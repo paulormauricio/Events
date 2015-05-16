@@ -1,0 +1,23 @@
+<ion-header-bar class="bar-positive">
+        <h1 class="title">My Profile</h1>
+        <button class="button button-clear" ng-click="logout()">Logout</button>
+</ion-header-bar>
+
+<ion-view title="My Profile">
+  <ion-content id="settings">
+    <div class="centered">
+      <img ng-src="https://graph.facebook.com/v2.2/{{facebookId}}/picture?type=large" class="circle " style="width: 40%; margin: 20px 0px 30px;">
+    </div>
+
+    <div class="list">
+
+  		<a class="item item-icon-left item-icon-right" ng-href="#/friends">
+  			<i class="icon ion-person-stalker"></i>
+  			{{total_friends}} {{total_friends == 1 ? 'Friend' : 'Friends'}} connected
+  			<i class="icon ion-ios-arrow-forward"></i>
+  		</a>
+
+    </div>
+
+  </ion-content>
+</ion-view>

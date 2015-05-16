@@ -1,0 +1,17 @@
+<ion-header-bar class="bar-positive">
+        <button class="button button-clear" ui-sref="tab.profile">
+            <i class="icon ion-ios-arrow-back"></i>
+        </button>
+        <h1 class="title">Friends</h1>
+</ion-header-bar>
+
+<ion-view title="Friends">
+    <ion-content>
+        <ion-list>
+            <a class="item item-avatar" ng-repeat="object in objects | orderBy : object.get('first_name') + object.get('last_name')">
+                <img ng-src="https://graph.facebook.com/v2.2/{{object.get('Friend').get('facebookId')}}/picture??type=small">
+                <span class="middle">{{object.get('Friend').get('first_name')}} {{object.get('Friend').get('last_name')}}</span>
+            </a>
+        </ion-list>
+    </ion-content>
+</ion-view>
