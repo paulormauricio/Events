@@ -11,7 +11,8 @@ angular.module('events.EventControllers',[])
         showDelay: 500
     });
 
-    Event.getAll().then(function(objects) {
+    Event.getAll()
+    .then(function(objects) {
         $scope.objects = objects;
         $ionicLoading.hide();
     });
@@ -34,42 +35,129 @@ angular.module('events.EventControllers',[])
             '$ionicLoading',
             'Event', 
             'Friend', 
+            'EventParticipant',
+            'Theme',
             function(
                 $scope,
                 $state, 
                 $stateParams,
                 $ionicLoading, 
                 Event, 
-                Friend
+                Friend,
+                EventParticipant,
+                Theme
             )
         {
 
+    $scope.object = {};
 
-//    $scope.object = $stateParams.object;
+    console.log( 'Event:', Event );
 
-    $scope.storeName = function(object){
-        console.log('object:');
-        console.log(object);
-        // if( angular.isObject($stateParams.object) )
-        //     $state.go('editEventFriends({object: '+$scope.object+'})')
-        // else
-        //     $state.go('editEventFriends')
-    }
+    $scope.loadingIndicator = $ionicLoading.show({
+        content: 'Loading Data',
+        animation: 'fade-in',
+        showBackdrop: false,
+        maxWidth: 200,
+        showDelay: 500
+    });
 
-    $scope.create = function(){
-        console.log($scope);
-        console.log($scope.name);
-        // Event.create($scope.object).then( function() {
-        //     $state.go('tab.events');
-        // });
-    }
+    $scope.storeName = function() {
 
-    $scope.loadFriends = function(){
+        console.log('Event:', $scope.object);
+
         
-        console.log('chegou');
+
+        Event.myEvent.set('name', $scope.object.name);
+
+        console.log('myEvent:', Event.myEvent);
+
+        Event.save();
+
+        $state.go('editEventFriends', {}, {reload: true});
+    }
+
+    $scope.storeFriends = function() {
+        
+        console.log('Store Friends');
 
     }
 
+    $scope.create = function() {
+        Event.create($scope.object).then( function() {
+            $state.go('tab.events');
+        });
+    }
+
+    $scope.loadThemes = function() {
+        $scope.object.name = Event.myEvent.get('name');
+
+        console.log('load past Events');
+
+        Theme.getAll().then(function(themes){
+            $scope.themes = themes;
+            console.log('Themes: ', themes);
+        });
+
+        $ionicLoading.hide();
+    }
+
+    $scope.loadFriends = function() {
+        console.log('chegou ao loadFriends');
+
+        $scope.friends = [];
+        $scope.invitedFriends = [];
+        
+        Friend.getAllExceptParticipants().then(function(friends) {
+
+            $scope.friends = friends;
+
+            console.log('friends: ', $scope.friends);
+
+            EventParticipant.getAll(Event.myEvent).then(function(invitedFriends){
+                $scope.invitedFriends = invitedFriends;
+                console.log('invitedFriends: ', $scope.invitedFriends);
+                $ionicLoading.hide();
+            })
+            .catch(function(fallback) {
+                console.log('Error: ', fallback + '!!');
+                $ionicLoading.hide();
+            });
+            
+        })
+        .catch(function(fallback) {
+            console.log('Error: ', fallback + '!!');
+            $ionicLoading.hide();
+        });
+    }
+
+    $scope.inviteFriend = function(index) {
+        console.log('chegou ao invite Friends. Index = ' + index);
+        console.log('Selected friend: ', $scope.friends[index]);
+        var participant = EventParticipant.store(Event.myEvent, $scope.friends[index].get('Friend'));
+        $scope.invitedFriends.push( participant );
+        $scope.friends.splice(index, 1);
+
+    }
+
+    $scope.uninviteFriend = function(index) {
+        console.log('chegou ao uninvite Friends. Index = ' + index);
+
+        var newFriend = Friend.newFriend($scope.invitedFriends[index].get('User'));
+
+        EventParticipant.delete($scope.invitedFriends[index]);
+
+        $scope.invitedFriends.splice(index, 1);
+        $scope.friends.push( newFriend );
+    }
+
+    $scope.selectTheme = function(index) {
+        console.log('chegou ao selectTheme. Index = ' + index);
+        Event.selectTheme($scope.themes[index]);
+    }
+
+    $scope.notifyParticipants = function() {
+        console.log('Notify Participants');
+    }
 
 }])
 

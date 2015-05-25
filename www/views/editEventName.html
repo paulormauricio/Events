@@ -3,18 +3,31 @@
         <i class="icon ion-ios-arrow-back"></i>
     </button>
     <h1 class="title">What?</h1>
-    <button class="button button-clear" ng-click="create()">
+    <button class="button button-clear" ng-click="storeName()">
         Save
     </button>
 </ion-header-bar>
 
-<ion-content>
-<div>
-    <ion-list>
-        <li class="item item-input item-stacked-label">
-            <textarea type="text" name="name" placeholder="What are you going to do?" name="content" style="padding: 30px 10px" ng-model="name" required></textarea>
-        </li>
-        {{object.name}}
-    </ion-list>
-</div>
+<ion-content ng-init="loadThemes()">
+    <div class="card">
+        <img src="">
+        <div class="cover"></div>
+        <textarea type="text" placeholder="" name="name" ng-model="object.name" required autofocus></textarea>
+        <label ng-hide="object.name">
+            What are you going to do?
+        </label>
+    </div>
+
+    <div class="item item-divider" ng-show="themes.length>0">
+        Choose your theme
+    </div>
+    <ion-scroll direction="y" class="collectionList" ng-show="themes.length>0">
+        <a href="javascript:void(0)" ng-click="selectTheme($index)" class="item slow" ng-repeat="theme in themes | filter : object.name">
+            <img ng-src="" class="">
+            <div class="title">
+                {{theme.name}}
+            </div>
+        </a>
+    </ion-scroll>
+
 </ion-content>

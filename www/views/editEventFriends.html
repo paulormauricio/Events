@@ -1,20 +1,36 @@
 <ion-header-bar class="bar-positive">
-        <button class="button button-clear" ui-sref="tab.events">
+        <button class="button button-clear" ui-sref="editEventName">
             <i class="icon ion-ios-arrow-back"></i>
         </button>
-        <h1 class="title">What?</h1>
-        <button class="button button-clear" ng-click="storeFriends()">
-            Save
+        <h1 class="title">Who?</h1>
+        <button class="button button-clear" ng-click="notifyParticipants()">
+            Open
         </button>
 </ion-header-bar>
 
-<ion-view title="Friends" ng-init="loadFriends()">
-    <ion-content>
-        <ion-list>
-            <a class="item item-avatar" ng-repeat="object in objects | orderBy : object.get('first_name') + object.get('last_name')">
-                <img ng-src="https://graph.facebook.com/v2.2/{{object.get('Friend').get('facebookId')}}/picture??type=small">
-                <span class="middle">{{friends.get('Friend').get('first_name')}} {{friends.get('Friend').get('last_name')}}</span>
-            </a>
-        </ion-list>
-    </ion-content>
-</ion-view>
+<ion-content ng-init="loadFriends()">
+    <div class="item item-divider" ng-show="invitedFriends.length>0">
+        {{invitedFriends.length}} Invited {{invitedFriends.length == 1 ? 'Friend' : 'friends'}}
+    </div>
+
+    <ion-scroll direction="x" class="horizontalList" ng-show="invitedFriends.length>0">
+        <a href="javascript:void(0)" ng-click="uninviteFriend($index)" class="item slow" ng-repeat="invitedFriend in invitedFriends | orderBy : invitedFriend.get('first_name') + invitedFriend.get('last_name')">
+            <img ng-src="https://graph.facebook.com/v2.2/{{invitedFriend.get('User').get('facebookId')}}/picture??type=small" class="circle">
+            <div class="title">
+                {{invitedFriend.get('User').get('first_name')}} {{invitedFriend.get('User').get('last_name')}}
+            </div>
+        </a>
+    </ion-scroll>
+    <ion-list ng-show="friends.length>0">
+        <div class="item item-divider">
+            Friends
+        </div>
+
+        <a href="javascript:void(0)" ng-click="inviteFriend($index)" class="item item-avatar slow" ng-repeat="friend in friends | orderBy : friend.get('Friend').get('first_name') + friend.get('Friend').get('last_name')">
+            <img ng-src="https://graph.facebook.com/v2.2/{{friend.get('Friend').get('facebookId')}}/picture??type=small" class="circle">
+            <div class="middle">
+                {{friend.get('Friend').get('first_name')}} {{friend.get('Friend').get('last_name')}}
+            </div>
+        </a>
+    </ion-list>
+</ion-content>

@@ -1,13 +1,15 @@
 angular.module('events', 
     [
       'ionic',
+      'ngAnimate',
       'events.EventControllers',
       'events.EventServices',
       'events.LoginControllers',
       'events.ProfileControllers',
       'events.ProfileServices',
       'events.FriendControllers',
-      'events.FriendServices'
+      'events.FriendServices',
+      'events.filters'
     ]
   )
 
@@ -52,20 +54,22 @@ angular.module('events',
         authenticate: true
       }
     }).state('editEventName',{
-      url:'/events/edit/:object',
+      url:'/events/editName',
       controller:'EventEditController',
       templateUrl:'views/editEventName.html',
       data: {
         authenticate: true
       }
-    }).state('editEventFriends',{
-      url:'/events/edit/:object',
+    })
+    .state('editEventFriends',{
+      url:'/events/editFriends',
       controller:'EventEditController',
       templateUrl:'views/editEventFriends.html',
       data: {
         authenticate: true
       }
-    }).state('showEvent',{
+    })
+    .state('showEvent',{
       url:'/events/:object',
       controller:'EventShowController',
       templateUrl:'views/showEvent.html',
