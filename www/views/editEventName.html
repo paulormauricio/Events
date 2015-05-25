@@ -9,10 +9,10 @@
 </ion-header-bar>
 
 <ion-content ng-init="loadThemes()">
-    <div class="card">
-        <img src="">
+    <div class="card" style="background-color: {{object.backgroundColor}}">
+        <img ng-src="{{object.iconUrl}}" ng-hide="object.iconUrl == ''">
         <div class="cover"></div>
-        <textarea type="text" placeholder="" name="name" ng-model="object.name" required autofocus></textarea>
+        <textarea type="text" placeholder="" name="name" ng-model="object.name" required autofocus style="padding: 40px 0px 0px"></textarea>
         <label ng-hide="object.name">
             What are you going to do?
         </label>
@@ -22,10 +22,11 @@
         Choose your theme
     </div>
     <ion-scroll direction="y" class="collectionList" ng-show="themes.length>0">
-        <a href="javascript:void(0)" ng-click="selectTheme($index)" class="item slow" ng-repeat="theme in themes | filter : object.name">
-            <img ng-src="" class="">
+        <a href="javascript:void(0)" ng-click="selectTheme($index, theme)" class="item slow" ng-repeat="theme in themes | parseSearch : object.name: 'tags_en_us' : 'tags'" style="background-color: {{theme.get('backgroundColor')}}">
+            <img ng-src="{{theme.get('icon').url()}}" class="">
+            <div class="cover"></div>
             <div class="title">
-                {{theme.name}}
+                {{theme.get('name')}}
             </div>
         </a>
     </ion-scroll>

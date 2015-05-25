@@ -45,6 +45,7 @@ angular.module('events.FriendServices',[])
 			query.equalTo("User", Parse.User.current() );
 			query.equalTo("isActive", true );
 			query.include("Friend");
+			//query.ascending("");
 
 			var innerQuery = new Parse.Query(Participant);
 			innerQuery.equalTo("Event", myEvent );

@@ -10,11 +10,21 @@
         <ion-refresher pulling-text="Pull to refresh..."
             on-refresh="doRefresh()">
         </ion-refresher>
-        <ion-list>
-            <ion-item ng-repeat="object in objects" item="item"
-                      ng-href="#/events/{{object}}">
-                {{object.get('name')}}
-            </ion-item>
+        <ion-list class="cards">
+            <a class="card" ng-repeat="object in objects" item="item"
+                      ng-href="#/events/{{object.get('Event')}}">
+                <div class="header" style="background-color: {{object.get('Event').has('Theme') ? object.get('Event').get('Theme').get('backgroundColor') : 'transparent;'}}">
+                    <img ng-src="{{object.get('Event').has('Theme') ? object.get('Event').get('Theme').get('icon').url() : ''}}" ng-show="object.get('Event').has('Theme')">
+                    <div class="cover"></div>
+                    <label ng-hide="object.name">
+                        {{object.get('Event').get('name')}}
+                    </label>
+                </div>
+                <div class="footer">
+                    
+                </div>
+            </a>
         </ion-list>
     </ion-content>
 </ion-view>
+

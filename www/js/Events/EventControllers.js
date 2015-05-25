@@ -14,6 +14,7 @@ angular.module('events.EventControllers',[])
     Event.getAll()
     .then(function(objects) {
         $scope.objects = objects;
+        console.log('Events: ', objects);
         $ionicLoading.hide();
     });
     
@@ -35,7 +36,7 @@ angular.module('events.EventControllers',[])
             '$ionicLoading',
             'Event', 
             'Friend', 
-            'EventParticipant',
+            'Participant',
             'Theme',
             function(
                 $scope,
@@ -44,7 +45,7 @@ angular.module('events.EventControllers',[])
                 $ionicLoading, 
                 Event, 
                 Friend,
-                EventParticipant,
+                Participant,
                 Theme
             )
         {
@@ -90,6 +91,8 @@ angular.module('events.EventControllers',[])
 
     $scope.loadThemes = function() {
         $scope.object.name = Event.myEvent.get('name');
+        $scope.object.backgroundColor = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('backgroundColor') : ';';
+        $scope.object.iconUrl = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('icon').url() : '';
 
         console.log('load past Events');
 
@@ -113,7 +116,7 @@ angular.module('events.EventControllers',[])
 
             console.log('friends: ', $scope.friends);
 
-            EventParticipant.getAll(Event.myEvent).then(function(invitedFriends){
+            Participant.getAll(Event.myEvent).then(function(invitedFriends){
                 $scope.invitedFriends = invitedFriends;
                 console.log('invitedFriends: ', $scope.invitedFriends);
                 $ionicLoading.hide();
@@ -133,7 +136,7 @@ angular.module('events.EventControllers',[])
     $scope.inviteFriend = function(index) {
         console.log('chegou ao invite Friends. Index = ' + index);
         console.log('Selected friend: ', $scope.friends[index]);
-        var participant = EventParticipant.store(Event.myEvent, $scope.friends[index].get('Friend'));
+        var participant = Participant.store(Event.myEvent, $scope.friends[index].get('Friend'));
         $scope.invitedFriends.push( participant );
         $scope.friends.splice(index, 1);
 
@@ -144,19 +147,25 @@ angular.module('events.EventControllers',[])
 
         var newFriend = Friend.newFriend($scope.invitedFriends[index].get('User'));
 
-        EventParticipant.delete($scope.invitedFriends[index]);
+        Participant.delete($scope.invitedFriends[index]);
 
         $scope.invitedFriends.splice(index, 1);
         $scope.friends.push( newFriend );
     }
 
-    $scope.selectTheme = function(index) {
-        console.log('chegou ao selectTheme. Index = ' + index);
-        Event.selectTheme($scope.themes[index]);
+    $scope.selectTheme = function(index, theme) {
+
+        Event.selectTheme(theme);
+
+        $scope.object.backgroundColor = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('backgroundColor') : ';';
+        $scope.object.iconUrl = Event.myEvent.get('Theme') ? Event.myEvent.get('Theme').get('icon').url() : '';
+
     }
 
     $scope.notifyParticipants = function() {
         console.log('Notify Participants');
+        Event.resetMyEvent();
+        $state.go('tab.events');
     }
 
 }])

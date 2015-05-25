@@ -1,9 +1,10 @@
 angular.module('events.EventServices',[])
 
 
-.service('Event',['$rootScope', '$q', function($rootScope, $q){
+.service('Event',['$rootScope', '$q', 'Participant' , function($rootScope, $q, Participant){
 
 	var Event = Parse.Object.extend("Event");
+	var Participant = Parse.Object.extend("Participant");
 
 	this.eventList = [];
 
@@ -14,14 +15,21 @@ angular.module('events.EventServices',[])
 			var deferred = $q.defer();
 
 			var query = new Parse.Query(Event);
-			query.equalTo("createdBy", Parse.User.current() );
-			query.find({
+			var innerQuery = new Parse.Query(Participant);
+
+			innerQuery.matchesQuery("Event", query);
+			innerQuery.equalTo("User", Parse.User.current() );
+			innerQuery.equalTo("isHidden", false );
+			innerQuery.include("Event");
+			innerQuery.include("Event.Theme");
+
+			innerQuery.find({
 			  success: function(objects) {
 			  	console.log('Events List get successfully!');
 
-			    $rootScope.$apply(function() { deferred.resolve(objects); });
+				this.eventList = objects;
 
-			    this.eventList = objects;
+			    $rootScope.$apply(function() { deferred.resolve(objects); });
 
 			  },
 			  error: function(error) {
@@ -58,6 +66,9 @@ angular.module('events.EventServices',[])
 			  	$rootScope.$apply(function() { deferred.resolve(true); });
 
 			  	this.eventList.push(newEvent);
+			  	this.myEvent = newEvent;
+
+			  	Participant.store(newEvent, Parse.User.current());
 
 			  },
 			  error: function(gameScore, error) {
@@ -72,14 +83,22 @@ angular.module('events.EventServices',[])
 	};
 
 	this.selectTheme = function(theme) {
-		this.myEvent.set('theme', theme);
+		//console.log('Theme: ', this.myEvent.get('Theme'));
+		if( this.myEvent.has('Theme') ) {
+			if( this.myEvent.get('Theme').id == theme.id ) 
+				this.myEvent.unset('Theme');
+			else
+				this.myEvent.set('Theme', theme);
+		}
+		else
+			this.myEvent.set('Theme', theme);
 	};
 
 }])
 
-.factory('EventParticipant',['$rootScope', '$q', function($rootScope, $q){
+.factory('Participant',['$rootScope', '$q', function($rootScope, $q){
 
-	var Participant = Parse.Object.extend("EventParticipant");
+	var Participant = Parse.Object.extend("Participant");
 
 	var participants = [];
 
@@ -89,7 +108,7 @@ angular.module('events.EventServices',[])
 			var deferred = $q.defer();
 
 			var query = new Parse.Query(Participant);
-			query.equalTo("Event", myEvent );
+			query.equalTo("Event", myEvent.id );
 			query.equalTo("isHidden", false );
 			query.include("User");
 			query.find({
@@ -114,6 +133,7 @@ angular.module('events.EventServices',[])
             participant.set('Event', myEvent);
             participant.set('User', friend);
             participant.set('isSeen', false);
+            participant.set('isHidden', false);
             participant.set('isNotified', false);
 
 			var query = new Parse.Query(Participant);
@@ -159,6 +179,8 @@ angular.module('events.EventServices',[])
 
 	var Theme = Parse.Object.extend("Theme");
 
+	var themes = [];
+
 	return {
 
 		getAll: function() {
@@ -174,12 +196,17 @@ angular.module('events.EventServices',[])
 			  		var locale = Parse.User.current().get('locale').toLowerCase();
 
 			  		var name = '';
-			  		if(object.has('name_'+locale))
+			  		if(object.has('name_'+locale)) {
 			  			name = object.get('name_'+locale);
-			  		else
+			  			tags = object.get('tags_'+locale);
+			  		}
+			  		else {
 			  			name = object.get('name_en_us');
+			  			tags = object.get('tags_en_us');
+			  		}
 
 			  		object.set('name', name);
+			  		object.set('tags', tags);
 			  	});
 
 			    $rootScope.$apply(function() { deferred.resolve(objects); });
