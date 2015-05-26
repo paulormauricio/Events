@@ -12,7 +12,7 @@
         </ion-refresher>
         <ion-list class="cards">
             <a class="card" ng-repeat="object in objects" item="item"
-                      ng-href="#/events/{{object.get('Event')}}">
+                      ng-click="showEvent(object.get('Event'))">
                 <div class="header" style="background-color: {{object.get('Event').has('Theme') ? object.get('Event').get('Theme').get('backgroundColor') : 'transparent;'}}">
                     <img ng-src="{{object.get('Event').has('Theme') ? object.get('Event').get('Theme').get('icon').url() : ''}}" ng-show="object.get('Event').has('Theme')">
                     <div class="cover"></div>
@@ -21,7 +21,28 @@
                     </label>
                 </div>
                 <div class="footer">
-                    
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td ng-hide="{{object.get('Event').has('place_id')}}">
+                                    <i class="ion-ios-location-outline"></i>
+                                    <label>Not defined yet</label>
+                                </td>
+                                <td ng-show="{{object.get('Event').has('place_id')}}">
+                                    <i class="ion-ios-location"></i>
+                                    <label>Place xxx</label>
+                                </td>
+                                <td>
+                                    <i class="ion-calendar"></i>
+                                    <label>Tomorrow at 19:00</label>
+                                </td>
+                                <td>
+                                    <i class="ion-android-sunny"></i>
+                                    <label>Sunny 27ºC</label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </a>
         </ion-list>

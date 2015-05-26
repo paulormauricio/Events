@@ -1,6 +1,6 @@
 angular.module('events.EventControllers',[])
 
-.controller('EventsListController',['$scope', '$ionicLoading', 'Event',function($scope,$ionicLoading,Event){
+.controller('EventsListController',['$state', '$scope', '$ionicLoading', 'Event', function($state, $scope,$ionicLoading,Event){
     
 
     $scope.loadingIndicator = $ionicLoading.show({
@@ -25,6 +25,10 @@ angular.module('events.EventControllers',[])
         });
     }
 
+    $scope.showEvent = function(myEvent) {
+        Event.showEvent = myEvent;
+        $state.go('showEvent', {objectId: Event.showEvent.id});
+    }
 
 }])
 
@@ -158,21 +162,51 @@ angular.module('events.EventControllers',[])
         Event.selectTheme(theme);
 
         $scope.object.backgroundColor = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('backgroundColor') : ';';
-        $scope.object.iconUrl = Event.myEvent.get('Theme') ? Event.myEvent.get('Theme').get('icon').url() : '';
+        $scope.object.iconUrl = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('icon').url() : '';
 
     }
 
     $scope.notifyParticipants = function() {
         console.log('Notify Participants');
         Event.resetMyEvent();
-        $state.go('tab.events');
+        Event.showEvent = Event.myEvent;
+        $state.go('showEvent', {objectId: Event.showEvent.id});
     }
 
 }])
 
-.controller('EventShowController',['$scope','Event','$state','$stateParams',function($scope,Event,$state,$stateParams){
+.controller('EventShowController',['$scope','Event','$state','$stateParams','$ionicLoading', function($scope,Event,$state,$stateParams, $ionicLoading){
 
-	var obj = angular.fromJson($stateParams.object);
-    $scope.object = obj;
+    $scope.loadingIndicator = $ionicLoading.show({
+        content: 'Loading Data',
+        animation: 'fade-in',
+        showBackdrop: false,
+        maxWidth: 200,
+        showDelay: 500
+    });
+
+    if( !Event.showEvent.id ) {
+        Event.get($stateParams.objectId).then(function(object) {
+            Event.showEvent = object;
+            loadEventDetail();
+            $ionicLoading.hide();
+        })
+        .catch(function(fallback) {
+            console.log('Error: ', fallback + '!!');
+            $ionicLoading.hide();
+        });
+    }
+    else {
+        loadEventDetail();
+        $ionicLoading.hide();
+    }
+
+    function loadEventDetail() {
+        $scope.object = Event.showEvent;
+        $scope.object.backgroundColor = Event.showEvent.has('Theme') ? Event.showEvent.get('Theme').get('backgroundColor') : ';';
+        $scope.object.iconUrl = Event.showEvent.has('Theme') ? Event.showEvent.get('Theme').get('icon').url() : '';
+
+        console.log('Show Event: ', $scope.object);
+    }
 
 }]);

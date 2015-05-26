@@ -4,6 +4,7 @@ angular.module('events',
       'ngAnimate',
       'events.EventControllers',
       'events.EventServices',
+      'events.WeatherServices',
       'events.LoginControllers',
       'events.ProfileControllers',
       'events.ProfileServices',
@@ -70,7 +71,7 @@ angular.module('events',
       }
     })
     .state('showEvent',{
-      url:'/events/:object',
+      url:'/event/:objectId',
       controller:'EventShowController',
       templateUrl:'views/showEvent.html',
       data: {

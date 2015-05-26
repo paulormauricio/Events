@@ -10,6 +10,8 @@ angular.module('events.EventServices',[])
 
 	this.myEvent = new Event();
 
+	this.showEvent = {};
+
 
 	this.getAll = function() {
 			var deferred = $q.defer();
@@ -40,19 +42,25 @@ angular.module('events.EventServices',[])
 		};
 
 	this.get = function(id) {
+			var deferred = $q.defer();
 			
 			var query = new Parse.Query(Event);
 			query.equalTo("objectId", id );
+			query.include("Theme");
 			query.first({
 			  success: function(object) {
 			  	console.log('Event get successfully!');
-			  	this.myEvent = result;
-			    return result;
+
+				this.showEvent = object;
+				
+			  	$rootScope.$apply(function() { deferred.resolve(object); });
+
 			  },
 			  error: function(error) {
 			    console.log("Error: " + error.code + " " + error.message);
 			  }
 			});
+			return deferred.promise;
 		};
 
 	this.save = function() {

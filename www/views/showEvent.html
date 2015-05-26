@@ -8,9 +8,29 @@
 <ion-content>
     <div>
         <ion-list>
-            <li class="item item-input item-stacked-label">
-                {{object.name}}
-            </li>
+            <div class="card" style="background-color: {{object.backgroundColor}}">
+                <img ng-src="{{object.iconUrl}}" ng-hide="object.iconUrl == ''">
+                <div class="cover"></div>
+                <label ng-show="object.get('name')">
+                    {{object.get('name')}}
+                </label>
+            </div>
+            <ion-item>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="cellSideTemplate">
+                                <i class="ion-calendar"></i>
+                                <label>Click to define date</label>
+                            </td>
+                            <td class="cellSideTemplate" ng-show="object.has('date')">
+                                <i class="ion-android-sunny"></i>
+                                <label>Sunny</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </ion-item>
         </ion-list>
     </div>
 </ion-content>
