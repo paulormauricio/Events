@@ -1,13 +1,14 @@
-<widget id="com.Events" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="com.Events" version="1.0.0">
   <name>Events</name>
   <description>
         Live together!
-    </description>
+  </description>
   <author email="hi@ionicframework" href="http://ionicframework.com/">
       Ionic Framework Team
-    </author>
+  </author>
   <content src="index.html"/>
-  <access origin="*"/>
+
+  <preference name="permissions" value="none"/>
   <preference name="orientation" value="portrait"/>
   <preference name="target-device" value="universal"/>
   <preference name="fullscreen" value="true"/>
@@ -20,11 +21,9 @@
   <preference name="SplashScreenDelay" value="3000"/>
   <preference name="StatusBarOverlaysWebView" value="true"/>
   <preference name="StatusBarBackgroundColor" value="#000000" />
+  <preference name="android-minSdkVersion" value="7"/>
+  <preference name="android-installLocation" value="auto"/>
   
-  <feature name="StatusBar">
-    <param name="ios-package" value="CDVStatusBar" onload="true"/>
-  </feature>
-  <gap:plugin name="org.apache.cordova.console" version="0.2.11" />
   <gap:plugin name="org.apache.cordova.device-orientation" version="0.3.9" />
   <gap:plugin name="org.apache.cordova.network-information" version="0.2.12" />
   <gap:plugin name="com.phonegap.plugin.statusbar" version="1.1.0" />
@@ -79,4 +78,7 @@
     <splash src="resources/android/splash/drawable-port-xxhdpi-screen.png" density="port-xxhdpi"/>
     <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" density="port-xxxhdpi"/>
   </platform>
+
+
+  <access origin="*"/>
 </widget>
