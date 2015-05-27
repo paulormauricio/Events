@@ -6,7 +6,7 @@
 </ion-header-bar>
 
 <ion-view title="Friends">
-    <ion-content>
+    <ion-content has-bouncing="true">
         <ion-list>
             <a class="item item-avatar" ng-repeat="object in objects | orderBy : object.get('first_name') + object.get('last_name')">
                 <img ng-src="https://graph.facebook.com/v2.2/{{object.get('Friend').get('facebookId')}}/picture??type=small">

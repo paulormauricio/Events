@@ -1,0 +1,27 @@
+<ion-header-bar class="bar-positive">
+    <button class="button button-clear" ui-sref="tab.events">
+        <i class="icon ion-ios-arrow-back"></i>
+    </button>
+    <h1 class="title">When?</h1>
+    <button class="button button-clear" ng-click="storeDate()">
+        Save
+    </button>
+</ion-header-bar>
+
+<ion-content ng-init="loadDates()">
+
+    <ion-list>
+        <ion-item>
+            <a href="javascript:void(0)" ng-click="">
+                In 30 minutes
+            </a>
+        </ion-item>
+        <ion-item>
+        </ion-item>
+    </ion-list>
+
+    <div class="tabs">
+        <input type="datetime" ng-model="object.date" autofocus>
+    </div>
+
+</ion-content>

@@ -23,11 +23,7 @@
     </div>
     <ion-scroll direction="y" class="collectionList" ng-show="themes.length>0">
         <a href="javascript:void(0)" ng-click="selectTheme($index, theme)" class="item slow" ng-repeat="theme in themes | parseSearch : object.name: 'tags_en_us' : 'tags'" style="background-color: {{theme.get('backgroundColor')}}">
-            <img ng-src="{{theme.get('icon').url()}}" class="">
-            <div class="cover"></div>
-            <div class="title">
-                {{theme.get('name')}}
-            </div>
+            <img ng-src="{{theme.get('icon').url()}}">
         </a>
     </ion-scroll>
 

@@ -5,7 +5,7 @@
         <h1 class="title">Event</h1>
 </ion-header-bar>
 
-<ion-content>
+<ion-content has-bouncing="true">
     <div>
         <ion-list>
             <div class="card" style="background-color: {{object.backgroundColor}}">
@@ -15,13 +15,16 @@
                     {{object.get('name')}}
                 </label>
             </div>
+            <!-- Event Date and Weather  -->
             <ion-item>
                 <table>
                     <tbody>
                         <tr>
                             <td class="cellSideTemplate">
-                                <i class="ion-calendar"></i>
-                                <label>Click to define date</label>
+                                <a href="javascript:void(0)" ng-click="editDate()">
+                                    <i class="ion-calendar"></i>
+                                    <label>Click to define date</label>
+                                </a>
                             </td>
                             <td class="cellSideTemplate" ng-show="object.has('date')">
                                 <i class="ion-android-sunny"></i>
@@ -31,6 +34,14 @@
                     </tbody>
                 </table>
             </ion-item>
+            <!-- Event Place  -->
+            <ion-item>
+                <div class="cellSideTemplate">
+                    <i class="ion-ios-location-outline"></i>
+                    <label>Click to define location</label>
+                </div>
+            </ion-item>
         </ion-list>
+        <div date-picker="start" ng-show="true"></div>
     </div>
 </ion-content>

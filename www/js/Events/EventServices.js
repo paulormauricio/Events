@@ -1,7 +1,7 @@
 angular.module('events.EventServices',[])
 
 
-.service('Event',['$rootScope', '$q', 'Participant' , function($rootScope, $q, Participant){
+.service('Event',['$rootScope', '$q' , function($rootScope, $q ){
 
 	var Event = Parse.Object.extend("Event");
 	var Participant = Parse.Object.extend("Participant");
@@ -9,6 +9,8 @@ angular.module('events.EventServices',[])
 	this.eventList = [];
 
 	this.myEvent = new Event();
+	this.myEvent.set('totalParticipants', 0);
+	this.myEvent.set('goingParticipants', 0);
 
 	this.showEvent = {};
 
@@ -71,12 +73,10 @@ angular.module('events.EventServices',[])
 			this.myEvent.save(null, {
 			  success: function(newEvent) {
 			  	console.log('Event created successfully!');
-			  	$rootScope.$apply(function() { deferred.resolve(true); });
 
-			  	this.eventList.push(newEvent);
 			  	this.myEvent = newEvent;
 
-			  	Participant.store(newEvent, Parse.User.current());
+			  	$rootScope.$apply(function() { deferred.resolve(true); });
 
 			  },
 			  error: function(gameScore, error) {
@@ -102,9 +102,26 @@ angular.module('events.EventServices',[])
 			this.myEvent.set('Theme', theme);
 	};
 
+	this.newParticipant = function() {
+		this.myEvent.increment('totalParticipants');
+		this.myEvent.save();
+	}
+	this.removeParticipant = function() {
+		this.myEvent.increment("totalParticipants", -1);
+		this.myEvent.save();
+	}
+	this.newGoingParticipant = function() {
+		this.myEvent.increment('goingParticipants');
+		this.myEvent.save();
+	}	
+	this.removeGoingParticipant = function() {
+		this.myEvent.increment("goingParticipants", -1);
+		this.myEvent.save();
+	}
+
 }])
 
-.factory('Participant',['$rootScope', '$q', function($rootScope, $q){
+.factory('Participant',['$rootScope', '$q', 'Event', function($rootScope, $q, Event){
 
 	var Participant = Parse.Object.extend("Participant");
 
@@ -116,7 +133,7 @@ angular.module('events.EventServices',[])
 			var deferred = $q.defer();
 
 			var query = new Parse.Query(Participant);
-			query.equalTo("Event", myEvent.id );
+			query.equalTo("Event", myEvent );
 			query.equalTo("isHidden", false );
 			query.include("User");
 			query.find({
@@ -153,7 +170,7 @@ angular.module('events.EventServices',[])
 			  	if (object === undefined) {
 			  		console.log('Participant saved successfully!');
                     participant.save();
-
+                    Event.newParticipant();
 			  	}
 
 			  },
@@ -171,7 +188,8 @@ angular.module('events.EventServices',[])
 			
 			participant.destroy({
 				success: function(myObject) {
-					// The object was deleted from the Parse Cloud.
+					Event.removeParticipant();
+					if(participant.get('isGoing)')) Event.removeGoingParticipant();
 				},
 				error: function(myObject, error) {
 			    console.log("Error: " + error.code + " " + error.message);

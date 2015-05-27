@@ -2,6 +2,8 @@ angular.module('events.LoginControllers', [])
 
   .controller('LoginController', ['$scope', '$state', function($scope, $state) {
     var fbLogged = new Parse.Promise();
+
+    alert('Entrou no Controller');
       
     var fbLoginSuccess = function(response) {
       if (!response.authResponse){
@@ -26,6 +28,7 @@ angular.module('events.LoginControllers', [])
     };
 
     $scope.login = function() {
+      alert('Chegou ao login');
       console.log('Login');
       if (!window.cordova) {
         facebookConnectPlugin.browserInit('1536111309938547');

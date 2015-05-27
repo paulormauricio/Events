@@ -6,43 +6,43 @@
 </ion-header-bar>
 
 <ion-view title="Events">
-    <ion-content>
+    <ion-content has-bouncing="true">
         <ion-refresher pulling-text="Pull to refresh..."
             on-refresh="doRefresh()">
         </ion-refresher>
         <ion-list class="cards">
             <a class="card" ng-repeat="object in objects" item="item"
-                      ng-click="showEvent(object.get('Event'))">
+                      ng-click="showEvent(object.get('Event'))" nav-transition="ios">
                 <div class="header" style="background-color: {{object.get('Event').has('Theme') ? object.get('Event').get('Theme').get('backgroundColor') : 'transparent;'}}">
                     <img ng-src="{{object.get('Event').has('Theme') ? object.get('Event').get('Theme').get('icon').url() : ''}}" ng-show="object.get('Event').has('Theme')">
                     <div class="cover"></div>
-                    <label ng-hide="object.name">
-                        {{object.get('Event').get('name')}}
-                    </label>
+                    <div class="titleWithBadge">
+                        <label ng-hide="object.name">
+                            {{object.get('Event').get('name')}}
+                        </label>
+                    </div>
+                    <span class="badge badge-{{(object.get('Event').get('goingParticipants')/object.get('Event').get('totalParticipants')>=0.5) ? 'balanced' : 'stable'}}">
+                        <i class="ion-person-stalker"></i>
+                        {{object.get('Event').get('goingParticipants')}}
+                    </span>
                 </div>
-                <div class="footer">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td ng-hide="{{object.get('Event').has('place_id')}}">
-                                    <i class="ion-ios-location-outline"></i>
-                                    <label>Not defined yet</label>
-                                </td>
-                                <td ng-show="{{object.get('Event').has('place_id')}}">
-                                    <i class="ion-ios-location"></i>
-                                    <label>Place xxx</label>
-                                </td>
-                                <td>
-                                    <i class="ion-calendar"></i>
-                                    <label>Tomorrow at 19:00</label>
-                                </td>
-                                <td>
-                                    <i class="ion-android-sunny"></i>
-                                    <label>Sunny 27ºC</label>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="footer row">
+                    <div class="col col-33" ng-hide="{{object.get('Event').has('place_id')}}">
+                        <i class="ion-ios-location-outline"></i>
+                        <label>Not defined yet</label>
+                    </div>
+                    <div class="col col-33" ng-show="{{object.get('Event').has('place_id')}}">
+                        <i class="ion-ios-location"></i>
+                        <label>Place xxx</label>
+                    </div>
+                    <div class="col col-33">
+                        <i class="ion-calendar"></i>
+                        <label>Tomorrow at 19:00</label>
+                    </div>
+                    <div class="col col-33">
+                        <i class="ion-android-sunny"></i>
+                        <label>Sunny 27ºC</label>
+                    </div>
                 </div>
             </a>
         </ion-list>

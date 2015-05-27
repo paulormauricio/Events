@@ -26,8 +26,8 @@ angular.module('events.EventControllers',[])
     }
 
     $scope.showEvent = function(myEvent) {
-        Event.showEvent = myEvent;
-        $state.go('showEvent', {objectId: Event.showEvent.id});
+        Event.myEvent = myEvent;
+        $state.transitionTo('showEvent', {objectId: Event.myEvent.id});
     }
 
 }])
@@ -68,17 +68,26 @@ angular.module('events.EventControllers',[])
 
     $scope.storeName = function() {
 
-        console.log('Event:', $scope.object);
+        $scope.loadingIndicator = $ionicLoading.show({
+            content: 'Loading Data',
+            animation: 'fade-in',
+            showBackdrop: false,
+            maxWidth: 200,
+            showDelay: 500
+        });
 
-        
+        console.log('Event:', $scope.object);
 
         Event.myEvent.set('name', $scope.object.name);
 
         console.log('myEvent:', Event.myEvent);
 
-        Event.save();
+        Event.save().then(function() {
+            Participant.store(Event.myEvent, Parse.User.current());
+            Event.newGoingParticipant();
+            $state.go('editEventFriends', {}, {reload: true});
+        });
 
-        $state.go('editEventFriends', {}, {reload: true});
     }
 
     $scope.storeFriends = function() {
@@ -139,22 +148,23 @@ angular.module('events.EventControllers',[])
 
     $scope.inviteFriend = function(index) {
         console.log('chegou ao invite Friends. Index = ' + index);
-        console.log('Selected friend: ', $scope.friends[index]);
+        
         var participant = Participant.store(Event.myEvent, $scope.friends[index].get('Friend'));
-        $scope.invitedFriends.push( participant );
-        $scope.friends.splice(index, 1);
 
+        $scope.friends.splice(index, 1);
+        $scope.invitedFriends.push( participant );
     }
 
     $scope.uninviteFriend = function(index) {
-        console.log('chegou ao uninvite Friends. Index = ' + index);
+        console.log('chegou ao uninvite Friends. Index = ' + index + ': ', $scope.invitedFriends[index]);
 
         var newFriend = Friend.newFriend($scope.invitedFriends[index].get('User'));
+
+        $scope.friends.push( newFriend );
 
         Participant.delete($scope.invitedFriends[index]);
 
         $scope.invitedFriends.splice(index, 1);
-        $scope.friends.push( newFriend );
     }
 
     $scope.selectTheme = function(index, theme) {
@@ -168,14 +178,61 @@ angular.module('events.EventControllers',[])
 
     $scope.notifyParticipants = function() {
         console.log('Notify Participants');
-        Event.resetMyEvent();
-        Event.showEvent = Event.myEvent;
-        $state.go('showEvent', {objectId: Event.showEvent.id});
+        $state.go('myEvent', {objectId: Event.myEvent.id});
     }
+
+    $scope.loadDates = function() {
+        $scope.object.date = new Date();
+        showDatePicker();
+        $ionicLoading.hide();
+    }
+
+    function showDatePicker() {
+
+        if( ionic.Platform.isIOS() || ionic.Platform.isAndroid() || ionic.Platform.isWindowsPhone() ) {
+            var options = {
+                date: $scope.object.date,
+                mode: 'datetime',
+                allowOldDates: false,
+                minuteInterval: 5
+            };
+
+            datePicker.show(options, function(date){
+                alert("date result " + date);  
+            });
+        }
+    }
+
+    $scope.setDate = function(date) {
+        $scope.object.date = date;
+    }
+
+    $scope.storeDate = function() {
+        console.log('Chegou ao StoreDate');
+        Event.myEvent.set('date', $scope.object.date);
+        console.log('Event: ', Event.myEvent);
+    }
+
 
 }])
 
-.controller('EventShowController',['$scope','Event','$state','$stateParams','$ionicLoading', function($scope,Event,$state,$stateParams, $ionicLoading){
+.controller('EventShowController',
+        [
+            '$scope',
+            'Event',
+            '$state',
+            '$stateParams',
+            '$ionicLoading', 
+            '$ionicActionSheet',
+            function(
+                $scope,
+                Event,
+                $state,
+                $stateParams, 
+                $ionicLoading,
+                $ionicActionSheet
+            )
+    {
 
     $scope.loadingIndicator = $ionicLoading.show({
         content: 'Loading Data',
@@ -185,9 +242,9 @@ angular.module('events.EventControllers',[])
         showDelay: 500
     });
 
-    if( !Event.showEvent.id ) {
+    if( !Event.myEvent.id ) {
         Event.get($stateParams.objectId).then(function(object) {
-            Event.showEvent = object;
+            Event.myEvent = object;
             loadEventDetail();
             $ionicLoading.hide();
         })
@@ -202,11 +259,44 @@ angular.module('events.EventControllers',[])
     }
 
     function loadEventDetail() {
-        $scope.object = Event.showEvent;
-        $scope.object.backgroundColor = Event.showEvent.has('Theme') ? Event.showEvent.get('Theme').get('backgroundColor') : ';';
-        $scope.object.iconUrl = Event.showEvent.has('Theme') ? Event.showEvent.get('Theme').get('icon').url() : '';
+        $scope.object = Event.myEvent;
+        $scope.object.backgroundColor = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('backgroundColor') : ';';
+        $scope.object.iconUrl = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('icon').url() : '';
 
         console.log('Show Event: ', $scope.object);
+    }
+
+    $scope.editDate = function() {
+        console.log('Chegou ao EditDate');
+        $scope.showAngularDateEditor = true;
+
+        //$state.go('editEventDate');
+    }
+
+    function showDatePicker() {
+
+        if( ionic.Platform.isIOS() || ionic.Platform.isAndroid() || ionic.Platform.isWindowsPhone() ) {
+            var options = {
+                date: $scope.object.date,
+                mode: 'datetime',
+                allowOldDates: false,
+                minuteInterval: 5
+            };
+
+            datePicker.show(options, function(date){
+                alert("date result " + date);  
+            });
+        }
+    }
+
+    $scope.setDate = function(date) {
+        $scope.object.date = date;
+    }
+
+    $scope.storeDate = function() {
+        console.log('Chegou ao StoreDate');
+        Event.myEvent.set('date', $scope.object.date);
+        console.log('Event: ', Event.myEvent);
     }
 
 }]);

@@ -14,7 +14,8 @@ angular.module('events',
     ]
   )
 
-.run(function($ionicPlatform, $rootScope, $state) {
+.run(function($ionicPlatform, $rootScope, $state, $ionicPopup) {
+  alert('chegou');
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -23,6 +24,20 @@ angular.module('events',
     }
     if(window.StatusBar) {
       StatusBar.styleDefault();
+    }
+    if(window.Connection) {
+      if(navigator.connection.type == Connection.NONE) {
+        $ionicPopup.confirm({
+          title: "Internet Disconnected",
+          content: "The internet is disconnected on your device."
+        })
+        .then(function(result) {
+          if(!result) {
+            console.log('warning result: ', result);
+            //ionic.Platform.exitApp();
+          }
+        });
+      }
     }
   });
 
@@ -55,7 +70,7 @@ angular.module('events',
         authenticate: true
       }
     }).state('editEventName',{
-      url:'/events/editName',
+      url:'/event/editName',
       controller:'EventEditController',
       templateUrl:'views/editEventName.html',
       data: {
@@ -63,9 +78,17 @@ angular.module('events',
       }
     })
     .state('editEventFriends',{
-      url:'/events/editFriends',
+      url:'/event/editFriends',
       controller:'EventEditController',
       templateUrl:'views/editEventFriends.html',
+      data: {
+        authenticate: true
+      }
+    })
+    .state('editEventDate',{
+      url:'/event/editDate',
+      controller:'EventEditController',
+      templateUrl:'views/editEventDate.html',
       data: {
         authenticate: true
       }
