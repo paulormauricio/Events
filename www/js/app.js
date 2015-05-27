@@ -1,6 +1,7 @@
 angular.module('events', 
     [
       'ionic',
+      'ng-cordova',
       'ngAnimate',
       'events.EventControllers',
       'events.EventServices',
