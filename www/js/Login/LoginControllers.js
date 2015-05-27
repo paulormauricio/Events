@@ -35,8 +35,10 @@ angular.module('events.LoginControllers', [])
       if (!window.cordova) {
         facebookConnectPlugin.browserInit('1536111309938547');
       }
+      alert('Antes do facebookConnectPlugin');
       facebookConnectPlugin.login(['email, user_friends'], fbLoginSuccess, fbLoginError);
-    
+      alert('Passou o facebookConnectPlugin');
+      
       fbLogged.then( function(authData) {
         console.log('Promised');
         alert('Promised');
