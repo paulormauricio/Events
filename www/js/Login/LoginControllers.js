@@ -6,8 +6,10 @@ angular.module('events.LoginControllers', [])
     var fbLoginSuccess = function(response) {
       if (!response.authResponse){
         fbLoginError("Cannot find the authResponse");
+        alert("Cannot find the authResponse");
         return;
       }
+      alert('fbLoginSuccess');
       var expDate = new Date(
         new Date().getTime() + response.authResponse.expiresIn * 1000
       ).toISOString();
@@ -19,6 +21,7 @@ angular.module('events.LoginControllers', [])
       }
       fbLogged.resolve(authData);
       console.log(response);
+      alert.log(response);
     };
 
     var fbLoginError = function(error){
@@ -27,7 +30,7 @@ angular.module('events.LoginControllers', [])
     };
 
     $scope.login = function() {
-      alert('Chegou ao login');
+      
       console.log('Login');
       if (!window.cordova) {
         facebookConnectPlugin.browserInit('1536111309938547');
@@ -36,6 +39,7 @@ angular.module('events.LoginControllers', [])
     
       fbLogged.then( function(authData) {
         console.log('Promised');
+        alert('Promised');
         return Parse.FacebookUtils.logIn(authData);
       })
       .then( function(userObject) {
