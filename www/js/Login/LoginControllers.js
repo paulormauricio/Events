@@ -2,8 +2,6 @@ angular.module('events.LoginControllers', [])
 
   .controller('LoginController', ['$scope', '$state', function($scope, $state) {
     var fbLogged = new Parse.Promise();
-
-    alert('Entrou no Controller');
       
     var fbLoginSuccess = function(response) {
       if (!response.authResponse){
@@ -25,6 +23,7 @@ angular.module('events.LoginControllers', [])
 
     var fbLoginError = function(error){
       fbLogged.reject(error);
+      alert('fbLoginError: '+error);
     };
 
     $scope.login = function() {
@@ -56,6 +55,7 @@ angular.module('events.LoginControllers', [])
             userObject.save();
           },
           function(error) {
+            alert('Error:'+error);
             console.log(error);
           }
         );
@@ -117,6 +117,7 @@ angular.module('events.LoginControllers', [])
           },
           function(error) {
             console.log(error);
+            alert('Error:'+error);
           }
         );
         $state.go('tab.events');
