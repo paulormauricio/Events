@@ -30,6 +30,8 @@
   <gap:plugin name="org.apache.cordova.geolocation"/>
 
   <gap:plugin name="com.phonegap.plugins.facebookconnect" version="0.9.0">
+      <param name="APP_ID" value="1536111309938547" />
+      <param name="APP_NAME" value="Events" />
   </gap:plugin>
 
 
