@@ -178,7 +178,7 @@ angular.module('events.EventControllers',[])
 
     $scope.notifyParticipants = function() {
         console.log('Notify Participants');
-        $state.go('myEvent', {objectId: Event.myEvent.id});
+        $state.go('showEvent', {objectId: Event.myEvent.id});
     }
 
     $scope.loadDates = function() {
