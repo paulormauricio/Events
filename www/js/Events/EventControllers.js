@@ -26,8 +26,8 @@ angular.module('events.EventControllers',[])
     }
 
     $scope.showEvent = function(myEvent) {
-        Event.myEvent = myEvent;
-        $state.transitionTo('showEvent', {objectId: Event.myEvent.id});
+        Event.showEvent = myEvent;
+        $state.transitionTo('showEvent', {objectId: Event.showEvent.id});
     }
 
 }])
@@ -178,7 +178,9 @@ angular.module('events.EventControllers',[])
 
     $scope.notifyParticipants = function() {
         console.log('Notify Participants');
-        $state.go('showEvent', {objectId: Event.myEvent.id});
+        Event.showEvent = Event.myEvent;
+        Event.resetMyEvent();
+        $state.go('showEvent', {objectId: Event.showEvent.id});
     }
 
     $scope.loadDates = function() {
@@ -224,13 +226,15 @@ angular.module('events.EventControllers',[])
             '$stateParams',
             '$ionicLoading', 
             '$ionicActionSheet',
+            '$timeout',
             function(
                 $scope,
                 Event,
                 $state,
                 $stateParams, 
                 $ionicLoading,
-                $ionicActionSheet
+                $ionicActionSheet,
+                $timeout
             )
     {
 
@@ -270,7 +274,80 @@ angular.module('events.EventControllers',[])
         console.log('Chegou ao EditDate');
         $scope.showAngularDateEditor = true;
 
+        var date = Event.showEvent.get('date');
+
+        alert('isWebView: '+ ionic.Platform.isWebView());
+        alert('isIPad: '+ ionic.Platform.isIPad());
+        alert('isIOS: '+ ionic.Platform.isIOS());
+        alert('isAndroid: '+ ionic.Platform.isAndroid());
+        alert('isWindowsPhone: '+ ionic.Platform.isWindowsPhone());
+
+        if( ionic.Platform.isIOS() ||
+            ionic.Platform.isAndroid() ||
+            ionic.Platform.isWindowsPhone()
+            ) {
+            alert('Device: ', ionic.Platform.device() );
+
+            var options = {
+                date: new Date(),
+                mode: 'datetime',
+                minuteInterval: 5,
+                allowOldDates: false,
+                doneButtonColor: '#0000FF',
+                cancelButtonColor: '#000000'
+            };
+
+            datePicker.show(options, function(newDate){
+                alert("date result " + newDate);  
+                date = newDate;
+            });
+        }
+        else {
+            console.log('is WebBrowser');
+
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+             buttons: [
+               { text: 'In 15 minutes' },
+               { text: 'In 30 minutes' },
+               { text: 'In 60 minutes' },
+               { text: 'In 2 hours' }
+             ],
+             destructiveText: 'Clear event date',
+             // titleText: 'Modify your album',
+             cancelText: 'Cancel',
+             cancel: function() {
+                  // add cancel code..
+                },
+             buttonClicked: function(index) {
+                console.log('Button clicked. Index = ', index);
+               return true;
+             },
+             destructiveButtonClicked: function() {
+                console.log('chegou ao delete');
+                date = '';
+             }
+            });
+
+            // For example's sake, hide the sheet after two seconds
+            $timeout(function() {
+             hideSheet();
+            }, 8000);
+
+        }
+
+        alert('chegou ao Save Date');
+        // Event.showEvent.set('date', date);
+        // Event.myEvent = Event.showEvent;
+        // Event.save();
+        // Event.resetMyEvent();
+        // $scope.object = Event.showEvent;
+
+
         //$state.go('editEventDate');
+    }
+
+    function saveDate(date) {
     }
 
     function showDatePicker() {

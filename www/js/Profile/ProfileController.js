@@ -20,6 +20,9 @@ angular.module('events.ProfileControllers', [])
       );
       
       Parse.User.logOut();
+
+      ionic.Platform.exitApp();
+      
       $state.go('login');
     };
     
