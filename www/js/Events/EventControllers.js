@@ -299,7 +299,7 @@ angular.module('events.EventControllers',[])
 
             datePicker.show(options, function(newDate){
                 alert("date result " + newDate);  
-                date = newDate;
+                saveDate(newDate);
             });
         }
         else {
@@ -307,47 +307,45 @@ angular.module('events.EventControllers',[])
 
             // Show the action sheet
             var hideSheet = $ionicActionSheet.show({
-             buttons: [
-               { text: 'In 15 minutes' },
-               { text: 'In 30 minutes' },
-               { text: 'In 60 minutes' },
-               { text: 'In 2 hours' }
-             ],
-             destructiveText: 'Clear event date',
-             // titleText: 'Modify your album',
-             cancelText: 'Cancel',
-             cancel: function() {
-                  // add cancel code..
+                buttons: [
+                    { text: 'In 15 minutes' },
+                    { text: 'In 30 minutes' },
+                    { text: 'In 60 minutes' },
+                    { text: 'In 2 hours' }
+                ],
+                destructiveText: 'Clear event date',
+                // titleText: 'Modify your album',
+                cancelText: 'Cancel',
+                cancel: function() {
+                    // add cancel code..
                 },
-             buttonClicked: function(index) {
-                console.log('Button clicked. Index = ', index);
-               return true;
-             },
-             destructiveButtonClicked: function() {
-                console.log('chegou ao delete');
-                date = '';
-             }
+                buttonClicked: function(index) {
+                    console.log('Button clicked. Index = ', index);
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    console.log('chegou ao delete');
+                    date = '';
+                }
             });
 
             // For example's sake, hide the sheet after two seconds
             $timeout(function() {
-             hideSheet();
+                hideSheet();
             }, 8000);
 
         }
 
-        alert('chegou ao Save Date');
-        // Event.showEvent.set('date', date);
-        // Event.myEvent = Event.showEvent;
-        // Event.save();
-        // Event.resetMyEvent();
-        // $scope.object = Event.showEvent;
-
-
         //$state.go('editEventDate');
     }
 
-    function saveDate(date) {
+    function saveDate(newdate) {
+        var date = new Date(newdate);
+        Event.showEvent.set('date', date);
+        Event.myEvent = Event.showEvent;
+        Event.save();
+        Event.resetMyEvent();
+        $scope.object = Event.showEvent;
     }
 
     function showDatePicker() {
