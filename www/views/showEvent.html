@@ -27,7 +27,7 @@
                                         Click to define date
                                     </label>
                                     <label ng-show="object.has('date')">
-                                        {{object.get('date')}}
+                                        {{ object.get('date') | date : 'dd-MM-yyyy HH:mm' }}
                                     </label>
                                 </a>
                             </td>

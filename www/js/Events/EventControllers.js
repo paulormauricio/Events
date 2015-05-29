@@ -275,14 +275,10 @@ angular.module('events.EventControllers',[])
         console.log(Event.showEvent);
         var date = Event.showEvent.get('date');
 
-        alert('isWebView: '+ ionic.Platform.isWebView());
-        alert('isIOS: '+ ionic.Platform.isIOS());
-
         if( ionic.Platform.isIOS() ||
             ionic.Platform.isAndroid() ||
             ionic.Platform.isWindowsPhone()
             ) {
-            alert('Device: ', ionic.Platform.device() );
 
             var options = {
                 date: new Date(),
@@ -322,29 +318,27 @@ angular.module('events.EventControllers',[])
                     console.log('Button clicked. Index = ', index);
                     switch(index) {
                         case 0: 
-                            hideSheet();
                             date = addMinutes(Date(), 15);
                             break;
                         case 1: 
-                            hideSheet();
                             date = addMinutes(Date(), 30);
                             break;
                         case 2: 
-                            hideSheet();
                             date = addMinutes(Date(), 60);
                             break;
                         case 3: 
-                            hideSheet();
                             date = addMinutes(Date(), 120);
                             break;
                         default: return addMinutes(Date(), 0);
                     }
+                    hideSheet();
                     saveDate(date);
                     return true;
                 },
                 destructiveButtonClicked: function() {
                     console.log('chegou ao delete');
-                    date = '';
+                    hideSheet();
+                    saveDate('');
                 }
             });
 
@@ -355,7 +349,6 @@ angular.module('events.EventControllers',[])
 
         }
 
-        //$state.go('editEventDate');
     }
 
     function addMinutes(newdate, minutes) {
@@ -365,39 +358,19 @@ angular.module('events.EventControllers',[])
     }
 
     function saveDate(newdate) {
-        var date = new Date(newdate);
-        alert('Save date: '+date);
-        Event.showEvent.set('date', date);
+        if( newdate == '' ) {
+            $scope.object.unset('date');
+            Event.showEvent.unset('date');
+        }
+        else {
+            var date = new Date(newdate);
+            alert('Save date: '+date);
+            $scope.object.set('date', date);
+            Event.showEvent.set('date', date);
+        }
         Event.myEvent = Event.showEvent;
         Event.save();
         Event.resetMyEvent();
-        $scope.object = Event.showEvent;
-    }
-
-    function showDatePicker() {
-
-        if( ionic.Platform.isIOS() || ionic.Platform.isAndroid() || ionic.Platform.isWindowsPhone() ) {
-            var options = {
-                date: $scope.object.date,
-                mode: 'datetime',
-                allowOldDates: false,
-                minuteInterval: 5
-            };
-
-            datePicker.show(options, function(date){
-                alert("date result " + date);  
-            });
-        }
-    }
-
-    $scope.setDate = function(date) {
-        $scope.object.date = date;
-    }
-
-    $scope.storeDate = function() {
-        console.log('Chegou ao StoreDate');
-        Event.myEvent.set('date', $scope.object.date);
-        console.log('Event: ', Event.myEvent);
     }
 
 }]);
