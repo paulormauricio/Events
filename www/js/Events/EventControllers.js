@@ -294,7 +294,10 @@ angular.module('events.EventControllers',[])
                 minuteInterval: 5,
                 allowOldDates: false,
                 doneButtonColor: '#0000FF',
-                cancelButtonColor: '#000000'
+                cancelButtonColor: '#000000',
+                clearButton: true,
+                clearButtonColor: "#ddd",
+                clearButtonLabel: "Clear date"
             };
 
             datePicker.show(options, function(newDate){
@@ -321,6 +324,13 @@ angular.module('events.EventControllers',[])
                 },
                 buttonClicked: function(index) {
                     console.log('Button clicked. Index = ', index);
+                    switch(index) {
+                        case 0: return addMinutes(Date(), 15);
+                        case 1: return addMinutes(Date(), 15);
+                        case 2: return addMinutes(Date(), 15);
+                        case 3: return addMinutes(Date(), 15);
+                        default: return addMinutes(Date(), 0);
+                    }
                     return true;
                 },
                 destructiveButtonClicked: function() {
@@ -339,8 +349,13 @@ angular.module('events.EventControllers',[])
         //$state.go('editEventDate');
     }
 
+    function addMinutes(date, minutes) {
+        return new Date(date.getTime() + minutes*60000);
+    }
+
     function saveDate(newdate) {
         var date = new Date(newdate);
+        alert('Save date: '+date);
         Event.showEvent.set('date', date);
         Event.myEvent = Event.showEvent;
         Event.save();

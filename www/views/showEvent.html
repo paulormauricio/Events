@@ -23,9 +23,15 @@
                             <td class="cellSideTemplate">
                                 <a href="javascript:void(0)" ng-click="editDate()">
                                     <i class="ion-calendar"></i>
-                                    <label>Click to define date</label>
+                                    <label ng-hide="object.has('date')">
+                                        Click to define date
+                                    </label>
+                                    <label ng-show="object.has('date')">
+                                        {{object.get('date')}}
+                                    </label>
                                 </a>
                             </td>
+
                             <td class="cellSideTemplate" ng-show="object.has('date')">
                                 <i class="ion-android-sunny"></i>
                                 <label>Sunny</label>
