@@ -72,7 +72,7 @@ angular.module('events.EventServices',[])
 
 			this.myEvent.save(null, {
 			  success: function(newEvent) {
-			  	console.log('Event created successfully!');
+			  	console.log('Event saved successfully!');
 
 			  	this.myEvent = newEvent;
 

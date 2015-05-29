@@ -245,10 +245,10 @@ angular.module('events.EventControllers',[])
         maxWidth: 200,
         showDelay: 500
     });
-
-    if( !Event.myEvent.id ) {
+    
+    if( !Event.showEvent.id ) {
         Event.get($stateParams.objectId).then(function(object) {
-            Event.myEvent = object;
+            Event.showEvent = object;
             loadEventDetail();
             $ionicLoading.hide();
         })
@@ -263,24 +263,20 @@ angular.module('events.EventControllers',[])
     }
 
     function loadEventDetail() {
-        $scope.object = Event.myEvent;
-        $scope.object.backgroundColor = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('backgroundColor') : ';';
-        $scope.object.iconUrl = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('icon').url() : '';
-
-        console.log('Show Event: ', $scope.object);
+        $scope.object = Event.showEvent;
+        $scope.object.backgroundColor = Event.showEvent.has('Theme') ? Event.showEvent.get('Theme').get('backgroundColor') : ';';
+        $scope.object.iconUrl = Event.showEvent.has('Theme') ? Event.showEvent.get('Theme').get('icon').url() : '';
     }
 
     $scope.editDate = function() {
         console.log('Chegou ao EditDate');
         $scope.showAngularDateEditor = true;
 
+        console.log(Event.showEvent);
         var date = Event.showEvent.get('date');
 
         alert('isWebView: '+ ionic.Platform.isWebView());
-        alert('isIPad: '+ ionic.Platform.isIPad());
         alert('isIOS: '+ ionic.Platform.isIOS());
-        alert('isAndroid: '+ ionic.Platform.isAndroid());
-        alert('isWindowsPhone: '+ ionic.Platform.isWindowsPhone());
 
         if( ionic.Platform.isIOS() ||
             ionic.Platform.isAndroid() ||
@@ -325,12 +321,25 @@ angular.module('events.EventControllers',[])
                 buttonClicked: function(index) {
                     console.log('Button clicked. Index = ', index);
                     switch(index) {
-                        case 0: return addMinutes(Date(), 15);
-                        case 1: return addMinutes(Date(), 15);
-                        case 2: return addMinutes(Date(), 15);
-                        case 3: return addMinutes(Date(), 15);
+                        case 0: 
+                            hideSheet();
+                            date = addMinutes(Date(), 15);
+                            break;
+                        case 1: 
+                            hideSheet();
+                            date = addMinutes(Date(), 30);
+                            break;
+                        case 2: 
+                            hideSheet();
+                            date = addMinutes(Date(), 60);
+                            break;
+                        case 3: 
+                            hideSheet();
+                            date = addMinutes(Date(), 120);
+                            break;
                         default: return addMinutes(Date(), 0);
                     }
+                    saveDate(date);
                     return true;
                 },
                 destructiveButtonClicked: function() {
@@ -349,7 +358,9 @@ angular.module('events.EventControllers',[])
         //$state.go('editEventDate');
     }
 
-    function addMinutes(date, minutes) {
+    function addMinutes(newdate, minutes) {
+        var date = new Date(newdate);
+        console.log('Date:', date);
         return new Date(date.getTime() + minutes*60000);
     }
 
