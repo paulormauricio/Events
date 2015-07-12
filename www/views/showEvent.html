@@ -16,18 +16,18 @@
                 </label>
             </div>
             <!-- Event Date and Weather  -->
-            <ion-item>
+            <ion-item ng-click="editDate()">
                 <table>
                     <tbody>
                         <tr>
                             <td class="cellSideTemplate">
-                                <a href="javascript:void(0)" ng-click="editDate()">
+                                <a href="javascript:void(0)" >
                                     <i class="ion-calendar"></i>
                                     <label ng-hide="object.has('date')">
                                         Click to define date
                                     </label>
                                     <label ng-show="object.has('date')">
-                                        {{ object.get('date') | date : 'dd-MM-yyyy HH:mm' }}
+                                        {{ object.get('date') | prettyDateFormat }}
                                     </label>
                                 </a>
                             </td>
@@ -41,13 +41,40 @@
                 </table>
             </ion-item>
             <!-- Event Place  -->
-            <ion-item>
-                <div class="cellSideTemplate">
+            <ion-item ng-click="placePressed()">
+                <div class="cellSideTemplate" ng-hide="object.has('place_name')">
                     <i class="ion-ios-location-outline"></i>
-                    <label>Click to define location</label>
+                    <label>
+                        Click to define location
+                    </label>
                 </div>
+                <div class="fillParent" style="position: absolute; z-index: 1000;"></div>
+                <div class="mapContainer fillParent" ng-show="object.has('place_name')">
+                    <div id="map" class="fillParent" data-tap-disabled="true"></div>
+                    <div class="info">
+                        <div class="title">Address</div>
+                        <p>{{ object.get('place_name') }}</p>
+                        <p>{{ object.get('place_address') }}</p>
+                    </div>
+                </div>
+            </ion-item>
+            <ion-item class="noPadding">
+                <div class="leftTitle">Going</div>
+                <a class="buttonRight">
+                    See all <i class="ion-ios-arrow-forward"></i>
+                </a>
+                <ion-scroll direction="x" class="horizontalList">
+                    <a href="javascript:void(0)" class="item slow" ng-repeat="participant in participants | orderBy : participant.get('User').get('first_name') + participant.get('User').get('last_name')">
+                        <img ng-src="https://graph.facebook.com/v2.2/{{participant.get('User').get('facebookId')}}/picture??type=small" class="circle">
+                        <div class="title">
+                            {{participant.get('User').get('first_name')}} {{participant.get('User').get('last_name')}}
+                        </div>
+                    </a>
+                </ion-scroll>
             </ion-item>
         </ion-list>
         <div date-picker="start" ng-show="true"></div>
     </div>
-</ion-content>
+</ion-content>  
+
+

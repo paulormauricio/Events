@@ -1,0 +1,27 @@
+<div class="ion-autocomplete-container modal">
+     <div class="bar bar-header item-input-inset">
+          <label class="item-input-wrapper">
+               <i class="icon ion-search placeholder-icon"></i>
+               <input type="search" class="ion-autocomplete-search" ng-model="searchQuery" placeholder="{{placeholder}}"/>
+          </label>
+          <button class="ion-autocomplete-cancel button button-clear">
+               {{cancelLabel}}
+          </button>
+     </div>
+     <ion-content class="has-header has-header">
+          <ion-list>
+               <ion-item class="item-avatar item-square" ng-repeat="place in items"ng-click="selectItem(place)">
+                    <img ng-src="{{ place.photos ? place.photos[0].getUrl({'maxWidth': 200, 'maxHeight': 100}) : '' }}" ng-show="place.photos" class="">
+                    <h2 class="{{place.opening_hours == undefined ? 'middle':''}}">
+                         {{place.name}}
+                    </h2>
+                    <p ng-hide="place.opening_hours == undefined">
+                         <label class="{{place.opening_hours.open_now ? 'balanced' : '' }}">{{place.opening_hours.open_now ? 'Open now' : 'Closed now'}}</label>
+                    </p>
+               </ion-item>
+               <ion-item class="item-avatar item-square" ng-click="selectItem({name: searchQuery, place_id: '-1'})">
+                    {{searchQuery}}
+               </ion-item>
+          </ion-list>
+     </ion-content>
+</div>

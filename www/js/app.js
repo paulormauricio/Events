@@ -2,9 +2,14 @@ angular.module('events',
     [
       'ionic',
       'ngAnimate',
+      'pascalprecht.translate',
+      'ion-autocomplete',
+      'ngGPlaces',
       'events.EventControllers',
       'events.EventServices',
       'events.WeatherServices',
+      'events.GeolocationServices',
+      'events.Storage',
       'events.LoginControllers',
       'events.ProfileControllers',
       'events.ProfileServices',
@@ -84,10 +89,10 @@ angular.module('events',
         authenticate: true
       }
     })
-    .state('editEventDate',{
-      url:'/event/editDate',
+    .state('editEventPlace',{
+      url:'/event/editPlace',
       controller:'EventEditController',
-      templateUrl:'views/editEventDate.html',
+      templateUrl:'views/editEventPlace.html',
       data: {
         authenticate: true
       }

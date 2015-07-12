@@ -102,6 +102,15 @@ angular.module('events.EventServices',[])
 			this.myEvent.set('Theme', theme);
 	};
 
+	this.deletePlace = function() {
+		this.myEvent.unset('place_id');
+		this.myEvent.unset('place_name');
+		this.myEvent.unset('place_address');
+		this.myEvent.unset('place_lat');
+		this.myEvent.unset('place_lng');
+		this.save();
+	}
+
 	this.newParticipant = function() {
 		this.myEvent.increment('totalParticipants');
 		this.myEvent.save();
@@ -129,12 +138,15 @@ angular.module('events.EventServices',[])
 
 	return {
 
-		getAll: function(myEvent) {
+		getAll: function(myEvent, isGoing) {
 			var deferred = $q.defer();
 
 			var query = new Parse.Query(Participant);
 			query.equalTo("Event", myEvent );
 			query.equalTo("isHidden", false );
+			if (isGoing) {
+				query.equalTo("isGoing", true );
+			}
 			query.include("User");
 			query.find({
 			  success: function(objects) {
