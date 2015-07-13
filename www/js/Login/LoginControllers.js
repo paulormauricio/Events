@@ -1,6 +1,12 @@
 angular.module('events.LoginControllers', [])
 
   .controller('LoginController', ['$scope', '$state', function($scope, $state) {
+    
+    if( Parse.User.current() ) {
+      console.log('Users logged in. Redirect to Events');
+      $state.transitionTo("tab.events");
+    }
+
     var fbLogged = new Parse.Promise();
       
     var fbLoginSuccess = function(response) {
@@ -117,6 +123,7 @@ angular.module('events.LoginControllers', [])
             console.log(error);
           }
         );
+
         $state.go('tab.events');
       })
 

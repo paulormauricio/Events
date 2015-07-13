@@ -2,7 +2,7 @@ angular.module('events',
     [
       'ionic',
       'ngAnimate',
-      'pascalprecht.translate',
+      'events.translations',
       'ion-autocomplete',
       'ngGPlaces',
       'events.EventControllers',
@@ -19,7 +19,7 @@ angular.module('events',
     ]
   )
 
-.run(function($ionicPlatform, $rootScope, $state, $ionicPopup) {
+.run(function($ionicPlatform, $rootScope, $state, $ionicPopup, $translate) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -47,10 +47,18 @@ angular.module('events',
 
   // UI Router Authentication Check
   $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
+    
     if (toState.data.authenticate && !Parse.User.current()) {
       // User isn’t authenticated
+      console.log('Redirect to login');
       $state.transitionTo("login");
       event.preventDefault(); 
+    }
+    else {
+      if( Parse.User.current() ) {
+        console.log('Set language: ', Parse.User.current().get('locale'));
+        $translate.use( Parse.User.current().get('locale') );
+      }
     }
   });
 })
@@ -135,5 +143,5 @@ angular.module('events',
     });
 
   // Send to events if the URL was not found
-  $urlRouterProvider.otherwise('/tab/events');
+  $urlRouterProvider.otherwise('/login');
 }); 
