@@ -56,8 +56,8 @@ angular.module('events',
     }
     else {
       if( Parse.User.current() ) {
-        console.log('Set language: ', Parse.User.current().get('locale'));
-        $translate.use( Parse.User.current().get('locale') );
+        locale = Parse.User.current().get('locale');
+        $translate.use( locale.toLowerCase() );
       }
     }
   });

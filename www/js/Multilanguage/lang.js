@@ -1,16 +1,16 @@
 angular.module('events.translations', 
 		[
 			'pascalprecht.translate',
-			'events.lang_en',
-			'events.lang_pt'
+			'events.lang_en_us',
+			'events.lang_pt_pt'
 		])
 
-.config(function ($translateProvider, lang_en, lang_pt) {
+.config(function ($translateProvider, lang_en_us, lang_pt_pt) {
 	
-	$translateProvider.translations('en', lang_en);
-	$translateProvider.translations('pt', lang_pt);
+	$translateProvider.translations('en_us', lang_en_us);
+	$translateProvider.translations('pt_pt', lang_pt_pt);
 
 	$translateProvider.useSanitizeValueStrategy('sanitize');
-	$translateProvider.preferredLanguage('pt');
+	$translateProvider.preferredLanguage('en_us');
 
 });
