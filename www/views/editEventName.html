@@ -1,30 +1,25 @@
-<ion-header-bar class="bar-positive">
-    <button class="button button-clear" ui-sref="tab.events">
+<ion-header-bar class="bar-positive themeBackgroundColor">
+    <button class="button button-clear" ui-sref="events">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
-    <h1 class="title">What?</h1>
-    <button class="button button-clear" ng-click="storeName()">
-        Save
-    </button>
+    <h1 class="title" translate="event_new">New event</h1>
 </ion-header-bar>
 
-<ion-content ng-init="loadThemes()">
-    <div class="card" style="background-color: {{object.backgroundColor}}">
-        <img ng-src="{{object.iconUrl}}" ng-hide="object.iconUrl == ''">
-        <div class="cover"></div>
-        <textarea type="text" placeholder="" name="name" ng-model="object.name" required autofocus style="padding: 40px 0px 0px"></textarea>
-        <label ng-hide="object.name">
-            What are you going to do?
-        </label>
-    </div>
+<ion-content ng-init="loadThemes()" style="height: 100%;" scroll="false" has-bouncing="true">
+    <textarea type="text" placeholder="{{'event_what' | translate}}" 
+              name="name" ng-model="editEvent.name" required autofocus 
+              style="padding: 25px 0px 10px; width: 100%; resize: none; border: 1px solid #eee; text-align: center"></textarea>
 
-    <div class="item item-divider" ng-show="themes.length>0">
+    <div class="item item-divider clean themeBorderColor themeColor" translate="event_theme_choose" ng-show="editEvent.name.length > 2">
         Choose your theme
     </div>
-    <ion-scroll direction="y" class="collectionList" ng-show="themes.length>0">
-        <a href="javascript:void(0)" ng-click="selectTheme($index, theme)" class="item slow" ng-repeat="theme in themes | parseSearch : object.name: 'tags_en_us' : 'tags'" style="background-color: {{theme.get('backgroundColor')}}">
-            <img ng-src="{{theme.get('icon').url()}}">
-        </a>
+    <ion-scroll class="collectionList" ng-show="themes.length>2 && editEvent.name.length>2">
+        <ion-item ng-click="storeName(theme)" class="slow" 
+                  ng-repeat="theme in themes"
+                  ng-show="editEvent.name>2 || ([theme]|parseSearch:editEvent.name).length"
+                  ng-style="{'width': item.width, 'height': item.height}">
+            <img ng-src="{{'img/themes/'+theme.name+'.png'}}">
+        </ion-item>
     </ion-scroll>
 
 </ion-content>

@@ -4,7 +4,7 @@ angular.module('events.LoginControllers', [])
     
     if( Parse.User.current() ) {
       console.log('Users logged in. Redirect to Events');
-      $state.transitionTo("tab.events");
+      $state.transitionTo("events");
     }
 
     var fbLogged = new Parse.Promise();
@@ -83,7 +83,7 @@ angular.module('events.LoginControllers', [])
 
                   Friend = object;
 
-                  var UserFriend = Parse.Object.extend("UserFriend");
+                  var UserFriend = Parse.Object.extend("Friend");
 
                   var query = new Parse.Query(UserFriend);
                   query.equalTo("User", User);
@@ -92,7 +92,7 @@ angular.module('events.LoginControllers', [])
                     success: function(object) {
                       // IF friends relation was not added before, then store relationship
                       if (object === undefined) {
-                        var UserFriend = Parse.Object.extend("UserFriend");
+                        var UserFriend = Parse.Object.extend("Friend");
                         var UserRelation = new UserFriend();
                         UserRelation.set('User', User);
                         UserRelation.set('Friend', Friend);
@@ -124,7 +124,7 @@ angular.module('events.LoginControllers', [])
           }
         );
 
-        $state.go('tab.events');
+        $state.go('events');
       })
 
     };

@@ -38,6 +38,7 @@ angular.module('events',
         .then(function(result) {
           if(!result) {
             console.log('warning result: ', result);
+            alert('Exiting the  App...');
             //ionic.Platform.exitApp();
           }
         });
@@ -65,24 +66,15 @@ angular.module('events',
 
 .config(function($stateProvider, $urlRouterProvider){
     $stateProvider
-    .state('tab', {
-      url: '/tab',
-      abstract: true,
-      templateUrl: 'views/tabs.html'
-    })
-    .state('tab.events',{
+    .state('events',{
       url:'/events',
-      views: {
-        'events': {
-          templateUrl:'views/events.html',
-          controller:'EventsListController'
-        }
-      },
+      templateUrl:'views/events.html',
+      controller:'EventsListController',
       data: {
         authenticate: true
       }
     }).state('editEventName',{
-      url:'/event/editName',
+      url:'/event/editName/:objectId',
       controller:'EventEditController',
       templateUrl:'views/editEventName.html',
       data: {
@@ -90,7 +82,7 @@ angular.module('events',
       }
     })
     .state('editEventFriends',{
-      url:'/event/editFriends',
+      url:'/event/editFriends/:objectId',
       controller:'EventEditController',
       templateUrl:'views/editEventFriends.html',
       data: {
@@ -98,7 +90,7 @@ angular.module('events',
       }
     })
     .state('editEventPlace',{
-      url:'/event/editPlace',
+      url:'/event/editPlace/:objectId',
       controller:'EventEditController',
       templateUrl:'views/editEventPlace.html',
       data: {
@@ -113,14 +105,10 @@ angular.module('events',
         authenticate: true
       }
     })
-    .state('tab.profile',{
+    .state('profile',{
       url:'/profile',
-      views: {
-        'profile': {
-          templateUrl:'views/profile.html',
-          controller:'ProfileController'
-        }
-      },
+      templateUrl:'views/profile.html',
+      controller:'ProfileController',
       data: {
         authenticate: true
       }
@@ -143,5 +131,5 @@ angular.module('events',
     });
 
   // Send to events if the URL was not found
-  $urlRouterProvider.otherwise('/login');
+  $urlRouterProvider.otherwise('/events');
 }); 

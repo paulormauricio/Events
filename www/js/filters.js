@@ -3,41 +3,45 @@ angular.module('events.filters',[])
 .filter('parseSearch', function() {
     
 
-    return function(input, searchString, searchfield1, searchfield2) {
-
-        if( !angular.isString(searchString) ) return input;
+    return function(input, searchString) {
 
         var output = [];
 
+        if( !angular.isString(searchString) ) return output;
+
+                
+        searchString = searchString.toLowerCase();
         var keywords_aux = searchString.split(' ');
         var keywords = [];
 
-        for (var i = 0; i<keywords_aux.length; i++) {
-            if(keywords_aux[i].length > 2) {
-                keywords.push( keywords_aux[i] );
-            }
-        }
+        angular.forEach(keywords_aux, function(keyword) {
+                
+            if(keyword.length > 2)
+                this.push(keyword);
 
-        if( keywords.length == 0 ) return input;
+        }, keywords);
+
+        if( keywords.length == 0 ) return output;
 
         var string1 = '';
         var string2 = '';
         var word = '';
+        var locale = Parse.User.current().get('locale').toLowerCase();
 
         // Using the angular.forEach method, go through the array of data and perform the operation of figuring out if the language is statically or dynamically typed.
         angular.forEach(input, function(object) {
         	for (var i = 0; i<keywords.length; i++) {
         		
-        		string1 = object.get(searchfield1).toLowerCase();
-        		string2 = object.get(searchfield2).toLowerCase();
-        		word = keywords[i].toLowerCase();
+        		string1 = object['tags_en_us'];
+        		string2 = object['tags_'+locale];
+                
+        		if(string1.search(keywords[i]) >= 0 || string2.search(keywords[i]) >= 0) {
 
-        		if(string1.search(word) >= 0 || string2.search(word) >= 0) {
-        			output.push(object);
+                    this.push(object);
         			break;
         		}
         	};
-        });
+        }, output);
 
         return output;
     }

@@ -1,51 +1,28 @@
-<ion-header-bar class="bar-positive">
-        <h1 class="title">Events</h1>
+<ion-header-bar class="bar-positive themeBackgroundColor">
+        <button class="button button-clear" ui-sref="profile">
+            <i class="ion-person"></i>
+        </button>
+        <h1 class="title"></h1>
         <a class="button button-clear" ui-sref="editEventName">
-            New
+            <i class="ion-plus-round"></i>
         </a>
 </ion-header-bar>
 
-<ion-view title="Events">
-    <ion-content has-bouncing="true">
-        <ion-refresher pulling-text="Pull to refresh..."
-            on-refresh="doRefresh()">
-        </ion-refresher>
-        <ion-list class="cards">
-            <a class="card" ng-repeat="object in objects" item="item"
-                      ng-click="showEvent(object.get('Event'))" nav-transition="ios">
-                <div class="header" style="background-color: {{object.get('Event').has('Theme') ? object.get('Event').get('Theme').get('backgroundColor') : 'transparent;'}}">
-                    <img ng-src="{{object.get('Event').has('Theme') ? object.get('Event').get('Theme').get('icon').url() : ''}}" ng-show="object.get('Event').has('Theme')">
-                    <div class="cover"></div>
-                    <div class="titleWithBadge">
-                        <label ng-hide="object.name">
-                            {{object.get('Event').get('name')}}
-                        </label>
-                    </div>
-                    <span class="badge badge-{{(object.get('Event').get('goingParticipants')/object.get('Event').get('totalParticipants')>=0.5) ? 'balanced' : 'stable'}}">
-                        <i class="ion-person-stalker"></i>
-                        {{object.get('Event').get('goingParticipants')}}
-                    </span>
-                </div>
-                <div class="footer row">
-                    <div class="col col-33" ng-hide="{{object.get('Event').has('place_id')}}">
-                        <i class="ion-ios-location-outline"></i>
-                        <label>Not defined yet</label>
-                    </div>
-                    <div class="col col-33" ng-show="{{object.get('Event').has('place_id')}}">
-                        <i class="ion-ios-location"></i>
-                        <label>Place xxx</label>
-                    </div>
-                    <div class="col col-33">
-                        <i class="ion-calendar"></i>
-                        <label>Tomorrow at 19:00</label>
-                    </div>
-                    <div class="col col-33">
-                        <i class="ion-android-sunny"></i>
-                        <label>Sunny 27ºC</label>
-                    </div>
-                </div>
-            </a>
-        </ion-list>
-    </ion-content>
-</ion-view>
 
+<ion-content has-bouncing="true">
+    <ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+    <ion-list class="collectionList">
+        <ion-item class="" ng-repeat="myEvent in myEvents"
+                  ng-click="showEvent(myEvent)" nav-transition="ios"
+                  ng-style="{'width': item.width, 'height': item.height}">
+            <span ng-switch="myEvent.place_image_url == undefined">
+                <div ng-switch-when="false" class="background" 
+                     ng-style="{'background-image': 'url('+myEvent.place_image_url+')'}"></div>
+                <img ng-switch-when="true" ng-src="{{'img/themes/'+myEvent.theme+'.png'}}">
+            </span>
+            <h2>{{myEvent.name}}</h2>
+            <h3>{{myEvent.place_name}}</h3>
+            <h4>{{myEvent.date | prettyDateFormat }}</h4>
+        </ion-item>
+    </ion-list>
+</ion-content>

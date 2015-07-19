@@ -6,16 +6,54 @@ angular.module('events.EventServices',[])
 	var Event = Parse.Object.extend("Event");
 	var Participant = Parse.Object.extend("Participant");
 
-	this.eventList = [];
-
-	this.myEvent = new Event();
-	this.myEvent.set('totalParticipants', 0);
-	this.myEvent.set('goingParticipants', 0);
+	this.myEvent = null;
 
 	this.showEvent = {};
 
 
-	this.getAll = function() {
+	this.getMyEvents = function() {
+			var deferred = $q.defer();
+
+			var query = new Parse.Query(Event);
+			var innerQuery = new Parse.Query(Participant);
+
+			innerQuery.matchesQuery("Event", query);
+			innerQuery.equalTo("User", Parse.User.current() );
+			innerQuery.equalTo("isHidden", false );
+			innerQuery.equalTo("isGoing", true );
+			innerQuery.include("Event");
+
+			innerQuery.find({
+			  success: function(objects) {
+			  	console.log('Events List get successfully!');
+
+				var results = [];
+
+				angular.forEach(objects, function(object, key) {
+					var result = {};
+					result.id = object.get('Event').id;
+					result.name = object.get('Event').get('name');
+					result.theme = object.get('Event').get('theme');
+					result.place_id = object.get('Event').get('place_id');
+					result.place_name = object.get('Event').get('place_name');
+					result.place_image_url = object.get('Event').get('place_image_url');
+					result.place_lat = object.get('Event').get('place_lat');
+					result.place_lng = object.get('Event').get('place_lng');
+					result.date = object.get('Event').get('date');
+					this.push(result);
+				}, results);
+
+			    $rootScope.$apply(function() { deferred.resolve(results); });
+
+			  },
+			  error: function(error) {
+			    console.log("Error: " + error.code + " " + error.message);
+			  }
+			});
+			return deferred.promise;
+		};
+
+	this.getNew = function() {
 			var deferred = $q.defer();
 
 			var query = new Parse.Query(Event);
@@ -25,15 +63,28 @@ angular.module('events.EventServices',[])
 			innerQuery.equalTo("User", Parse.User.current() );
 			innerQuery.equalTo("isHidden", false );
 			innerQuery.include("Event");
-			innerQuery.include("Event.Theme");
 
 			innerQuery.find({
 			  success: function(objects) {
 			  	console.log('Events List get successfully!');
 
-				this.eventList = objects;
+				var results = [];
 
-			    $rootScope.$apply(function() { deferred.resolve(objects); });
+				angular.forEach(objects, function(object, key) {
+					var result = {};
+					result.id = object.get('Event').id;
+					result.name = object.get('Event').get('name');
+					result.theme = object.get('Event').get('theme');
+					result.place_id = object.get('Event').get('place_id');
+					result.place_name = object.get('Event').get('place_name');
+					result.place_image_url = object.get('Event').get('place_image_url');
+					result.place_lat = object.get('Event').get('place_lat');
+					result.place_lng = object.get('Event').get('place_lng');
+					result.date = object.get('Event').get('date');
+					this.push(result);
+				}, results);
+
+			    $rootScope.$apply(function() { deferred.resolve(results); });
 
 			  },
 			  error: function(error) {
@@ -48,14 +99,24 @@ angular.module('events.EventServices',[])
 			
 			var query = new Parse.Query(Event);
 			query.equalTo("objectId", id );
-			query.include("Theme");
 			query.first({
 			  success: function(object) {
 			  	console.log('Event get successfully!');
 
-				this.showEvent = object;
+				var result = {};
+				result.id = object.get('Event').id;
+				result.name = object.get('Event').get('name');
+				result.theme = object.get('Event').get('theme');
+				result.place_id = object.get('Event').get('place_id');
+				result.place_name = object.get('Event').get('place_name');
+				result.place_image_url = object.get('Event').get('place_image_url');
+				result.place_lat = object.get('Event').get('place_lat');
+				result.place_lng = object.get('Event').get('place_lng');
+				result.date = object.get('Event').get('date');
+
+				this.showEvent = result;
 				
-			  	$rootScope.$apply(function() { deferred.resolve(object); });
+			  	$rootScope.$apply(function() { deferred.resolve(result); });
 
 			  },
 			  error: function(error) {
@@ -65,18 +126,24 @@ angular.module('events.EventServices',[])
 			return deferred.promise;
 		};
 
-	this.save = function() {
+	this.save = function(isNew) {
 			var deferred = $q.defer();
 
-			this.myEvent.set('createdBy', Parse.User.current());
+			var saveEvent = new Event(); 
 
-			this.myEvent.save(null, {
+			if(isNew) {
+				this.myEvent.createdBy = Parse.User.current();
+			}
+			else {
+				saveEvent.id = this.myEvent.id;
+			}
+
+
+			saveEvent.save( this.myEvent , {
 			  success: function(newEvent) {
 			  	console.log('Event saved successfully!');
 
-			  	this.myEvent = newEvent;
-
-			  	$rootScope.$apply(function() { deferred.resolve(true); });
+			  	$rootScope.$apply(function() { deferred.resolve(newEvent); });
 
 			  },
 			  error: function(gameScore, error) {
@@ -87,19 +154,7 @@ angular.module('events.EventServices',[])
 		};
 
 	this.resetMyEvent = function() {
-		this.myEvent = new Event();
-	};
-
-	this.selectTheme = function(theme) {
-		//console.log('Theme: ', this.myEvent.get('Theme'));
-		if( this.myEvent.has('Theme') ) {
-			if( this.myEvent.get('Theme').id == theme.id ) 
-				this.myEvent.unset('Theme');
-			else
-				this.myEvent.set('Theme', theme);
-		}
-		else
-			this.myEvent.set('Theme', theme);
+		this.myEvent = {};
 	};
 
 	this.deletePlace = function() {
@@ -133,6 +188,7 @@ angular.module('events.EventServices',[])
 .factory('Participant',['$rootScope', '$q', 'Event', function($rootScope, $q, Event){
 
 	var Participant = Parse.Object.extend("Participant");
+	var Event = Parse.Object.extend("Event");
 
 	var participants = [];
 
@@ -141,20 +197,37 @@ angular.module('events.EventServices',[])
 		getAll: function(myEvent, isGoing) {
 			var deferred = $q.defer();
 
+			var thisEvent = new Event(); 
+			thisEvent.id = myEvent.id;
+			
 			var query = new Parse.Query(Participant);
-			query.equalTo("Event", myEvent );
+			query.equalTo("Event", thisEvent );
 			query.equalTo("isHidden", false );
 			if (isGoing) {
 				query.equalTo("isGoing", true );
 			}
 			query.include("User");
+			query.ascending("");
 			query.find({
 			  success: function(objects) {
 			  	console.log('Participants List get successfully!');
 
-			    $rootScope.$apply(function() { deferred.resolve(objects); });
+				var results = [];
 
-			    participants = objects;
+				angular.forEach(objects, function(object, key) {
+					var result = {};
+					result.id = object.get('User').id;
+					result.facebookId = object.get('User').get('facebookId');
+					result.first_name = object.get('User').get('first_name');
+					result.last_name = object.get('User').get('last_name');
+					result.isGoing = object.get('isGoing');
+					result.isHidden = object.get('isHidden');
+					this.push(result);
+				}, results);
+
+			    $rootScope.$apply(function() { deferred.resolve(results); });
+
+			    participants = results;
 
 			  },
 			  error: function(error) {
@@ -164,25 +237,32 @@ angular.module('events.EventServices',[])
 			return deferred.promise;
 		},
 
-		store: function(myEvent, friend) {
+		store: function(myEvent, friend, isOwner) {
+
+
 
 	  		var participant = new Participant();
-            participant.set('Event', myEvent);
+	  		var saveEvent = new Event(); 
+	  		saveEvent.id = myEvent.id;
+
+            participant.set('Event', saveEvent);
             participant.set('User', friend);
-            participant.set('isSeen', false);
+            participant.set('isSeen', isOwner);
             participant.set('isHidden', false);
-            participant.set('isNotified', false);
+            participant.set('isNotified', isOwner);
+
+            if(isOwner) participant.set('isGoing', true);
 
 			var query = new Parse.Query(Participant);
-			query.equalTo("Event", myEvent );
+			query.equalTo("Event", saveEvent );
 			query.equalTo("User", friend );
+
 			query.first({
 			  success: function(object) {
 
 			  	if (object === undefined) {
 			  		console.log('Participant saved successfully!');
                     participant.save();
-                    Event.newParticipant();
 			  	}
 
 			  },
@@ -191,9 +271,6 @@ angular.module('events.EventServices',[])
 			  }
 			});
 
-
-            return participant;
-
 		},
 
 		delete: function (participant) {
@@ -201,7 +278,7 @@ angular.module('events.EventServices',[])
 			participant.destroy({
 				success: function(myObject) {
 					Event.removeParticipant();
-					if(participant.get('isGoing)')) Event.removeGoingParticipant();
+					//if(participant.get('isGoing)')) Event.removeGoingParticipant();
 				},
 				error: function(myObject, error) {
 			    console.log("Error: " + error.code + " " + error.message);
@@ -215,45 +292,21 @@ angular.module('events.EventServices',[])
 
 .factory('Theme',['$rootScope', '$q', function($rootScope, $q){
 
-	var Theme = Parse.Object.extend("Theme");
-
-	var themes = [];
+	var themes = [
+		{name: 'food', 		tags_en_us: 'dinner, lunch, food', 	tags_pt_pt: 'jantar, comer, almoçar, almoço'},
+		{name: 'football', 	tags_en_us: 'play, football', 		tags_pt_pt: 'jogar, futebol, bola'},
+		{name: 'running', 	tags_en_us: 'run, running', 		tags_pt_pt: 'correr, corrida, caminhar, caminhada'}
+	];
 
 	return {
 
 		getAll: function() {
 			var deferred = $q.defer();
 
-			var query = new Parse.Query(Theme);
-			query.equalTo("isActive", true );
-			query.find({
-			  success: function(objects) {
-			  	console.log('Themes List get successfully!');
+			setTimeout(function() {
+				$rootScope.$apply(function() { deferred.resolve(themes); });
+			}, 1000);
 
-			  	angular.forEach(objects, function(object, key) {
-			  		var locale = Parse.User.current().get('locale').toLowerCase();
-
-			  		var name = '';
-			  		if(object.has('name_'+locale)) {
-			  			name = object.get('name_'+locale);
-			  			tags = object.get('tags_'+locale);
-			  		}
-			  		else {
-			  			name = object.get('name_en_us');
-			  			tags = object.get('tags_en_us');
-			  		}
-
-			  		object.set('name', name);
-			  		object.set('tags', tags);
-			  	});
-
-			    $rootScope.$apply(function() { deferred.resolve(objects); });
-
-			  },
-			  error: function(error) {
-			    console.log("Error: " + error.code + " " + error.message);
-			  }
-			});
 			return deferred.promise;
 		}
 

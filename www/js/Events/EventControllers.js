@@ -1,6 +1,6 @@
 angular.module('events.EventControllers',[])
 
-.controller('EventsListController',['$state', '$scope', '$ionicLoading', 'Event', function($state, $scope,$ionicLoading,Event){
+.controller('EventsListController',['$window', '$state', '$scope', '$ionicLoading', 'Event', function( $window, $state, $scope,$ionicLoading, Event){
     
 
     $scope.loadingIndicator = $ionicLoading.show({
@@ -10,31 +10,58 @@ angular.module('events.EventControllers',[])
         maxWidth: 200,
         showDelay: 500
     });
+    calculateColectionItemSize();
 
-    Event.getAll()
-    .then(function(objects) {
-        $scope.objects = objects;
-        console.log('Events: ', objects);
+    Event.getMyEvents().then(function(objects) {
+        $scope.myEvents = objects;
+        console.log('My Events: ', objects);
         $ionicLoading.hide();
     });
-    
+
+    Event.getNew().then(function(objects) {
+        $scope.newEvents = objects;
+        console.log('New Events: ', objects);
+    });
+
     $scope.doRefresh = function() {
-        Event.getAll().then(function(objects) {
-            $scope.objects = objects;
+        Event.getNew().then(function(objects) {
+            $scope.newEvents = objects;
             $scope.$broadcast('scroll.refreshComplete');
         });
     }
 
     $scope.showEvent = function(myEvent) {
         Event.showEvent = myEvent;
-        $state.transitionTo('showEvent', {objectId: Event.showEvent.id});
+        $state.transitionTo('showEvent', {objectId: myEvent.id});
     }
 
+    angular.element(window).bind('resize', function () {
+        calculateColectionItemSize();
+    });
+
+    function calculateColectionItemSize() {
+        var width =  $window.innerWidth;
+        $scope.item = {width: 0, height: 0};
+        if( width > 700 ) {
+            $scope.item.width = 120 + 'px';
+        }
+        else if( width > 550 ) {
+            $scope.item.width = (width / 4 - 3) + 'px';
+        }
+        else if( width > 400 ) {
+            $scope.item.width = (width / 3 - 3) + 'px';
+        }
+        else {
+            $scope.item.width = (width / 2 - 3) + 'px';
+        }
+        $scope.item.height = $scope.item.width;
+    }
 }])
 
 .controller('EventEditController',
         [
             '$scope', 
+            '$window',
             '$state', 
             '$stateParams',
             '$ionicLoading',
@@ -46,6 +73,7 @@ angular.module('events.EventControllers',[])
             'ngGPlacesAPI',
             function(
                 $scope,
+                $window,
                 $state, 
                 $stateParams,
                 $ionicLoading, 
@@ -58,9 +86,7 @@ angular.module('events.EventControllers',[])
             )
         {
 
-    $scope.object = {};
-
-    console.log( 'Event:', Event );
+    $scope.isNew = $stateParams.objectId ? false : true;
 
     $scope.loadingIndicator = $ionicLoading.show({
         content: 'Loading Data',
@@ -70,9 +96,40 @@ angular.module('events.EventControllers',[])
         showDelay: 500
     });
 
+    if( $scope.isNew ) {
+        $scope.editEvent = {};
+    }
+    else {
+
+        if(!Event.myEvent) {
+            Event.myEvent = {id: $stateParams.objectId};
+        }
+        $scope.editEvent = Event.myEvent;
+        console.log('chegou');
+    }
+    console.log('isNew: ', $scope.isNew);
+    console.log( 'Edit Event:', $scope.editEvent );
+
+
     var currentLocation = {};
 
-    $scope.storeName = function() {
+//  Edit Event Name
+    $scope.loadThemes = function() {
+
+        Theme.getAll().then(function(themes){
+            $scope.themes = themes;
+            console.log('Themes: ', themes);
+        });
+
+        calculateColectionItemSize();
+        angular.element(window).bind('resize', function () {
+            calculateColectionItemSize();
+        });
+
+        $ionicLoading.hide();
+    }
+
+    $scope.storeName = function(theme) {
 
         $scope.loadingIndicator = $ionicLoading.show({
             content: 'Loading Data',
@@ -82,46 +139,21 @@ angular.module('events.EventControllers',[])
             showDelay: 500
         });
 
-        console.log('Event:', $scope.object);
+        Event.myEvent.name = $scope.editEvent.name;
+        Event.myEvent.theme = theme.name;
 
-        Event.myEvent.set('name', $scope.object.name);
-
-        console.log('myEvent:', Event.myEvent);
-
-        Event.save().then(function() {
-            Participant.store(Event.myEvent, Parse.User.current());
-            Event.newGoingParticipant();
-            $state.go('editEventFriends', {}, {reload: true});
+        Event.save($scope.isNew).then(function(newEvent) {
+            Event.myEvent = newEvent;
+            if($scope.isNew) {
+                Participant.store(Event.myEvent, Parse.User.current(), true);
+            }
+            $ionicLoading.hide();
+            $state.go('editEventFriends', {objectId: newEvent.id}, {reload: true});
         });
 
     }
 
-    $scope.storeFriends = function() {
-        
-        console.log('Store Friends');
-
-    }
-
-    $scope.create = function() {
-        Event.create($scope.object).then( function() {
-            $state.go('tab.events');
-        });
-    }
-
-    $scope.loadThemes = function() {
-        $scope.object.name = Event.myEvent.get('name');
-        $scope.object.backgroundColor = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('backgroundColor') : ';';
-        $scope.object.iconUrl = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('icon').url() : '';
-
-        console.log('load past Events');
-
-        Theme.getAll().then(function(themes){
-            $scope.themes = themes;
-            console.log('Themes: ', themes);
-        });
-
-        $ionicLoading.hide();
-    }
+//  Edit Event Participants
 
     $scope.loadFriends = function() {
         console.log('chegou ao loadFriends');
@@ -129,38 +161,62 @@ angular.module('events.EventControllers',[])
         $scope.friends = [];
         $scope.invitedFriends = [];
         
-        Friend.getAllExceptParticipants().then(function(friends) {
+        Friend.getAll().then(function(friends) {
 
             $scope.friends = friends;
 
-            console.log('friends: ', $scope.friends);
-
-            Participant.getAll(Event.myEvent).then(function(invitedFriends){
+            Participant.getAll($scope.editEvent, false).then(function(invitedFriends){
                 $scope.invitedFriends = invitedFriends;
-                console.log('invitedFriends: ', $scope.invitedFriends);
-                $ionicLoading.hide();
+
+                //Remove participants from friends
+                for (var i = 0; i < invitedFriends.length; i++) {
+                    for (var j = 0; j < $scope.friends.length; j++) {
+
+                        if(invitedFriends[i].id == $scope.friends[j].id ) {
+                            $scope.friends.splice(j, 1);
+                            break;
+                        }
+                    }
+                }
             })
             .catch(function(fallback) {
                 console.log('Error: ', fallback + '!!');
-                $ionicLoading.hide();
             });
             
         })
         .catch(function(fallback) {
             console.log('Error: ', fallback + '!!');
+        })
+        .finally( function() {
             $ionicLoading.hide();
         });
     }
 
-    $scope.inviteFriend = function(index) {
-        console.log('chegou ao invite Friends. Index = ' + index);
-        
-        var participant = Participant.store(Event.myEvent, $scope.friends[index].get('Friend'));
+    $scope.inviteFriend = function(index, friend) {
+        console.log('chegou ao invite Friends. Index = ' + index + ': ', friend.first_name);
 
+        friend.isNew = 1;
         $scope.friends.splice(index, 1);
-        $scope.invitedFriends.push( participant );
+        $scope.invitedFriends.unshift( friend );
     }
 
+    $scope.uninviteFriend = function(index, friend) {
+        console.log('chegou ao uninvite Friends. Index = ' + index + ': ', $scope.invitedFriends[index].first_name);
+
+        friend.isNew = 0;
+        $scope.friends.unshift( friend );
+        $scope.invitedFriends.splice(index, 1);
+    }
+
+    $scope.notifyParticipants = function() {
+        console.log('Notify Participants');
+        Event.showEvent = Event.myEvent;
+        Event.resetMyEvent();
+        $state.go('showEvent', {objectId: Event.showEvent.id});
+    }
+
+
+//  Edit Event Place
     $scope.loadSuggestedPlaces = function() {
         console.log('chegou ao loadPlaces()');
         
@@ -242,66 +298,27 @@ angular.module('events.EventControllers',[])
         $state.go('showEvent', {objectId: Event.showEvent.id});
     }
 
-    $scope.uninviteFriend = function(index) {
-        console.log('chegou ao uninvite Friends. Index = ' + index + ': ', $scope.invitedFriends[index]);
 
-        var newFriend = Friend.newFriend($scope.invitedFriends[index].get('User'));
-
-        $scope.friends.push( newFriend );
-
-        Participant.delete($scope.invitedFriends[index]);
-
-        $scope.invitedFriends.splice(index, 1);
-    }
-
-    $scope.selectTheme = function(index, theme) {
-
-        Event.selectTheme(theme);
-
-        $scope.object.backgroundColor = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('backgroundColor') : ';';
-        $scope.object.iconUrl = Event.myEvent.has('Theme') ? Event.myEvent.get('Theme').get('icon').url() : '';
-
-    }
-
-    $scope.notifyParticipants = function() {
-        console.log('Notify Participants');
-        Event.showEvent = Event.myEvent;
-        Event.resetMyEvent();
-        $state.go('showEvent', {objectId: Event.showEvent.id});
-    }
-
-    $scope.loadDates = function() {
-        $scope.object.date = new Date();
-        showDatePicker();
-        $ionicLoading.hide();
-    }
-
-    function showDatePicker() {
-
-        if( ionic.Platform.isIOS() || ionic.Platform.isAndroid() || ionic.Platform.isWindowsPhone() ) {
-            var options = {
-                date: $scope.object.date,
-                mode: 'datetime',
-                allowOldDates: false,
-                minuteInterval: 5
-            };
-
-            datePicker.show(options, function(date){
-                alert("date result " + date);  
-            });
+//  Other functions
+    function calculateColectionItemSize() {
+        var width =  $window.innerWidth;
+        $scope.item = {width: 0, height: 0};
+        if( width > 700 ) {
+            $scope.item.width = 120 + 'px';
         }
+        else if( width > 550 ) {
+            $scope.item.width = (width / 4 - 3) + 'px';
+        }
+        else if( width > 400 ) {
+            $scope.item.width = (width / 3 - 3) + 'px';
+        }
+        else {
+            $scope.item.width = (width / 2 - 3) + 'px';
+        }
+        $scope.item.height = $scope.item.width;
+        console.log('height: ', $scope.item.height);
+        console.log('width: ', $scope.item.width);
     }
-
-    $scope.setDate = function(date) {
-        $scope.object.date = date;
-    }
-
-    $scope.storeDate = function() {
-        console.log('Chegou ao StoreDate');
-        Event.myEvent.set('date', $scope.object.date);
-        console.log('Event: ', Event.myEvent);
-    }
-
 
 }])
 
@@ -341,10 +358,11 @@ angular.module('events.EventControllers',[])
         Event.get($stateParams.objectId).then(function(object) {
             Event.showEvent = object;
             loadEventDetail();
-            $ionicLoading.hide();
         })
         .catch(function(fallback) {
             console.log('Error: ', fallback + '!!');
+        })
+        .finally( function() {
             $ionicLoading.hide();
         });
     }

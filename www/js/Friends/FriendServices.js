@@ -2,7 +2,7 @@ angular.module('events.FriendServices',[])
 
 .factory('Friend',['$rootScope', '$q', function($rootScope, $q){
 
-	var Friend = Parse.Object.extend("UserFriend");
+	var Friend = Parse.Object.extend("Friend");
 
 	var friends = [];
 	var friendsExceptParticipants = [];
@@ -12,17 +12,27 @@ angular.module('events.FriendServices',[])
 		getAll: function() {
 
 			var deferred = $q.defer();
-			console.log(friends);
 
 			var query = new Parse.Query(Friend);
 			query.equalTo("User", Parse.User.current() );
 			query.equalTo("isActive", true );
 			query.include("Friend");
 			query.find({
-			  success: function(objects) {
+			  success: function(objects) {			  
 			  	console.log('Success: Friend.getAll()');
-			  	friends = objects;
-			    $rootScope.$apply(function() { deferred.resolve(objects); });
+
+				angular.forEach(objects, function(object, key) {
+					var result = {};
+					result.id = object.get('Friend').id;
+					result.facebookId = object.get('Friend').get('facebookId');
+					result.first_name = object.get('Friend').get('first_name');
+					result.last_name = object.get('Friend').get('last_name');
+					result.gender = object.get('Friend').get('gender');
+					
+					this.push(result);
+				}, friends);
+
+			    $rootScope.$apply(function() { deferred.resolve(friends); });
 
 			  },
 			  error: function(error) {
@@ -37,9 +47,8 @@ angular.module('events.FriendServices',[])
 		getAllExceptParticipants: function(myEvent) {
 
 			var deferred = $q.defer();
-			console.log(friends);
 
-			var Participant = Parse.Object.extend("EventParticipant");
+			var Participant = Parse.Object.extend("Participant");
 
 			var query = new Parse.Query(Friend);
 			query.equalTo("User", Parse.User.current() );
