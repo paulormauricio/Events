@@ -1,10 +1,15 @@
-<ion-header-bar class="bar-positive">
-        <h1 class="title">My Profile</h1>
-        <button class="button button-clear" ng-click="logout()">Logout</button>
+<ion-header-bar class="bar-positive themeBackgroundColor">
+        <button class="button button-clear" ui-sref="events">
+          <i class="icon ion-ios-arrow-back"></i>
+        </button>
+        <h1 class="title" translate="profile_title">My Profile</h1>
+        <button class="button button-clear" ui-sref="settings">
+          <i class="icon ion-ios-gear"></i>
+        </button>
 </ion-header-bar>
 
-<ion-view title="My Profile">
-  <ion-content id="settings">
+<ion-view>
+  <ion-content>
     <div class="centered">
       <img ng-src="https://graph.facebook.com/v2.2/{{facebookId}}/picture?type=large" class="circle " style="width: 40%; margin: 20px 0px 30px;">
     </div>

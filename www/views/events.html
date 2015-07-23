@@ -10,19 +10,47 @@
 
 
 <ion-content has-bouncing="true">
-    <ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()"></ion-refresher>
+    <ion-refresher pulling-text="{{ 'refresh' | translate }}" on-refresh="doRefresh()" class=""></ion-refresher>
     <ion-list class="collectionList">
+
+    <!-- My Events -->
+        <h1 class="item-divider clean themeBorderColor themeColor" translate="event_myEvents_title">
+            My events
+        </h1>
+        <div ng-show="myEvents.length == 0" class="emptyMsg" translate="event_myEvents_noEvents"></div>
         <ion-item class="" ng-repeat="myEvent in myEvents"
                   ng-click="showEvent(myEvent)" nav-transition="ios"
                   ng-style="{'width': item.width, 'height': item.height}">
             <span ng-switch="myEvent.place_image_url == undefined">
-                <div ng-switch-when="false" class="background" 
+                <div ng-switch-when="false" class="background backgroundImage" 
                      ng-style="{'background-image': 'url('+myEvent.place_image_url+')'}"></div>
                 <img ng-switch-when="true" ng-src="{{'img/themes/'+myEvent.theme+'.png'}}">
+                <div ng-switch-when="false" class="cover backgroundImage"></div>
             </span>
-            <h2>{{myEvent.name}}</h2>
-            <h3>{{myEvent.place_name}}</h3>
-            <h4>{{myEvent.date | prettyDateFormat }}</h4>
+            <h2 class="topHalf">{{myEvent.name}}</h2>
+            <h3 class="bottomHalf">{{myEvent.place_name}}</h3>
+            <h3 class="bottom">{{myEvent.date | prettyDateFormat }}</h3>
+        </ion-item>
+
+
+    <!-- New Events -->
+        <h1 class="item-divider clean themeBorderColor themeColor" translate="event_newEvents_title">
+            New events
+        </h1>
+        <div ng-show="newEvents.length == 0" class="emptyMsg" translate="event_newEvents_noEvents"></div>
+        <ion-item class="" ng-repeat="newEvent in newEvents"
+                  ng-click="showEvent(newEvent)" nav-transition="ios"
+                  ng-style="{'width': item.width, 'height': item.height}">
+            <span ng-switch="newEvent.place_image_url == undefined">
+                <div ng-switch-when="false" class="background backgroundImage" 
+                     ng-style="{'background-image': 'url('+newEvent.place_image_url+')'}"></div>
+                <img ng-switch-when="true" ng-src="{{'img/themes/'+newEvent.theme+'.png'}}">
+                <div ng-switch-when="false" class="cover backgroundImage"></div>
+            </span>
+            <button class="themeButton" translate="event_newEvent_join" ng-click="joinNewEvent(newEvent, $index); $event.stopPropagation();">JOIN</button>
+            <h2 class="topHalf">{{newEvent.name}}</h2>
+            <h3 class="bottomHalf">{{newEvent.place_name}}</h3>
+            <h3 class="bottom">{{newEvent.date | prettyDateFormat}}</h3>
         </ion-item>
     </ion-list>
 </ion-content>

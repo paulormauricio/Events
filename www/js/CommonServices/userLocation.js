@@ -1,4 +1,4 @@
-angular.module('events.GeolocationServices',['geolocation'])
+angular.module('common.GeolocationServices',['geolocation'])
 
 .factory('userlocation', ['$timeout', '$rootScope', '$q', 'geolocation', function( $timeout, $rootScope, $q, geolocation) {
 

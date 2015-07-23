@@ -1,10 +1,10 @@
-<ion-header-bar class="bar-positive">
+<ion-header-bar class="bar-positive themeBackgroundColor">
     <button class="button button-clear" ui-sref="events">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
     <h1 class="title">
     <i class="ion-search 2x"></i>
-    <span>Where?</span>
+    <span translate="event_where">Where?</span>
             <ion-autocomplete 
                 ng-model="query" 
                 items-method="loadGooglePlaces(query)"
@@ -16,9 +16,6 @@
                 ></ion-autocomplete>
             
     </h1>
-    <button class="button button-clear" ng-click="storePlace()">
-        Save
-    </button>
 </ion-header-bar>
 
 <ion-content ng-init="loadSuggestedPlaces()">

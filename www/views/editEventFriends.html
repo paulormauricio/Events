@@ -10,12 +10,16 @@
 
 <ion-content ng-init="loadFriends()" has-bouncing="true" style="height: 100%;" scroll="false">
     <div class="item item-divider">
-        {{invitedFriends.length}} Invited {{invitedFriends.length == 1 ? 'Friend' : 'friends'}}
+        {{invitedFriends.length}}
+        <span ng-switch="invitedFriends.length == 1">
+            <span ng-switch-when="true" translate="event_invitedFriend"></span>
+            <span ng-switch-when="false" translate="event_invitedFriends"></span>
+        </span>
     </div>
     <ion-scroll direction="x" class="horizontalList">
-        <a href="javascript:void(0)" class="item slow" 
+        <a href="javascript:void(0)" class="item" 
             ng-click="uninviteFriend($index, invitedFriend)" 
-            ng-repeat="invitedFriend in invitedFriends" 
+            ng-repeat="invitedFriend in invitedFriends track by invitedFriend.id" 
             ng-hide="invitedFriend.isHidden">
             <img ng-src="https://graph.facebook.com/v2.2/{{invitedFriend.facebookId}}/picture??type=small" class="circle">
             <div class="title">
@@ -24,13 +28,13 @@
         </a>
     </ion-scroll>
 
-    <div class="item item-divider">
+    <div class="item item-divider" translate="friends">
         Friends
     </div>
     <ion-list>
         <a href="javascript:void(0)" 
             ng-click="inviteFriend($index, friend)" 
-            class="item item-avatar slow" 
+            class="item item-avatar" 
             ng-repeat="friend in friends track by friend.id">
             <img ng-src="https://graph.facebook.com/v2.2/{{friend.facebookId}}/picture??type=small" class="circle">
             <div class="middle">

@@ -10,7 +10,7 @@ angular.module('events.translations',
 	$translateProvider.translations('en_us', lang_en_us);
 	$translateProvider.translations('pt_pt', lang_pt_pt);
 
-	$translateProvider.useSanitizeValueStrategy('sanitize');
+	$translateProvider.useSanitizeValueStrategy('escape');
 	$translateProvider.preferredLanguage('en_us');
 
 });

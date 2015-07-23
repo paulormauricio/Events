@@ -1,7 +1,25 @@
 angular.module('events.EventControllers',[])
 
-.controller('EventsListController',['$window', '$state', '$scope', '$ionicLoading', 'Event', function( $window, $state, $scope,$ionicLoading, Event){
-    
+.controller('EventsListController',
+    [
+        '$window', 
+        '$state', 
+        '$scope', 
+        '$ionicLoading', 
+        'Event', 
+        'Participant', 
+        function( 
+            $window, 
+            $state, 
+            $scope,
+            $ionicLoading,
+            Event,
+            Participant
+        )
+    {
+
+console.log('');
+console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 
     $scope.loadingIndicator = $ionicLoading.show({
         content: 'Loading events',
@@ -33,6 +51,12 @@ angular.module('events.EventControllers',[])
     $scope.showEvent = function(myEvent) {
         Event.showEvent = myEvent;
         $state.transitionTo('showEvent', {objectId: myEvent.id});
+    }
+
+    $scope.joinNewEvent = function(newEvent, index) {
+        Participant.updateByEvent(newEvent, Parse.User.current(), true);
+        $scope.myEvents.push(newEvent);
+        $scope.newEvents.splice(index, 1);
     }
 
     angular.element(window).bind('resize', function () {
@@ -85,7 +109,8 @@ angular.module('events.EventControllers',[])
                 ngGPlacesAPI
             )
         {
-
+console.log('');
+console.log('<<<<<<-----------   Edit Screen  ---------->>>>>');
     $scope.isNew = $stateParams.objectId ? false : true;
 
     $scope.loadingIndicator = $ionicLoading.show({
@@ -98,20 +123,25 @@ angular.module('events.EventControllers',[])
 
     if( $scope.isNew ) {
         $scope.editEvent = {};
+        Event.myEvent = {};
     }
     else {
-
         if(!Event.myEvent) {
             Event.myEvent = {id: $stateParams.objectId};
         }
         $scope.editEvent = Event.myEvent;
-        console.log('chegou');
     }
-    console.log('isNew: ', $scope.isNew);
-    console.log( 'Edit Event:', $scope.editEvent );
-
-
+console.log('Event.myEvent: ', Event.myEvent);
     var currentLocation = {};
+
+    $scope.back = function() {
+        if( $scope.isNew ) {
+            $state.go('events');
+        }
+        else {
+            $state.go('showEvent', {objectId: $scope.editEvent.id});
+        }
+    }
 
 //  Edit Event Name
     $scope.loadThemes = function() {
@@ -139,16 +169,25 @@ angular.module('events.EventControllers',[])
             showDelay: 500
         });
 
+        if( $scope.isNew ) {
+            Event.myEvent.id = $scope.editEvent.id;
+        }
         Event.myEvent.name = $scope.editEvent.name;
+        
         Event.myEvent.theme = theme.name;
 
-        Event.save($scope.isNew).then(function(newEvent) {
-            Event.myEvent = newEvent;
+        Event.save($scope.isNew).then(function(savedEvent) {
+            Event.myEvent.id = savedEvent.id;
             if($scope.isNew) {
                 Participant.store(Event.myEvent, Parse.User.current(), true);
             }
             $ionicLoading.hide();
-            $state.go('editEventFriends', {objectId: newEvent.id}, {reload: true});
+            if( !$scope.isNew ) {
+                $state.go('showEvent', {objectId: savedEvent.id});
+            }
+            else {
+                $state.go('editEventFriends', {objectId: savedEvent.id}, {reload: true});
+            }
         });
 
     }
@@ -193,16 +232,12 @@ angular.module('events.EventControllers',[])
     }
 
     $scope.inviteFriend = function(index, friend) {
-        console.log('chegou ao invite Friends. Index = ' + index + ': ', friend.first_name);
-
         friend.isNew = 1;
         $scope.friends.splice(index, 1);
         $scope.invitedFriends.unshift( friend );
     }
 
     $scope.uninviteFriend = function(index, friend) {
-        console.log('chegou ao uninvite Friends. Index = ' + index + ': ', $scope.invitedFriends[index].first_name);
-
         friend.isNew = 0;
         $scope.friends.unshift( friend );
         $scope.invitedFriends.splice(index, 1);
@@ -210,8 +245,33 @@ angular.module('events.EventControllers',[])
 
     $scope.notifyParticipants = function() {
         console.log('Notify Participants');
+
+        for (var i=0; i<$scope.invitedFriends.length; i++) {
+            if($scope.invitedFriends[i].isNew == 1) {
+                Participant.store(Event.myEvent, $scope.invitedFriends[i], false);
+            }
+            else {
+                break;
+            }
+        };
+        for (var i=0; i<$scope.friends.length; i++) {
+            if($scope.friends[i].isNew == 0) {
+                Participant.delete(Event.myEvent, $scope.friends[i], false);
+            }
+            else {
+                break;
+            }
+        };
+
         Event.showEvent = Event.myEvent;
+        Event.showEvent.participants = [];
+        for (var i=0; i<$scope.invitedFriends.length; i++) {
+            if($scope.invitedFriends[i].isGoing)
+                Event.showEvent.participants.push($scope.invitedFriends[i]);
+        };
+        //Event.showEvent.participants = $scope.invitedFriends;
         Event.resetMyEvent();
+        console.log('ShowEvent before show:', Event.showEvent);
         $state.go('showEvent', {objectId: Event.showEvent.id});
     }
 
@@ -278,28 +338,30 @@ angular.module('events.EventControllers',[])
 
     // Save selected place
     $scope.callbackMethod = function(callback) {
-        console.log('Selected place_id: ', callback.item.place_id);
+        console.log('Selected place: ', callback.item);
 
         if( callback.item.place_id != '-1' ) {
-            Event.myEvent.set('place_id', callback.item.place_id);
+            Event.myEvent.place_id = callback.item.place_id;
         }
-        Event.myEvent.set('place_name', callback.item.name);
-        Event.myEvent.set('place_address', callback.item.vicinity);
+        Event.myEvent.place_name = callback.item.name;
+        Event.myEvent.place_address = callback.item.vicinity;
         if( callback.item.geometry.location ) {
-            Event.myEvent.set('place_lat', callback.item.geometry.location.lat());
-            Event.myEvent.set('place_lng', callback.item.geometry.location.lng());
+            Event.myEvent.place_lat = callback.item.geometry.location.lat();
+            Event.myEvent.place_lng = callback.item.geometry.location.lng();
         }
         if( callback.item.photos ) 
-            Event.myEvent.set('place_image_url', callback.item.photos[0].getUrl({'maxWidth': 600, 'maxHeight': 300}));
+            Event.myEvent.place_image_url = callback.item.photos[0].getUrl({'maxWidth': 600, 'maxHeight': 600});
 
         Event.save();
+        console.log('Event.myEvent: ', Event.myEvent);
         Event.showEvent = Event.myEvent;
         Event.resetMyEvent;
+        console.log('Event.myEvent: ', Event.showEvent);
         $state.go('showEvent', {objectId: Event.showEvent.id});
     }
 
 
-//  Other functions
+    //  Other functions
     function calculateColectionItemSize() {
         var width =  $window.innerWidth;
         $scope.item = {width: 0, height: 0};
@@ -327,6 +389,8 @@ angular.module('events.EventControllers',[])
 .controller('EventShowController',
         [
             '$scope',
+            '$sce',
+            '$window',
             'Event',
             'Participant',
             '$state',
@@ -334,18 +398,25 @@ angular.module('events.EventControllers',[])
             '$ionicLoading', 
             '$ionicActionSheet',
             '$timeout',
+            'userlocation',
+            'Weather',
             function(
                 $scope,
+                $sce,
+                $window,
                 Event,
                 Participant,
                 $state,
                 $stateParams, 
                 $ionicLoading,
                 $ionicActionSheet,
-                $timeout
+                $timeout,
+                userlocation,
+                Weather
             )
     {
-
+console.log('');
+console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     $scope.loadingIndicator = $ionicLoading.show({
         content: 'Loading Data',
         animation: 'fade-in',
@@ -353,11 +424,16 @@ angular.module('events.EventControllers',[])
         maxWidth: 200,
         showDelay: 500
     });
-    
+
     if( !Event.showEvent.id ) {
         Event.get($stateParams.objectId).then(function(object) {
-            Event.showEvent = object;
-            loadEventDetail();
+            if(object == undefined ) {
+                $state.go('events');
+            }
+            else {
+                Event.showEvent = object;
+                loadEventDetail();
+            }
         })
         .catch(function(fallback) {
             console.log('Error: ', fallback + '!!');
@@ -371,23 +447,117 @@ angular.module('events.EventControllers',[])
         $ionicLoading.hide();
     }
 
-    function loadEventDetail() {
-        $scope.object = Event.showEvent;
-        console.log('Show event: ', $scope.object);
-        $scope.object.backgroundColor = Event.showEvent.has('Theme') ? Event.showEvent.get('Theme').get('backgroundColor') : ';';
-        $scope.object.iconUrl = Event.showEvent.has('Theme') ? Event.showEvent.get('Theme').get('icon').url() : '';
+    var currentLocation = {};
+    $scope.isEdit = false;
+    $scope.isShowAddress = false;
+    $scope.isShowJoinButton = false;
+    $scope.isShowEditButton = false;
 
-        if( Event.showEvent.has('place_id') ) {
-            initializeGoogleMaps(Event.showEvent.get('place_lat'), Event.showEvent.get('place_lng'));
-        }
-        $scope.participants = {};
-        Participant.getAll(Event.showEvent, true).then(function(result) {
-            $scope.participants = result;
-            console.log('Participantes: ', result);
+    $scope.doRefresh = function() {
+        Event.get($stateParams.objectId).then(function(object) {
+            Event.showEvent = object;
+            loadEventDetail();
+            $scope.$broadcast('scroll.refreshComplete');
         });
     }
 
+    function loadEventDetail() {
+        //$scope.class_pane = 'cover';
+        $scope.showEvent = Event.showEvent;
+        console.log('Show event: ', $scope.showEvent);
+
+        if( Event.showEvent.place_id ) {
+            initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
+        }
+
+        $scope.showEvent.participants = {};
+        Participant.getAll(Event.showEvent, true).then(function(result) {
+            $scope.showEvent.participants = result;
+            console.log('Participantes: ', $scope.showEvent.participants);
+
+            var count = 0;
+            for (var i = 0; i<$scope.showEvent.participants.length; i++) {
+                if( $scope.showEvent.participants[i].id == Parse.User.current().id )
+                    count++;
+            };
+            if(count==0) 
+                $scope.isShowJoinButton = true;
+            else
+                $scope.isShowEditButton = true;
+        });
+console.log('showEvent.place_name: ', showEvent.place_name);
+        $scope.weather = {};
+        getLocationWeather();
+    }
+
+    function getLocationWeather() {
+        if( $scope.showEvent.date ) {
+            if( $scope.place_lat && $scope.place_lng ) {
+                getWeather({lat: $scope.place_lat, lng: $scope.place_lng});
+            }
+            else
+                getUserLocation();
+        }
+    }
+
+    function getUserLocation() {
+        
+        userlocation.get().then(function(location) {
+            currentLocation = location;
+            getWeather(location);
+        })
+        .catch(function(error) {
+            console.log('Userlocation Error: ', error);
+        });
+    }
+
+    function getWeather(location) {
+        console.log('<<<--- Get weather --->>>');
+        console.log('location: ', location);
+        Weather.get($scope.showEvent.date, location).then( function(data) {
+            var date_aux = 
+            $scope.weather = data;
+        })
+        .catch(function(error) {
+            console.log('Weather Error: ', error);
+        });
+    }
+
+    $scope.startEdit = function() {
+        $scope.isEdit = true;
+    }
+    $scope.endEdit = function() {
+        $scope.isEdit = false;
+    }
+
+    $scope.joinEvent = function() {
+        Participant.updateByEvent($scope.showEvent, Parse.User.current(), true);
+        $scope.isShowJoinButton = false;
+        $scope.isShowEditButton = true;
+
+        var newParticipant = {
+            id: Parse.User.current().id,
+            facebookId: Parse.User.current().get('facebookId'),
+            first_name: Parse.User.current().get('first_name'),
+            last_name: Parse.User.current().get('last_name'),
+            isGoing: true,
+            isHidden: false
+        };
+        $scope.showEvent.participants.unshift(newParticipant);
+
+        console.log('-------------------------');
+        console.log('WARNING: Não esquecer de colocar o evento nos MyEvents after Join');
+        console.log('-------------------------');
+    }
+
+//  Place Section  ------------------------
+
+    $scope.toggleAddress = function() {
+        $scope.isShowAddress = $scope.isShowAddress ? false : true;
+    }
+
     function initializeGoogleMaps(lat, lng) {
+
         console.log('Initialize GoogleMaps: ', {lat: lat, lng: lng});
         var myLatlng = new google.maps.LatLng(lat,lng);
 
@@ -441,12 +611,24 @@ angular.module('events.EventControllers',[])
         });
     }
 
+//  Edit Name Section --------------------------
+
+    $scope.editName = function() {
+        if( $scope.isEdit ) {
+            Event.myEvent = $scope.showEvent;
+            $state.go('editEventName', {objectId: $scope.showEvent.id});
+        }
+    }
+
+//  Data Section --------------------------------
     $scope.editDate = function() {
-        console.log('Chegou ao EditDate');
+
+        if( !$scope.isEdit && $scope.showEvent.date ) return;
+
         $scope.showAngularDateEditor = true;
 
         console.log(Event.showEvent);
-        var date = Event.showEvent.get('date');
+        var date = Event.showEvent.date;
 
         if( ionic.Platform.isIOS() ||
             ionic.Platform.isAndroid() ||
@@ -532,28 +714,29 @@ angular.module('events.EventControllers',[])
 
     function saveDate(newdate) {
         if( newdate == '' ) {
-            $scope.object.unset('date');
-            Event.showEvent.unset('date');
+            $scope.showEvent.date = undefined;
+            Event.showEvent.date = undefined;
         }
         else {
             var date = new Date(newdate);
-            alert('Save date: '+date);
-            $scope.object.set('date', date);
-            Event.showEvent.set('date', date);
+            $scope.showEvent.date = date;
+            Event.showEvent.date = date;
         }
         Event.myEvent = Event.showEvent;
         Event.save();
         Event.resetMyEvent();
+        getLocationWeather();
     }
 
-    $scope.placePressed = function() {
+//  Edit Place  -------------------
+    $scope.newPlacePressed = function() {
         
-        console.log('chegou ao placePressed');
+        console.log('chegou ao newPlacePressed');
 
         var buttons = [
                 { text: 'Edit Place' }
             ];
-        if( Event.showEvent.has('place_id') )
+        if( $scope.showEvent.place_id )
             buttons.push({text: 'Go to google maps'});
 
         // Show the action sheet
@@ -569,8 +752,8 @@ angular.module('events.EventControllers',[])
                 console.log('Button clicked. Index = ', index);
                 switch(index) {
                     case 0: 
-                        Event.myEvent = Event.showEvent;
-                        $state.go('editEventPlace');
+                        Event.myEvent = $scope.showEvent;
+                        $state.go('editEventPlace', {objectId: $scope.showEvent.id});
                         break;
                     case 1:
                         console.log('Go to google maps');
@@ -585,11 +768,10 @@ angular.module('events.EventControllers',[])
                 hideSheet();
                 // Delete place
 
-                Event.myEvent = Event.showEvent;
+                Event.myEvent = $scope.showEvent;
                 Event.deletePlace();
-                Event.showEvent = Event.myEvent;
+                $scope.showEvent = Event.myEvent;
                 Event.resetMyEvent;
-                $scope.object = Event.showEvent;
             }
         });
 
@@ -597,6 +779,20 @@ angular.module('events.EventControllers',[])
         $timeout(function() {
             hideSheet();
         }, 28000);
+    }
+
+    //  Other functions
+    calculateScreenSize();
+
+    angular.element(window).bind('resize', function () {
+        calculateScreenSize();
+    });
+
+    function calculateScreenSize() {
+        $scope.item = {
+                height: $window.innerHeight + 'px',
+                width:  $window.innerWidth + 'px'
+            };
     }
 
 }]);

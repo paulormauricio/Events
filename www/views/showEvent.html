@@ -1,80 +1,148 @@
-<ion-header-bar class="bar-positive">
-        <button class="button button-clear" ui-sref="events">
-            <i class="icon ion-ios-arrow-back"></i>
-        </button>
-        <h1 class="title">Event</h1>
-</ion-header-bar>
+<ion-pane class="has-dynamicHeader" ng-class="{'bar-header-slide-away': slideHeader}">
 
-<ion-content has-bouncing="true">
-    <div>
-        <ion-list>
-            <div class="card" style="background-color: {{object.backgroundColor}}">
-                <img ng-src="{{object.iconUrl}}" ng-hide="object.iconUrl == ''">
-                <div class="cover"></div>
-                <label ng-show="object.get('name')">
-                    {{object.get('name')}}
-                </label>
-            </div>
+
+<div class="dynamicHeader">
+    <button class="button button-clear left" ui-sref="events">
+        <i class="icon ion-ios-arrow-back"></i>
+    </button>
+    <span ng-switch="isEdit" ng-show="isShowEditButton">
+        <button ng-switch-when="false" class="button button-clear right" ng-click="startEdit()">
+            <i class="icon ion-edit"></i>
+        </button>
+        <button ng-switch-when="true" class="button button-clear right" ng-click="endEdit()">
+            DONE
+        </button>
+    </span>
+</div>
+
+<div class="background backgroundImage" 
+     ng-show="showEvent.place_image_url"
+     style="position: fixed"
+     ng-style="{'background-image': 'url('+showEvent.place_image_url+')', 'width': item.width, 'height': item.height}"></div>
+
+<ion-content style="height: 100%;" has-bouncing="true" header-shrink scroll-event-interval="5" class="cover" scroll-watch>
+
+
+    <ion-list id="showEvent">
+        <ion-refresher pulling-text="{{ 'refresh' | translate }}" on-refresh="doRefresh()"></ion-refresher>  
+        <ion-item ng-style="{'height': item.height}">   
+            <h1 ng-show="showEvent.name"
+                ng-click="editName()"
+                class="topHalf centered">
+                {{showEvent.name}}
+                <span ng-show="isEdit" style="position: absolute; right: 0px;">
+                    <i class="icon ion-edit edit"></i>
+                </span>
+            </h1>   
+            <h2 ng-show="showEvent.place_name"
+                class="bottomHalf centered">
+                {{showEvent.place_name}}
+            </h2>
+
+            <button ng-show="isShowJoinButton" ng-click="joinEvent()" class="themeButton joinButton" translate="event_newEvent_join">
+                JOIN
+            </button>
+
             <!-- Event Date and Weather  -->
-            <ion-item ng-click="editDate()">
-                <table>
+            <div class="bottom">
+                <table style="width: 100%">
                     <tbody>
                         <tr>
-                            <td class="cellSideTemplate">
-                                <a href="javascript:void(0)" >
+                            <td class="cellSideTemplate" ng-click="editDate()">
+                                <a href="javascript:void(0)">
                                     <i class="ion-calendar"></i>
-                                    <label ng-hide="object.has('date')">
-                                        Click to define date
-                                    </label>
-                                    <label ng-show="object.has('date')">
-                                        {{ object.get('date') | prettyDateFormat }}
-                                    </label>
+                                    <span ng-switch="!showEvent.date" class="inline">
+                                        <label ng-switch-when="true">
+                                            Click to define date
+                                        </label>
+                                        <label ng-switch-when="false">
+                                            {{ showEvent.date | prettyDateFormat }}
+                                            <span id="dayLabel">{{showEvent.date | date: 'd'}}</span>
+                                        </label>
+                                    </span>
+                                    <span ng-show="isEdit" class="inline">
+                                        <i class="icon ion-edit edit"></i>
+                                    </span>
                                 </a>
                             </td>
-
-                            <td class="cellSideTemplate" ng-show="object.has('date')">
-                                <i class="ion-android-sunny"></i>
-                                <label>Sunny</label>
+                            <td class="cellSideTemplate right" ng-show="weather.code && !isEdit">
+                                <label>{{weather.desc}}</label>
+                                <label><small>{{weather.tempC}}ºC</small></label>
+                                <img ng-src="{{weather.icon_url}}" ng-alt="weather.desc">
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </ion-item>
-            <!-- Event Place  -->
-            <ion-item ng-click="placePressed()">
-                <div class="cellSideTemplate" ng-hide="object.has('place_name')">
-                    <i class="ion-ios-location-outline"></i>
-                    <label>
-                        Click to define location
-                    </label>
-                </div>
-                <div class="fillParent" style="position: absolute; z-index: 1000;"></div>
-                <div class="mapContainer fillParent" ng-show="object.has('place_name')">
-                    <div id="map" class="fillParent" data-tap-disabled="true"></div>
-                    <div class="info">
-                        <div class="title">Address</div>
-                        <p>{{ object.get('place_name') }}</p>
-                        <p>{{ object.get('place_address') }}</p>
-                    </div>
-                </div>
-            </ion-item>
-            <ion-item class="noPadding">
-                <div class="leftTitle">Going</div>
-                <a class="buttonRight">
-                    See all <i class="ion-ios-arrow-forward"></i>
+            </div>
+        </ion-item>
+
+        <!-- Participants -->
+        <ion-item class="noPadding">
+            <div class="leftTitle">
+                {{showEvent.participants.length}}
+                <span ng-switch="showEvent.participants.length == 1">
+                    <span ng-switch-when="true" translate="event_goingFriend"></span>
+                    <span ng-switch-when="false" translate="event_goingFriends"></span>
+                </span>
+                <a class="" ng-show="isEdit">
+                    <i class="icon ion-edit edit"></i>
                 </a>
-                <ion-scroll direction="x" class="horizontalList">
-                    <a href="javascript:void(0)" class="item slow" ng-repeat="participant in participants | orderBy : participant.get('User').get('first_name') + participant.get('User').get('last_name')">
-                        <img ng-src="https://graph.facebook.com/v2.2/{{participant.get('User').get('facebookId')}}/picture??type=small" class="circle">
-                        <div class="title">
-                            {{participant.get('User').get('first_name')}} {{participant.get('User').get('last_name')}}
-                        </div>
-                    </a>
-                </ion-scroll>
-            </ion-item>
-        </ion-list>
-        <div date-picker="start" ng-show="true"></div>
-    </div>
+            </div>
+            <ion-scroll direction="x" class="horizontalList">
+                <a href="javascript:void(0)" class="item" ng-repeat="participant in showEvent.participants | orderBy : participant.first_name + participant.last_name">
+                    <img ng-src="https://graph.facebook.com/v2.2/{{participant.facebookId}}/picture??type=small" class="circle">
+                    <div class="title">
+                        {{participant.first_name}} {{participant.last_name}}
+                    </div>
+                </a>
+            </ion-scroll>
+        </ion-item>
+
+        <!-- Event Place  -->
+        <ion-item class="noPadding">
+            <div class="leftTitle">
+                <span translate="event_place_details"></span>
+                <a class="" ng-show="isEdit">
+                    <i class="icon ion-edit edit"></i>
+                </a>
+            </div>
+
+            <div ng-hide="showEvent.place_id" class="cellSideTemplate" ng-click="newPlacePressed()">
+                <i class="ion-ios-location-outline" style="left: 5px"></i>
+                <label ng-switch="showEvent.place_name == undefined" style="padding-top: 15px;">
+                    <span ng-switch-when="true" class="emptyMsg" translate="event_place_click_edit"></span>
+                    <span ng-switch-when="false">{{showEvent.place_name}}</span>
+                </label>
+            </div>
+
+            <div ng-show="showEvent.place_id" class="">
+
+                <table id="addressInfo">
+                <tbody>
+                    <tr>
+                        <td width="100%">
+                            <div ng-show="isShowAddress" class="info">
+                                <p class="bold">{{ showEvent.place_name }}</p>
+                                <p>{{ showEvent.place_address }}</p>
+                            </div>
+                        </td>
+                        <td class="title themeBackgroundColor" ng-click="toggleAddress()" translate="event_place_address">Address</td>
+                    </tr>
+                </tbody>
+                </table>
+
+                <div class="mapContainer " ng-show="showEvent.place_name">
+                    <div id="map" class="circle themeBorderColor" data-tap-disabled="true"></div>
+                </div>
+
+            </div>
+        </ion-item>
+
+    </ion-list>
+
+    <div date-picker="start" ng-show="true"></div>
+
 </ion-content>  
 
 
+</ion-pane>

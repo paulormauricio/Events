@@ -2,20 +2,24 @@ angular.module('events',
     [
       'ionic',
       'ngAnimate',
+      'ngSanitize',
       'events.translations',
       'ion-autocomplete',
       'ngGPlaces',
       'events.EventControllers',
       'events.EventServices',
       'events.WeatherServices',
-      'events.GeolocationServices',
+      'common.GeolocationServices',
       'events.Storage',
       'events.LoginControllers',
       'events.ProfileControllers',
       'events.ProfileServices',
+      'events.SettingsControllers',
+      'events.SettingsServices',
       'events.FriendControllers',
       'events.FriendServices',
-      'events.filters'
+      'events.filters',
+      'common.DynamicHeader',
     ]
   )
 
@@ -109,6 +113,14 @@ angular.module('events',
       url:'/profile',
       templateUrl:'views/profile.html',
       controller:'ProfileController',
+      data: {
+        authenticate: true
+      }
+    })
+    .state('settings',{
+      url:'/settings',
+      templateUrl:'views/settings.html',
+      controller:'SettingsController',
       data: {
         authenticate: true
       }

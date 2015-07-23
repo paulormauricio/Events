@@ -62,6 +62,7 @@ angular.module('events.EventServices',[])
 			innerQuery.matchesQuery("Event", query);
 			innerQuery.equalTo("User", Parse.User.current() );
 			innerQuery.equalTo("isHidden", false );
+			innerQuery.equalTo("isGoing", false );
 			innerQuery.include("Event");
 
 			innerQuery.find({
@@ -96,23 +97,31 @@ angular.module('events.EventServices',[])
 
 	this.get = function(id) {
 			var deferred = $q.defer();
-			
+
 			var query = new Parse.Query(Event);
 			query.equalTo("objectId", id );
 			query.first({
 			  success: function(object) {
+
 			  	console.log('Event get successfully!');
 
-				var result = {};
-				result.id = object.get('Event').id;
-				result.name = object.get('Event').get('name');
-				result.theme = object.get('Event').get('theme');
-				result.place_id = object.get('Event').get('place_id');
-				result.place_name = object.get('Event').get('place_name');
-				result.place_image_url = object.get('Event').get('place_image_url');
-				result.place_lat = object.get('Event').get('place_lat');
-				result.place_lng = object.get('Event').get('place_lng');
-				result.date = object.get('Event').get('date');
+			  	var result = {};
+
+			  	if( object == undefined ) {
+			  		result = object;
+			  	}
+				else {
+					result.id = object.id;
+					result.name = object.get('name');
+					result.theme = object.get('theme');
+					result.place_id = object.get('place_id');
+					result.place_name = object.get('place_name');
+					result.place_image_url = object.get('place_image_url');
+					result.place_lat = object.get('place_lat');
+					result.place_lng = object.get('place_lng');
+					result.date = object.get('date');
+					result.participants = null;
+				}
 
 				this.showEvent = result;
 				
@@ -127,9 +136,10 @@ angular.module('events.EventServices',[])
 		};
 
 	this.save = function(isNew) {
+			isNew = typeof isNew !== 'undefined' ? isNew : false;
 			var deferred = $q.defer();
 
-			var saveEvent = new Event(); 
+			var saveEvent = new Event();
 
 			if(isNew) {
 				this.myEvent.createdBy = Parse.User.current();
@@ -137,9 +147,10 @@ angular.module('events.EventServices',[])
 			else {
 				saveEvent.id = this.myEvent.id;
 			}
+			var myEvent_temp = this.myEvent;
+			delete myEvent_temp['participants'];
 
-
-			saveEvent.save( this.myEvent , {
+			saveEvent.save( myEvent_temp , {
 			  success: function(newEvent) {
 			  	console.log('Event saved successfully!');
 
@@ -154,15 +165,15 @@ angular.module('events.EventServices',[])
 		};
 
 	this.resetMyEvent = function() {
-		this.myEvent = {};
+		this.myEvent = null;
 	};
 
 	this.deletePlace = function() {
-		this.myEvent.unset('place_id');
-		this.myEvent.unset('place_name');
-		this.myEvent.unset('place_address');
-		this.myEvent.unset('place_lat');
-		this.myEvent.unset('place_lng');
+		this.myEvent.place_id = undefined;
+		this.myEvent.place_name = undefined;
+		this.myEvent.place_address = undefined;
+		this.myEvent.place_lat = undefined;
+		this.myEvent.place_lng = undefined;
 		this.save();
 	}
 
@@ -189,6 +200,7 @@ angular.module('events.EventServices',[])
 
 	var Participant = Parse.Object.extend("Participant");
 	var Event = Parse.Object.extend("Event");
+	var User = Parse.Object.extend("User");
 
 	var participants = [];
 
@@ -217,6 +229,7 @@ angular.module('events.EventServices',[])
 				angular.forEach(objects, function(object, key) {
 					var result = {};
 					result.id = object.get('User').id;
+					result.participantId = object.id;
 					result.facebookId = object.get('User').get('facebookId');
 					result.first_name = object.get('User').get('first_name');
 					result.last_name = object.get('User').get('last_name');
@@ -239,23 +252,24 @@ angular.module('events.EventServices',[])
 
 		store: function(myEvent, friend, isOwner) {
 
-
-
 	  		var participant = new Participant();
+
 	  		var saveEvent = new Event(); 
 	  		saveEvent.id = myEvent.id;
 
+	  		var user = new User(); 
+	  		user.id = friend.id;
+
             participant.set('Event', saveEvent);
-            participant.set('User', friend);
+            participant.set('User', user);
             participant.set('isSeen', isOwner);
             participant.set('isHidden', false);
             participant.set('isNotified', isOwner);
-
-            if(isOwner) participant.set('isGoing', true);
+			participant.set('isGoing', isOwner);
 
 			var query = new Parse.Query(Participant);
 			query.equalTo("Event", saveEvent );
-			query.equalTo("User", friend );
+			query.equalTo("User", user );
 
 			query.first({
 			  success: function(object) {
@@ -273,12 +287,55 @@ angular.module('events.EventServices',[])
 
 		},
 
-		delete: function (participant) {
-			
+		update: function(participantId, isSeen, isHidden, isGoing) {
+
+	  		var participant = new Participant();
+
+	  		participant.id = participantId;
+            participant.set('isGoing', isGoing);
+            participant.set('isHidden', isHidden);
+            participant.set('isSeen', isSeen);
+
+			participant.save();
+			console.log('Participant updated successfully!');
+		},
+
+		updateByEvent: function(saveEvent, user, isGoing) {
+
+	  		var queryEvent = new Event(); 
+	  		queryEvent.id = saveEvent.id;
+
+			var query = new Parse.Query(Participant);
+			query.equalTo("Event", queryEvent );
+			query.equalTo("User", user );
+
+			query.first({
+			  success: function(participant) {
+
+			  	if (participant.id != undefined) {
+                    console.log('Participant updated successfully!');
+		            participant.set('isGoing', isGoing);
+		            participant.set('isHidden', false);
+
+					participant.save();
+			  	}
+			  	else {
+			  		console.log('Warning: Participant not found! ', participant);
+			  	}
+
+			  },
+			  error: function(error) {
+			    console.log("Error: " + error.code + " " + error.message);
+			  }
+			});
+		},
+
+		delete: function (participantId) {
+			var participant = new Participant();
+			participant.id = participantId;
 			participant.destroy({
 				success: function(myObject) {
-					Event.removeParticipant();
-					//if(participant.get('isGoing)')) Event.removeGoingParticipant();
+					console.log('Participant removed :', participantId);
 				},
 				error: function(myObject, error) {
 			    console.log("Error: " + error.code + " " + error.message);
@@ -293,6 +350,8 @@ angular.module('events.EventServices',[])
 .factory('Theme',['$rootScope', '$q', function($rootScope, $q){
 
 	var themes = [
+		{name: 'cocktail', 	tags_en_us: 'drinks, cocktails', 	tags_pt_pt: 'bebidas, beber, copo, cocktails'},
+		{name: 'drinks', 	tags_en_us: 'drinks, party', 		tags_pt_pt: 'bebidas, beber, copo, festa'},
 		{name: 'food', 		tags_en_us: 'dinner, lunch, food', 	tags_pt_pt: 'jantar, comer, almoçar, almoço'},
 		{name: 'football', 	tags_en_us: 'play, football', 		tags_pt_pt: 'jogar, futebol, bola'},
 		{name: 'running', 	tags_en_us: 'run, running', 		tags_pt_pt: 'correr, corrida, caminhar, caminhada'}

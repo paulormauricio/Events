@@ -1,5 +1,5 @@
 <ion-header-bar class="bar-positive themeBackgroundColor">
-    <button class="button button-clear" ui-sref="events">
+    <button class="button button-clear" ng-click="back()">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
     <h1 class="title" translate="event_new">New event</h1>
@@ -14,11 +14,15 @@
         Choose your theme
     </div>
     <ion-scroll class="collectionList" ng-show="themes.length>2 && editEvent.name.length>2">
-        <ion-item ng-click="storeName(theme)" class="slow" 
+        <ion-item ng-click="storeName(theme)" class="" 
                   ng-repeat="theme in themes"
-                  ng-show="editEvent.name>2 || ([theme]|parseSearch:editEvent.name).length"
+                  ng-show="([theme]|themeSearch:editEvent.name).length"
                   ng-style="{'width': item.width, 'height': item.height}">
             <img ng-src="{{'img/themes/'+theme.name+'.png'}}">
+        </ion-item>
+        <ion-item ng-click="storeName({name: '_'})" class="" 
+                  ng-style="{'width': item.width, 'height': item.height}">
+                  <span class="topHalf">{{editEvent.name}}</span>
         </ion-item>
     </ion-scroll>
 

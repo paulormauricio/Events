@@ -55,7 +55,7 @@ angular.module('events.LoginControllers', [])
             if( response.id ) userObject.set('facebookId', response.id);
             if( response.first_name ) userObject.set('first_name', response.first_name);
             if( response.last_name ) userObject.set('last_name', response.last_name);
-            if( response.locale ) userObject.set('locale', response.locale);
+            if( response.locale ) userObject.set('locale', response.locale.toLowerCase() );
             
             userObject.save();
           },

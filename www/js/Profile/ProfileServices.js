@@ -2,7 +2,7 @@ angular.module('events.ProfileServices',[])
 
 .factory('Profile',['$rootScope', '$q', function($rootScope, $q){
 
-	var Friend = Parse.Object.extend("UserFriend");
+	var Friend = Parse.Object.extend("Friend");
 
 	return {
 

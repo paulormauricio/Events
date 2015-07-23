@@ -1,6 +1,6 @@
 angular.module('events.filters',[])
 
-.filter('parseSearch', function() {
+.filter('themeSearch', function() {
     
 
     return function(input, searchString) {
@@ -67,22 +67,22 @@ angular.module('events.filters',[])
         var currentDateTime = new Date();
         var currentDate = new Date( $filter('date')(currentDateTime, 'yyyy-MM-dd' ) );
 
-
         var inputTime = $filter('date')(inputDateTime, 'HH:mm' );
 
         var dateDiff = differenceInDays(inputDate, currentDate);
 
         if (inputDate == currentDate) {
-            return "Today at " + inputTime;
+            return $filter('translate')('date_today')+' '+$filter('translate')('date_at')+' '+inputTime;
         }
         else if (dateDiff == 1) {
-            return "Tomorrow at " + inputTime;
+            return $filter('translate')('date_tomorrow')+' '+$filter('translate')('date_at')+' '+ inputTime;
         }
         else if (dateDiff < 7) {
-            return 'Next ' + $filter('date')(inputDateTime, 'EEEE') + ' at ' + inputTime;
+            var week = $filter('date')(inputDateTime, 'EEEE').toLowerCase();
+            return $filter('translate')( 'date_week_'+week ) + ' '+$filter('translate')('date_at')+' '+inputTime;
         }
         else {
-            return $filter('date')(inputDateTime, 'dd-MM-yyyy at HH:mm' );
+            return $filter('date')(inputDateTime, 'dd-MM-yyyy '+$filter('translate')('date_at')+' HH:mm' );
         }
         
         return "";
