@@ -15,7 +15,7 @@
     <script src="lib/angular-animate/angular-animate.min.js"></script>
 
     <!-- Google Places Autocomplete  -->
-    <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
+    <script src="//maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
     
     <!-- <script src="//maps.googleapis.com/maps/api/js"></script> -->
 
@@ -32,7 +32,11 @@
 
     <!-- <script src="lib/ng-cordova.min.js"></script>-->
     <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
+    <!--<script src="cordova.js"></script>-->
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+
+    <script src="lib/ionic-service-core/ionic-core.js"></script>
+    <script src="lib/ionic-service-push/ionic-push.js"></script>
 
     <!-- Parse -->
     <script src="lib/parse-1.4.2.min.js"></script>
@@ -51,6 +55,7 @@
     <script src="js/Friends/FriendControllers.js"></script>
     <script src="js/Friends/FriendServices.js"></script>
     <script src="js/filters.js"></script>
+    <script src="js/Push/IonicServices.js"></script>
 
     <script src="js/CommonServices/userLocation.js"></script>
     <script src="js/CommonServices/localstorage.js"></script>

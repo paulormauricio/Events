@@ -17,9 +17,9 @@ angular.module('events.WeatherServices',[])
 			time = $filter('date')(date, 'HH');
 			date = $filter('date')(date, 'yyyy-MM-dd');
 
-			var query = location.lat+','+location.lng;
+//https://api.worldweatheronline.com/free/v2/weather.ashx?key=eedf22d8e65bce4afbed9d86c0d38&tp=1&cc=no&num_of_days=1&format=json&date=2015-07-24&q=lisbon
 
-			//console.log('Weather URL: ', URL);
+			var query = location.lat+','+location.lng;
 
 			var request = $http({
                         method: "get",
@@ -57,9 +57,13 @@ angular.module('events.WeatherServices',[])
     		desc: data.weatherDesc[0].value,
     		icon_url: data.weatherIconUrl[0].value,
     		tempC: data.FeelsLikeC,
-    		tempF: data.FeelsLikeF,
+    		tempF: data.FeelsLikeF
     	};
+        var array = result.icon_url.split('/');
+        result.icon = array[array.length - 1];
+        
     	if( locale != 'en' ) result.desc = data['lang_'+locale][0].value;
+        
         return( result );
     }
 }]);

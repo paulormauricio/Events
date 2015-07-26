@@ -1,6 +1,16 @@
 angular.module('events.LoginControllers', [])
 
-  .controller('LoginController', ['$scope', '$state', function($scope, $state) {
+  .controller('LoginController', 
+    [
+      '$scope', 
+      '$state',
+      'PushService',
+      function(
+        $scope, 
+        $state,
+        PushService
+      )
+    {
     
     if( Parse.User.current() ) {
       console.log('Users logged in. Redirect to Events');
@@ -123,6 +133,8 @@ angular.module('events.LoginControllers', [])
             console.log(error);
           }
         );
+
+        PushService.init();
 
         $state.go('events');
       })

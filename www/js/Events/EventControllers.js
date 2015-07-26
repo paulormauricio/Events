@@ -485,7 +485,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
             else
                 $scope.isShowEditButton = true;
         });
-console.log('showEvent.place_name: ', showEvent.place_name);
+
         $scope.weather = {};
         getLocationWeather();
     }

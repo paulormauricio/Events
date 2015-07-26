@@ -1,11 +1,14 @@
 angular.module('events', 
     [
       'ionic',
+      'ngCordova',
+      'ionic.service.core',
+      'ionic.service.push',
       'ngAnimate',
-      'ngSanitize',
-      'events.translations',
+      //'ngSanitize',
       'ion-autocomplete',
       'ngGPlaces',
+      'events.translations',
       'events.EventControllers',
       'events.EventServices',
       'events.WeatherServices',
@@ -20,6 +23,7 @@ angular.module('events',
       'events.FriendServices',
       'events.filters',
       'common.DynamicHeader',
+      'events.IonicServices'
     ]
   )
 
@@ -48,7 +52,7 @@ angular.module('events',
         });
       }
     }
-  });
+  })
 
   // UI Router Authentication Check
   $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
@@ -67,6 +71,20 @@ angular.module('events',
     }
   });
 })
+
+.config(['$ionicAppProvider', function($ionicAppProvider) {
+  // Identify app
+  $ionicAppProvider.identify({
+    // The App ID (from apps.ionic.io) for the server
+    app_id: '0d7d2a38',
+    // The public API key all services will use for this app
+    api_key: 'ad0133ac388fc7014720dccfed644127c506109281f00e29',
+    // Set the app to use development pushes
+    dev_push: true,
+    // The GCM project number
+    gcm_id: 'AIzaSyAo1_8GKCmgPHRlGa_IqZI4F7p6JOBmwNk'
+  });
+}])
 
 .config(function($stateProvider, $urlRouterProvider){
     $stateProvider
