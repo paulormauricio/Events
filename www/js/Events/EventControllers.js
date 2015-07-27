@@ -476,7 +476,7 @@ if(ionic.Platform.isWebView()) alert('Show Screen ('+Event.showEvent.id+')');
         Participant.getAll(Event.showEvent, true).then(function(result) {
             $scope.showEvent.participants = result;
             console.log('Participantes: ', $scope.showEvent.participants);
-            if(ionic.Platform.isWebView()) alert('Get '+result.length+' participants');
+            if(ionic.Platform.isWebView()) alert('Get participants');
 
             var count = 0;
             for (var i = 0; i<$scope.showEvent.participants.length; i++) {
@@ -487,6 +487,9 @@ if(ionic.Platform.isWebView()) alert('Show Screen ('+Event.showEvent.id+')');
                 $scope.isShowJoinButton = true;
             else
                 $scope.isShowEditButton = true;
+        })
+        .catch(function(error) {
+            alert('Get participants Error: '+error);
         });
 
         $scope.weather = {};
