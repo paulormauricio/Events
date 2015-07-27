@@ -50,6 +50,11 @@ angular.module('events.WeatherServices',[])
         return( $q.reject( response.data.message ) );
     }
     function handleSuccess( response ) {
+        console.log('weather: ',response);
+        if(response.data.data.weather == undefined) {
+            console.log('Weather Error: response.data.data.weather is undefined.');
+            return {};
+        }
     	var index = Math.round(time * 3 / 8) - 1;
     	var data = response.data.data.weather[0].hourly[index];
     	var result = {
