@@ -347,6 +347,7 @@ a {
 	position: relative;
 	overflow: hidden;
 	display: inline-block;
+	float: left;
 	text-align: center;
 	width: 50%;
 	border: 3px solid #fff;
@@ -403,6 +404,7 @@ a {
 
 .collectionList h1 {
 	display: block;
+	clear: both;
 	width: 100%;
 	margin-top: 10px;
 	font-size: 18px;

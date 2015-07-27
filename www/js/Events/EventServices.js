@@ -47,7 +47,7 @@ angular.module('events.EventServices',[])
 
 			  },
 			  error: function(error) {
-			    console.log("Error: " + error.code + " " + error.message);
+			    alert("getMyEvents Error: " + error.code + " " + error.message);
 			  }
 			});
 			return deferred.promise;
@@ -89,7 +89,7 @@ angular.module('events.EventServices',[])
 
 			  },
 			  error: function(error) {
-			    console.log("Error: " + error.code + " " + error.message);
+			    alert("getNewEvent Error: " + error.code + " " + error.message);
 			  }
 			});
 			return deferred.promise;
@@ -129,7 +129,7 @@ angular.module('events.EventServices',[])
 
 			  },
 			  error: function(error) {
-			    console.log("Error: " + error.code + " " + error.message);
+			    alert("getEvent Error: " + error.code + " " + error.message);
 			  }
 			});
 			return deferred.promise;
@@ -158,7 +158,7 @@ angular.module('events.EventServices',[])
 
 			  },
 			  error: function(gameScore, error) {
-			  	console.log('Failed to create event: ' + error.message);
+			  	alert('Failed to create event: ' + error.message);
 			  }
 			});
 			return deferred.promise;

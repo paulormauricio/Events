@@ -13,7 +13,7 @@ angular.module('events.LoginControllers', [])
     {
     
     if( Parse.User.current() ) {
-      console.log('Users logged in. Redirect to Events');
+      alert('Users logged in. Redirect to Events');
       $state.transitionTo("events");
     }
 
@@ -70,7 +70,7 @@ angular.module('events.LoginControllers', [])
             userObject.save();
           },
           function(error) {
-            console.log(error);
+            alert('Login error: ', error);
           }
         );
         //Get Friends
@@ -123,19 +123,19 @@ angular.module('events.LoginControllers', [])
 
                 },
                 error: function(error) {
-                  console.log("Error in get Facebook Friends: " + error.code + " " + error.message);
+                  alert('Login error: ', error);
                 }
               });
 
             }
           },
           function(error) {
-            console.log(error);
+            alert('Login error: ', error);
           }
         );
-
+        alert('Login success');
         PushService.init();
-
+        alert('Push Service initialized. Going to events.');
         $state.go('events');
       })
 
