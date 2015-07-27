@@ -517,8 +517,8 @@ if(ionic.Platform.isWebView()) alert('Show Screen ('+Event.showEvent.id+')');
     function getWeather(location) {
         console.log('<<<--- Get weather --->>>');
         console.log('location: ', location);
+        if(ionic.Platform.isWebView()) alert('Get weather ('+location.lat+', '+location.lng+')');
         Weather.get($scope.showEvent.date, location).then( function(data) {
-            var date_aux = 
             $scope.weather = data;
         })
         .catch(function(error) {
