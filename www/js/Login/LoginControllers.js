@@ -133,9 +133,9 @@ angular.module('events.LoginControllers', [])
             alert('Login error: ', error);
           }
         );
-        alert('Login success');
+        
         PushService.init();
-        alert('Push Service initialized. Going to events.');
+        
         $state.go('events');
       })
 

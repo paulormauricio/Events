@@ -50,7 +50,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 
     $scope.showEvent = function(myEvent) {
         Event.showEvent = myEvent;
-        $state.transitionTo('showEvent', {objectId: myEvent.id});
+        $state.transitionTo('showEvent', {objectId: myEvent.id}, {reload: true});
     }
 
     $scope.joinNewEvent = function(newEvent, index) {
@@ -417,6 +417,7 @@ console.log('Event.myEvent: ', Event.myEvent);
     {
 console.log('');
 console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
+alert('Show Screen ('.$stateParams.objectId.')');
     $scope.loadingIndicator = $ionicLoading.show({
         content: 'Loading Data',
         animation: 'fade-in',

@@ -25,7 +25,7 @@ angular.module('events.lang_pt_pt', [])
 	event_myEvents_title: 'Os meus eventos',
 	event_new: 'Novo evento',
 	event_newEvent_join: 'Aceitar',
-	event_newEvents_noEvents: 'Nenhum evento. Os teus amigos andam adormecidos...',
+	event_newEvents_noEvents: 'Nenhum evento. Desafia tu os teus amigos...',
 	event_newEvents_title: 'Novos eventos',
 	event_place_address: 'Morada',
 	event_place_details: 'Detalhe do local',

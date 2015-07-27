@@ -3,9 +3,9 @@
             <i class="ion-person"></i>
         </button>
         <h1 class="title"></h1>
-        <a class="button button-clear" ui-sref="editEventName">
+        <button class="button button-clear" ui-sref="editEventName">
             <i class="ion-plus-round"></i>
-        </a>
+        </button>
 </ion-header-bar>
 
 
@@ -31,8 +31,9 @@
             <h3 class="bottomHalf">{{myEvent.place_name}}</h3>
             <h3 class="bottom">{{myEvent.date | prettyDateFormat }}</h3>
         </ion-item>
+    </ion-list>
 
-
+    <ion-list class="collectionList">
     <!-- New Events -->
         <h1 class="item-divider clean themeBorderColor themeColor" translate="event_newEvents_title">
             New events
