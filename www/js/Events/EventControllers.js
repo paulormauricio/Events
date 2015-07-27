@@ -565,6 +565,7 @@ if(ionic.Platform.isWebView()) alert('Before get participants');
     function initializeGoogleMaps(lat, lng) {
 
         if(ionic.Platform.isWebView())  alert('Initialize GoogleMaps (lat, lng) = ('+lat+', '+lng+')');
+try {
         var myLatlng = new google.maps.LatLng(lat,lng);
 
         // Create an array of styles.
@@ -615,6 +616,11 @@ if(ionic.Platform.isWebView()) alert('Before get participants');
             animation: google.maps.Animation.DROP,
             title: 'Place!'
         });
+}
+catch(err) {
+    alert( 'Maps Error: '+err.message);
+}
+
     }
 
 //  Edit Name Section --------------------------
