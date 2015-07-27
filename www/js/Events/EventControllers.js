@@ -417,7 +417,7 @@ console.log('Event.myEvent: ', Event.myEvent);
     {
 console.log('');
 console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
-if(ionic.Platform.isWebView()) alert('Show Screen ('+Event.showEvent.id+')');
+
     $scope.loadingIndicator = $ionicLoading.show({
         content: 'Loading Data',
         animation: 'fade-in',
@@ -447,7 +447,7 @@ if(ionic.Platform.isWebView()) alert('Show Screen ('+Event.showEvent.id+')');
         loadEventDetail();
         $ionicLoading.hide();
     }
-
+if(ionic.Platform.isWebView())  alert('Load Success!!');
     var currentLocation = {};
     $scope.isEdit = false;
     $scope.isShowAddress = false;
@@ -471,7 +471,7 @@ if(ionic.Platform.isWebView()) alert('Show Screen ('+Event.showEvent.id+')');
         if( Event.showEvent.place_id ) {
             initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
         }
-if(ionic.Platform.isWebView()) alert('Before get participants');
+
         $scope.showEvent.participants = {};
         Participant.getAll(Event.showEvent, true).then(function(result) {
             $scope.showEvent.participants = result;
@@ -494,6 +494,8 @@ if(ionic.Platform.isWebView()) alert('Before get participants');
 
         $scope.weather = {};
         getLocationWeather();
+
+        if(ionic.Platform.isWebView()) alert('Load Event Details completed');
     }
 
     function getLocationWeather() {
@@ -501,8 +503,9 @@ if(ionic.Platform.isWebView()) alert('Before get participants');
             if( $scope.place_lat && $scope.place_lng ) {
                 getWeather({lat: $scope.place_lat, lng: $scope.place_lng});
             }
-            else
+            else {
                 getUserLocation();
+            }
         }
     }
 

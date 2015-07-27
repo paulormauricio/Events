@@ -47,6 +47,7 @@ angular.module('events.WeatherServices',[])
             ) {
             return( $q.reject( "An unknown error occurred." ) );
         }
+        alert('Weather Get Error: ' +response.data.message);
         return( $q.reject( response.data.message ) );
     }
     function handleSuccess( response ) {
