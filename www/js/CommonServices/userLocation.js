@@ -8,10 +8,9 @@ angular.module('common.GeolocationServices',['geolocation'])
         	var deferred = $q.defer();
 
         	if( ionic.Platform.isIOS() || ionic.Platform.isAndroid() || ionic.Platform.isWindowsPhone() ) {
-	        	$cordovaGeolocation
-		            .getCurrentPosition()
+	        	$cordovaGeolocation.getCurrentPosition()
 		            .then(function (position) {
-
+		            	alert('userlocation: A obter posição.');
 		                var glocation = {
 			                lat: position.coords.latitude,
 			                lng: position.coords.longitude
@@ -41,5 +40,20 @@ angular.module('common.GeolocationServices',['geolocation'])
             return deferred.promise;
         }
 
+    }
+
+    function handleError( response ) {
+        if (
+            ! angular.isObject( response.data ) ||
+            ! response.data.message
+            ) {
+            return( $q.reject( "An unknown error occurred." ) );
+        }
+        alert('Geolocation error: ' +response.data.message);
+        return( $q.reject( response.data.message ) );
+    }
+    function handleSuccess( response ) {
+        
+        return( response );
     }
 }]);

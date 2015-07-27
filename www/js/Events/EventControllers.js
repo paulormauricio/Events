@@ -476,7 +476,6 @@ if(ionic.Platform.isWebView())  alert('Load Success!!');
         Participant.getAll(Event.showEvent, true).then(function(result) {
             $scope.showEvent.participants = result;
             console.log('Participantes: ', $scope.showEvent.participants);
-            if(ionic.Platform.isWebView()) alert('Get participants');
 
             var count = 0;
             for (var i = 0; i<$scope.showEvent.participants.length; i++) {
@@ -487,6 +486,8 @@ if(ionic.Platform.isWebView())  alert('Load Success!!');
                 $scope.isShowJoinButton = true;
             else
                 $scope.isShowEditButton = true;
+
+            if(ionic.Platform.isWebView()) alert('Get participants');
         })
         .catch(function(error) {
             alert('Get participants Error: '+error);
@@ -499,8 +500,9 @@ if(ionic.Platform.isWebView())  alert('Load Success!!');
     }
 
     function getLocationWeather() {
+    if(ionic.Platform.isWebView()) alert('Entrou no getLocationWeather');
         if( $scope.showEvent.date ) {
-            if( $scope.place_lat && $scope.place_lng ) {
+            if( $scope.showEvent.place_lat && $scope.showEvent.place_lng ) {
                 getWeather({lat: $scope.place_lat, lng: $scope.place_lng});
             }
             else {
@@ -510,6 +512,7 @@ if(ionic.Platform.isWebView())  alert('Load Success!!');
     }
 
     function getUserLocation() {
+    if(ionic.Platform.isWebView()) alert('Entrou no getUserLocation');
         
         userlocation.get().then(function(location) {
             currentLocation = location;
