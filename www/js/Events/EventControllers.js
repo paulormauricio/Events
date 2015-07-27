@@ -564,7 +564,13 @@ if(ionic.Platform.isWebView()) alert('Before get participants');
 
     function initializeGoogleMaps(lat, lng) {
 
+        if(!window.google) {
+            alert('Google Maps library not loaded!');
+            return;
+        }
+
         if(ionic.Platform.isWebView())  alert('Initialize GoogleMaps (lat, lng) = ('+lat+', '+lng+')');
+
 try {
         var myLatlng = new google.maps.LatLng(lat,lng);
 

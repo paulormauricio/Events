@@ -205,6 +205,10 @@ h1.title .top {
 	color: transparent;
 }
 
+.bar button > i {
+	font-size: 26px;
+}
+
 .button-clean {
 	position: absolute;
 	margin-left: -20px !important;
