@@ -417,7 +417,7 @@ console.log('Event.myEvent: ', Event.myEvent);
     {
 console.log('');
 console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
-alert('Show Screen ('.$stateParams.objectId.')');
+alert('Show Screen ('+$stateParams.objectId+')');
     $scope.loadingIndicator = $ionicLoading.show({
         content: 'Loading Data',
         animation: 'fade-in',
