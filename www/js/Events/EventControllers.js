@@ -447,7 +447,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
         loadEventDetail();
         $ionicLoading.hide();
     }
-if(ionic.Platform.isWebView())  alert('Load Success!!');
+
     var currentLocation = {};
     $scope.isEdit = false;
     $scope.isShowAddress = false;
@@ -464,7 +464,7 @@ if(ionic.Platform.isWebView())  alert('Load Success!!');
 
     function loadEventDetail() {
         //$scope.class_pane = 'cover';
-        if(ionic.Platform.isWebView())  alert('Load Event Detail');
+        
         $scope.showEvent = Event.showEvent;
         console.log('Show event: ', $scope.showEvent);
 
@@ -487,7 +487,6 @@ if(ionic.Platform.isWebView())  alert('Load Success!!');
             else
                 $scope.isShowEditButton = true;
 
-            if(ionic.Platform.isWebView()) alert('Get participants');
         })
         .catch(function(error) {
             alert('Get participants Error: '+error);
@@ -496,14 +495,14 @@ if(ionic.Platform.isWebView())  alert('Load Success!!');
         $scope.weather = {};
         getLocationWeather();
 
-        if(ionic.Platform.isWebView()) alert('Load Event Details completed');
+        
     }
 
     function getLocationWeather() {
-    if(ionic.Platform.isWebView()) alert('Entrou no getLocationWeather');
+    
         if( $scope.showEvent.date ) {
             if( $scope.showEvent.place_lat && $scope.showEvent.place_lng ) {
-                getWeather({lat: $scope.place_lat, lng: $scope.place_lng});
+                getWeather({lat: $scope.showEvent.place_lat, lng: $scope.showEvent.place_lng});
             }
             else {
                 getUserLocation();
@@ -526,7 +525,7 @@ if(ionic.Platform.isWebView())  alert('Load Success!!');
     function getWeather(location) {
         console.log('<<<--- Get weather --->>>');
         console.log('location: ', location);
-        if(ionic.Platform.isWebView()) alert('Get weather ('+location.lat+', '+location.lng+')');
+        
         Weather.get($scope.showEvent.date, location).then( function(data) {
             $scope.weather = data;
         })

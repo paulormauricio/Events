@@ -21,6 +21,7 @@ angular.module('events.FriendServices',[])
 			  success: function(objects) {			  
 			  	console.log('Success: Friend.getAll()');
 
+			  	friends = [];
 				angular.forEach(objects, function(object, key) {
 					var result = {};
 					result.id = object.get('Friend').id;

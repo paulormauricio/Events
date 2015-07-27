@@ -15,8 +15,10 @@ angular.module('common.GeolocationServices',['geolocation'])
 			                lat: position.coords.latitude,
 			                lng: position.coords.longitude
 			            };
-			            
-			            $rootScope.$apply(function() { deferred.resolve(glocation); });
+
+			            $timeout(function() {
+			            	$rootScope.$apply(function() { deferred.resolve(glocation); });
+		            	})
 
 		            }, function (error) {
 		                console.log('Geolocation error: ', error);
@@ -30,10 +32,12 @@ angular.module('common.GeolocationServices',['geolocation'])
 		    			lat: position.coords.latitude, 
 		    			lng: position.coords.longitude
 		    		};
+		    		
 		    		// Workaround para contornar o erro "$digest already in progress"
 			    	$timeout(function() {
 			    		$rootScope.$apply(function() { deferred.resolve(glocation); });
 		    		})
+
 			    });
             }
             
@@ -42,18 +46,4 @@ angular.module('common.GeolocationServices',['geolocation'])
 
     }
 
-    function handleError( response ) {
-        if (
-            ! angular.isObject( response.data ) ||
-            ! response.data.message
-            ) {
-            return( $q.reject( "An unknown error occurred." ) );
-        }
-        alert('Geolocation error: ' +response.data.message);
-        return( $q.reject( response.data.message ) );
-    }
-    function handleSuccess( response ) {
-        
-        return( response );
-    }
 }]);

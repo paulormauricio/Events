@@ -358,7 +358,7 @@ a {
 	border: 3px solid #fff;
 	border-bottom-width: 0px;
 	background-color: rgba(18, 86, 136, .5);
-	background-color: rgb(179, 193, 204);
+	/*background-color: rgb(179, 193, 204);*/
 	padding: 0px;
 	margin: 0px;
 }
