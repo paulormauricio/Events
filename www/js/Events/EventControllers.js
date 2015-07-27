@@ -634,6 +634,58 @@ catch(err) {
 
     }
 
+//  Edit Place  -------------------
+    $scope.newPlacePressed = function() {
+        
+        console.log('chegou ao newPlacePressed');
+
+        var buttons = [
+                { text: 'Edit Place' }
+            ];
+        if( $scope.showEvent.place_id )
+            buttons.push({text: 'Go to google maps'});
+
+        // Show the action sheet
+        var hideSheet = $ionicActionSheet.show({
+            buttons: buttons,
+            destructiveText: 'Clear event place',
+            // titleText: 'Modify your album',
+            cancelText: 'Cancel',
+            cancel: function() {
+                // add cancel code..
+            },
+            buttonClicked: function(index) {
+                console.log('Button clicked. Index = ', index);
+                switch(index) {
+                    case 0: 
+                        Event.myEvent = $scope.showEvent;
+                        $state.go('editEventPlace', {objectId: $scope.showEvent.id});
+                        break;
+                    case 1:
+                        console.log('Go to google maps');
+                        break;
+                    default: return false;
+                }
+                hideSheet();
+                return true;
+            },
+            destructiveButtonClicked: function() {
+                console.log('chegou ao delete place');
+                hideSheet();
+                // Delete place
+
+                Event.myEvent = $scope.showEvent;
+                Event.deletePlace();
+                $scope.showEvent = Event.myEvent;
+                Event.resetMyEvent;
+            }
+        });
+
+        // For example's sake, hide the sheet after two seconds
+        $timeout(function() {
+            hideSheet();
+        }, 28000);
+    }
 //  Edit Name Section --------------------------
 
     $scope.editName = function() {
@@ -749,59 +801,6 @@ catch(err) {
         Event.save();
         Event.resetMyEvent();
         getLocationWeather();
-    }
-
-//  Edit Place  -------------------
-    $scope.newPlacePressed = function() {
-        
-        console.log('chegou ao newPlacePressed');
-
-        var buttons = [
-                { text: 'Edit Place' }
-            ];
-        if( $scope.showEvent.place_id )
-            buttons.push({text: 'Go to google maps'});
-
-        // Show the action sheet
-        var hideSheet = $ionicActionSheet.show({
-            buttons: buttons,
-            destructiveText: 'Clear event place',
-            // titleText: 'Modify your album',
-            cancelText: 'Cancel',
-            cancel: function() {
-                // add cancel code..
-            },
-            buttonClicked: function(index) {
-                console.log('Button clicked. Index = ', index);
-                switch(index) {
-                    case 0: 
-                        Event.myEvent = $scope.showEvent;
-                        $state.go('editEventPlace', {objectId: $scope.showEvent.id});
-                        break;
-                    case 1:
-                        console.log('Go to google maps');
-                        break;
-                    default: return false;
-                }
-                hideSheet();
-                return true;
-            },
-            destructiveButtonClicked: function() {
-                console.log('chegou ao delete place');
-                hideSheet();
-                // Delete place
-
-                Event.myEvent = $scope.showEvent;
-                Event.deletePlace();
-                $scope.showEvent = Event.myEvent;
-                Event.resetMyEvent;
-            }
-        });
-
-        // For example's sake, hide the sheet after two seconds
-        $timeout(function() {
-            hideSheet();
-        }, 28000);
     }
 
     //  Other functions

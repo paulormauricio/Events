@@ -6,7 +6,7 @@ angular.module('common.GeolocationServices',['geolocation'])
         get: function () {
 
         	var deferred = $q.defer();
-try {
+
         	if( ionic.Platform.isIOS() || ionic.Platform.isAndroid() || ionic.Platform.isWindowsPhone() ) {
 	        	$cordovaGeolocation.getCurrentPosition()
 		            .then(function (position) {
@@ -40,10 +40,7 @@ try {
 
 			    });
             }
-            }
-catch(err) {
-    alert( 'userlocation Error: '+err.message);
-}
+
             return deferred.promise;
         }
 

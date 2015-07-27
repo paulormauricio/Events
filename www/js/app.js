@@ -27,7 +27,7 @@ angular.module('events',
     ]
   )
 
-.run(function($ionicPlatform, $rootScope, $state, $ionicPopup, $translate) {
+.run(function($ionicPlatform, $rootScope, $state, $ionicPopup, $translate, $cordovaNetwork) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -53,6 +53,15 @@ angular.module('events',
       }
     }
   })
+
+  // listen for Offline event
+  $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
+    var offlineState = networkState;
+    $ionicPopup.confirm({
+      title: "Internet Disconnected",
+      content: "The internet is disconnected on your device."
+    });
+  });
 
   // UI Router Authentication Check
   $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){

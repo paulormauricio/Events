@@ -117,20 +117,20 @@
 
             <div ng-show="showEvent.place_id" class="">
 
-                <table id="addressInfo">
+                <table id="addressInfo" ng-show="showEvent.place_address">
                 <tbody>
                     <tr>
-                        <td width="100%">
+                        <td width="100%" class="top">
                             <div ng-show="isShowAddress" class="info">
                                 <p class="bold">{{ showEvent.place_name }}</p>
                                 <p>{{ showEvent.place_address }}</p>
                             </div>
                         </td>
-                        <td class="title themeBackgroundColor" ng-click="toggleAddress()" translate="event_place_address">Address</td>
+                        <td class="title themeBackgroundColor top" ng-click="toggleAddress()" translate="event_place_address">Address</td>
                     </tr>
                 </tbody>
                 </table>
-                <div id="coverMap"></div>
+                <div id="coverMap" class="circle"></div>
                 <div class="mapContainer " ng-show="showEvent.place_name">
                     <div id="map" class="circle themeBorderColor" data-tap-disabled="true"></div>
                 </div>

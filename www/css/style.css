@@ -76,10 +76,10 @@ body > * {
 .dynamicHeader {
 	position: fixed;
 	z-index: 5000;
-	top: 0px;
+	top: 15px;
 	left: 0px;
 	right: 0px;
-
+	border: 0px;
 	background-color: transparent;
 	z-index: 1;
 	-webkit-transition: top 0.5s ease;
@@ -115,7 +115,7 @@ body > * {
 #addressInfo {
 	position: absolute;
 	z-index: 4000;
-	margin: 0px 40px;
+	margin: 0px 30px;
 	font-size: 12px;
 	width: auto;
 	right: 20px;
@@ -140,17 +140,31 @@ body > * {
 	padding: 5px 10px;
 	height: 100%;
 }
+#addressInfo p {
+	line-height: 1.0;
+	padding: 2px;
+}
 
-#map {
-	width: 50%;
-	padding-top:50%;
-	margin-top: 0px auto;
+#map, #coverMap {
+	width: 250px;
+	height: 250px;
+	margin: 20px auto 0px;
 	display: inline-block;
 	border: 2px solid;
 }
 
+#coverMap {
+	position: absolute;
+	z-index: 4000;
+	background-color: transparent;
+	left: 50%;
+	margin-left: -150px;
+	border: 0px;
+}
+
+
 @media (min-width: 600px) {
-    #map {
+    #map, #coverMap {
         width: 300px;
         height: 300px;
         padding: 0px;
@@ -205,8 +219,11 @@ h1.title .top {
 	color: transparent;
 }
 
-.bar button > i {
+.bar button > i, .dynamicHeader button > i {
 	font-size: 26px;
+}
+.dynamicHeader button > .icon:before {
+	font-size: 32px;
 }
 
 .button-clean {
@@ -252,6 +269,10 @@ table {
 table td {
 	vertical-align: middle;
 }
+
+table > tbody > tr > td.top {
+	vertical-align: top;
+} 
 
 i {
 	display: inline-block;
@@ -312,6 +333,7 @@ a {
 .horizontalList {
 	text-align: left;
 	white-space: nowrap;
+	display: inline-block;
 }
 
 .horizontalList .item {
@@ -732,6 +754,10 @@ i.edit {
 
 .greyBackground {
 	background-color: #f5f5f5;
+}
+
+.bold {
+	font-weight: bold !important;
 }
 
 

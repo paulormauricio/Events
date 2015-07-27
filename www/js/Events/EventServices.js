@@ -36,6 +36,7 @@ angular.module('events.EventServices',[])
 					result.theme = object.get('Event').get('theme');
 					result.place_id = object.get('Event').get('place_id');
 					result.place_name = object.get('Event').get('place_name');
+					result.place_address = object.get('Event').get('place_address');
 					result.place_image_url = object.get('Event').get('place_image_url');
 					result.place_lat = object.get('Event').get('place_lat');
 					result.place_lng = object.get('Event').get('place_lng');
@@ -78,6 +79,7 @@ angular.module('events.EventServices',[])
 					result.theme = object.get('Event').get('theme');
 					result.place_id = object.get('Event').get('place_id');
 					result.place_name = object.get('Event').get('place_name');
+					result.place_address = object.get('Event').get('place_address');
 					result.place_image_url = object.get('Event').get('place_image_url');
 					result.place_lat = object.get('Event').get('place_lat');
 					result.place_lng = object.get('Event').get('place_lng');
@@ -116,6 +118,7 @@ angular.module('events.EventServices',[])
 					result.theme = object.get('theme');
 					result.place_id = object.get('place_id');
 					result.place_name = object.get('place_name');
+					result.place_address = object.get('place_address');
 					result.place_image_url = object.get('place_image_url');
 					result.place_lat = object.get('place_lat');
 					result.place_lng = object.get('place_lng');
