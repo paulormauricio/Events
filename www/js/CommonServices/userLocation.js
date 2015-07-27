@@ -1,6 +1,6 @@
 angular.module('common.GeolocationServices',['geolocation'])
 
-.factory('userlocation', ['$timeout', '$rootScope', '$q', 'geolocation', function( $timeout, $rootScope, $q, geolocation) {
+.factory('userlocation', ['$timeout', '$rootScope', '$q', '$cordovaGeolocation', 'geolocation', function( $timeout, $rootScope, $q, $cordovaGeolocation, geolocation) {
 
     return {
         get: function () {
