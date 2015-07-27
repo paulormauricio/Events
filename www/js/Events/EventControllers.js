@@ -417,7 +417,7 @@ console.log('Event.myEvent: ', Event.myEvent);
     {
 console.log('');
 console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
-alert('Show Screen ('+$stateParams.objectId+')');
+if(ionic.Platform.isWebView()) alert('Show Screen ('+Event.showEvent.id+')');
     $scope.loadingIndicator = $ionicLoading.show({
         content: 'Loading Data',
         animation: 'fade-in',
@@ -437,7 +437,7 @@ alert('Show Screen ('+$stateParams.objectId+')');
             }
         })
         .catch(function(fallback) {
-            console.log('Error: ', fallback + '!!');
+            alert('Get Event Error: '+fallback);
         })
         .finally( function() {
             $ionicLoading.hide();
@@ -464,6 +464,7 @@ alert('Show Screen ('+$stateParams.objectId+')');
 
     function loadEventDetail() {
         //$scope.class_pane = 'cover';
+        if(ionic.Platform.isWebView())  alert('Load Event Detail');
         $scope.showEvent = Event.showEvent;
         console.log('Show event: ', $scope.showEvent);
 
@@ -475,6 +476,7 @@ alert('Show Screen ('+$stateParams.objectId+')');
         Participant.getAll(Event.showEvent, true).then(function(result) {
             $scope.showEvent.participants = result;
             console.log('Participantes: ', $scope.showEvent.participants);
+            if(ionic.Platform.isWebView()) alert('Get '+result.length+' participants');
 
             var count = 0;
             for (var i = 0; i<$scope.showEvent.participants.length; i++) {
@@ -508,7 +510,7 @@ alert('Show Screen ('+$stateParams.objectId+')');
             getWeather(location);
         })
         .catch(function(error) {
-            console.log('Userlocation Error: ', error);
+            alert('Userlocation Error: '+error);
         });
     }
 
@@ -520,7 +522,7 @@ alert('Show Screen ('+$stateParams.objectId+')');
             $scope.weather = data;
         })
         .catch(function(error) {
-            console.log('Weather Error: ', error);
+            alert('Weather Error: ', error);
         });
     }
 
@@ -559,7 +561,7 @@ alert('Show Screen ('+$stateParams.objectId+')');
 
     function initializeGoogleMaps(lat, lng) {
 
-        console.log('Initialize GoogleMaps: ', {lat: lat, lng: lng});
+        if(ionic.Platform.isWebView())  alert('Initialize GoogleMaps (lat, lng) = ('+lat+', '+lng+')');
         var myLatlng = new google.maps.LatLng(lat,lng);
 
         // Create an array of styles.
