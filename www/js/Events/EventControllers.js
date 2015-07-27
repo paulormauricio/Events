@@ -471,7 +471,7 @@ if(ionic.Platform.isWebView()) alert('Show Screen ('+Event.showEvent.id+')');
         if( Event.showEvent.place_id ) {
             initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
         }
-
+if(ionic.Platform.isWebView()) alert('Before get participants');
         $scope.showEvent.participants = {};
         Participant.getAll(Event.showEvent, true).then(function(result) {
             $scope.showEvent.participants = result;
@@ -613,7 +613,7 @@ if(ionic.Platform.isWebView()) alert('Show Screen ('+Event.showEvent.id+')');
             position: myLatlng,
             map: map,
             animation: google.maps.Animation.DROP,
-            title: 'Hello World!'
+            title: 'Place!'
         });
     }
 
