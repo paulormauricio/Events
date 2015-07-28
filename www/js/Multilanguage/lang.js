@@ -13,4 +13,20 @@ angular.module('events.translations',
 	$translateProvider.useSanitizeValueStrategy('escape');
 	$translateProvider.preferredLanguage('en_us');
 
-});
+})
+
+.factory('Language',['$rootScope', '$q', '$translate', function($rootScope, $q, $translate){
+
+	return {
+
+		set: function() {
+
+	        if( Parse.User.current() ) {
+	          locale = Parse.User.current().get('locale');
+	          $translate.use( locale.toLowerCase() );
+	        }
+
+		}
+
+   }
+}]);

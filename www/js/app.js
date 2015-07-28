@@ -27,7 +27,7 @@ angular.module('events',
     ]
   )
 
-.run(function($ionicPlatform, $rootScope, $state, $ionicPopup, $translate, $cordovaNetwork) {
+.run(function($ionicPlatform, $rootScope, $state, $ionicPopup, $translate, $cordovaNetwork, Language) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -52,6 +52,8 @@ angular.module('events',
         });
       }
     }
+
+    Language.set();
   })
 
   // listen for Offline event
@@ -73,10 +75,6 @@ angular.module('events',
       event.preventDefault(); 
     }
     else {
-      if( Parse.User.current() ) {
-        locale = Parse.User.current().get('locale');
-        $translate.use( locale.toLowerCase() );
-      }
     }
   });
 })

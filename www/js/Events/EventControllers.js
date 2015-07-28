@@ -111,6 +111,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
         {
 console.log('');
 console.log('<<<<<<-----------   Edit Screen  ---------->>>>>');
+if(ionic.Platform.isWebView()) alert('<<--- Edit Screen --->>>');
     $scope.isNew = $stateParams.objectId ? false : true;
 
     $scope.loadingIndicator = $ionicLoading.show({

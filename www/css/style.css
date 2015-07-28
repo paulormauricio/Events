@@ -76,7 +76,7 @@ body > * {
 .dynamicHeader {
 	position: fixed;
 	z-index: 5000;
-	top: 15px;
+	top: 20px;
 	left: 0px;
 	right: 0px;
 	border: 0px;
@@ -151,6 +151,7 @@ body > * {
 	margin: 20px auto 0px;
 	display: inline-block;
 	border: 2px solid;
+	background-color: white;
 }
 
 #coverMap {
