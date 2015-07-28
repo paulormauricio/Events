@@ -826,8 +826,8 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
                 Event, 
                 Friend,
                 Participant,
-                Theme
-                userlocation,
+                Theme,
+                userlocation
                 // ngGPlacesAPI
             )
         {
