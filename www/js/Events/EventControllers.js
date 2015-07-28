@@ -522,7 +522,6 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     }
 
     function getUserLocation() {
-    if(ionic.Platform.isWebView()) alert('Entrou no getUserLocation');
         
         userlocation.get().then(function(location) {
             currentLocation = location;
@@ -848,6 +847,133 @@ catch(err) {
                 height: $window.innerHeight + 'px',
                 width:  $window.innerWidth + 'px'
             };
+    }
+
+}])
+
+
+.controller('EventEditNameController',
+        [
+            '$scope', 
+            '$window',
+            '$state', 
+            '$stateParams',
+            '$ionicLoading',
+            'Event', 
+            'Participant',
+            'Theme',
+            function(
+                $scope,
+                $window,
+                $state, 
+                $stateParams,
+                $ionicLoading, 
+                Event, 
+                Participant,
+                Theme
+            )
+        {
+console.log('');
+console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
+if(ionic.Platform.isWebView()) alert('<<--- Edit Name Screen --->>>');
+    $scope.isNew = $stateParams.isNew ? true : false;
+
+    $scope.loadingIndicator = $ionicLoading.show({
+        content: 'Loading Data',
+        animation: 'fade-in',
+        showBackdrop: false,
+        maxWidth: 200,
+        showDelay: 500
+    });
+
+    if( $stateParams.objectId == '' ) {
+        $scope.editEvent = {};
+        Event.myEvent = {};
+    }
+    else {
+        if(!Event.myEvent) {
+            Event.myEvent = {id: $stateParams.objectId};
+        }
+        $scope.editEvent = Event.myEvent;
+    }
+
+    $scope.backFromName = function() {
+        if( $scope.isNew ) {
+            $state.go('events');
+        }
+        else {
+            $state.go('showEvent', {objectId: $scope.editEvent.id});
+        }
+    }
+
+//  Edit Event Name
+    $scope.loadThemes = function() {
+
+        Theme.getAll().then(function(themes){
+            $scope.themes = themes;
+            console.log('Themes: ', themes);
+        });
+
+        calculateColectionItemSize();
+        angular.element(window).bind('resize', function () {
+            calculateColectionItemSize();
+        });
+
+        $ionicLoading.hide();
+    }
+
+    $scope.storeName = function(theme) {
+
+        $scope.loadingIndicator = $ionicLoading.show({
+            content: 'Loading Data',
+            animation: 'fade-in',
+            showBackdrop: false,
+            maxWidth: 200,
+            showDelay: 500
+        });
+
+        if( $scope.isNew ) {
+            Event.myEvent.id = $scope.editEvent.id;
+        }
+        Event.myEvent.name = $scope.editEvent.name;
+        
+        Event.myEvent.theme = theme.name;
+
+        Event.save($scope.isNew).then(function(savedEvent) {
+            Event.myEvent.id = savedEvent.id;
+            if($scope.isNew) {
+                Participant.store(Event.myEvent, Parse.User.current(), true);
+            }
+            $ionicLoading.hide();
+            if( !$scope.isNew ) {
+                $state.go('showEvent', {objectId: savedEvent.id});
+            }
+            else {
+                $state.go('editEventFriends', {objectId: savedEvent.id}, {reload: true});
+            }
+        });
+
+    }
+
+    //  Other functions
+    function calculateColectionItemSize() {
+        var width =  $window.innerWidth;
+        $scope.item = {width: 0, height: 0};
+        if( width > 700 ) {
+            $scope.item.width = 120 + 'px';
+        }
+        else if( width > 550 ) {
+            $scope.item.width = (width / 4 - 3) + 'px';
+        }
+        else if( width > 400 ) {
+            $scope.item.width = (width / 3 - 3) + 'px';
+        }
+        else {
+            $scope.item.width = (width / 2 - 3) + 'px';
+        }
+        $scope.item.height = $scope.item.width;
+        console.log('height: ', $scope.item.height);
+        console.log('width: ', $scope.item.width);
     }
 
 }]);

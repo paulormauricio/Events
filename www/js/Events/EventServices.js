@@ -163,7 +163,7 @@ angular.module('events.EventServices',[])
 				date: 		this.myEvent.date == undefined ? null : this.myEvent.date,
 				createdBy:	this.myEvent.createdBy
 			};
-console.log('Before Save myEvent_temp: ', myEvent_temp);
+
 			saveEvent.save( myEvent_temp , {
 			  success: function(newEvent) {
 			  	console.log('Event saved successfully!');

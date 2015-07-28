@@ -33,6 +33,10 @@ body > * {
 	height: 100%;
 }
 
+.item h1 {
+	white-space: normal;
+}
+
 .item > .fillParent {
 	margin: -16px;
 }
@@ -425,7 +429,7 @@ a {
 
 .collectionList .item img {
 	width: 80%;
-	margin-top: 5%;
+	margin-top: 10%;
 	opacity: .7;
 }
 
@@ -505,6 +509,7 @@ a {
 	bottom: 50%;
 	left: 0px;
 	right: 0px;
+	white-space: normal;
 }
 .bottomHalf {
 	position: absolute;

@@ -5,7 +5,7 @@
     <button class="button button-clear left" ui-sref="events">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
-    <span ng-switch="isEdit" ng-show="isShowEditButton">
+    <span ng-switch="isEdit" ng-hide="!isShowEditButton">
         <button ng-switch-when="false" class="button button-clear right" ng-click="startEdit()">
             <i class="ion-edit"></i>
         </button>
@@ -30,7 +30,7 @@
                 ng-click="editName()"
                 class="topHalf centered">
                 {{showEvent.name}}
-                <span ng-show="isEdit" style="position: absolute; right: 0px;">
+                <span ng-hide="!isEdit" style="position: absolute; right: 0px;">
                     <i class="icon ion-edit edit"></i>
                 </span>
             </h1>   
@@ -60,7 +60,7 @@
                                             <span id="dayLabel">{{showEvent.date | date: 'd'}}</span>
                                         </label>
                                     </span>
-                                    <span ng-show="isEdit" class="inline">
+                                    <span ng-hide="!isEdit" class="inline">
                                         <i class="icon ion-edit edit"></i>
                                     </span>
                                 </a>
@@ -84,7 +84,7 @@
                     <span ng-switch-when="true" translate="event_goingFriend"></span>
                     <span ng-switch-when="false" translate="event_goingFriends"></span>
                 </span>
-                <a class="" ng-show="isEdit">
+                <a class="" ng-hide="!isEdit">
                     <i class="icon ion-edit edit"></i>
                 </a>
             </div>
@@ -102,7 +102,7 @@
         <ion-item class="noPadding" ng-click="editPlacePressed()">
             <div class="leftTitle">
                 <span translate="event_place_details"></span>
-                <a class="" ng-show="isEdit">
+                <a class="" ng-hide="!isEdit">
                     <i class="icon ion-edit edit"></i>
                 </a>
             </div>

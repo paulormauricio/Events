@@ -5,7 +5,6 @@ angular.module('events',
       'ionic.service.core',
       'ionic.service.push',
       'ngAnimate',
-      //'ngSanitize',
       'ion-autocomplete',
       'ngGPlaces',
       'events.translations',
@@ -105,7 +104,7 @@ angular.module('events',
       }
     }).state('editEventName',{
       url:'/event/editName/:isNew/:objectId',
-      controller:'EventEditController',
+      controller:'EventEditNameController',
       templateUrl:'views/editEventName.html',
       data: {
         authenticate: true
