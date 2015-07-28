@@ -58,11 +58,12 @@ angular.module('events',
   // listen for Offline event
   $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
     //var offlineState = networkState;
-    alert('Internet connection was lost.');
-    // $ionicPopup.confirm({
-    //   title: "Internet Disconnected",
-    //   content: "The internet is disconnected on your device."
-    // });
+    $ionicPopup.alert({
+      title: 'Internet Disconnected',
+      template: 'The internet is disconnected on your device.',
+      okText: 'Continue',
+      okType: 'button-light'
+    });
   });
 
   // UI Router Authentication Check
@@ -75,6 +76,7 @@ angular.module('events',
       event.preventDefault(); 
     }
     else {
+      Language.set();
     }
   });
 })
@@ -112,7 +114,7 @@ angular.module('events',
     })
     .state('editEventFriends',{
       url:'/event/editFriends/:isNew/:objectId',
-      controller:'EventEditController',
+      controller:'EventEditParticipantsController',
       templateUrl:'views/editEventFriends.html',
       data: {
         authenticate: true
@@ -120,7 +122,7 @@ angular.module('events',
     })
     .state('editEventPlace',{
       url:'/event/editPlace/:objectId',
-      controller:'EventEditController',
+      controller:'EventEditPlaceController',
       templateUrl:'views/editEventPlace.html',
       data: {
         authenticate: true
@@ -130,6 +132,7 @@ angular.module('events',
       url:'/event/:objectId',
       controller:'EventShowController',
       templateUrl:'views/showEvent.html',
+      cache: false,
       data: {
         authenticate: true
       }
