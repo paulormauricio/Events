@@ -349,18 +349,21 @@ console.log('Event.myEvent: ', Event.myEvent);
     $scope.callbackMethod = function(callback) {
         console.log('Selected place: ', callback.item);
 
+        Event.myEvent.place_name = callback.item.name;
+
         if( callback.item.place_id != '-1' ) {
             Event.myEvent.place_id = callback.item.place_id;
-        }
-        Event.myEvent.place_name = callback.item.name;
-        Event.myEvent.place_address = callback.item.vicinity;
-        if( callback.item.geometry.location ) {
-            Event.myEvent.place_lat = callback.item.geometry.location.lat();
-            Event.myEvent.place_lng = callback.item.geometry.location.lng();
-        }
-        if( callback.item.photos ) 
-            Event.myEvent.place_image_url = callback.item.photos[0].getUrl({'maxWidth': 600, 'maxHeight': 600});
+            Event.myEvent.place_address = callback.item.vicinity;
 
+            if( callback.item.geometry.location ) {
+                Event.myEvent.place_lat = callback.item.geometry.location.lat();
+                Event.myEvent.place_lng = callback.item.geometry.location.lng();
+            }
+            if( callback.item.photos ) {
+                Event.myEvent.place_image_url = callback.item.photos[0].getUrl({'maxWidth': 600, 'maxHeight': 600});
+            }
+        }
+        
         Event.save();
         console.log('Event.myEvent: ', Event.myEvent);
         Event.showEvent = Event.myEvent;
@@ -477,7 +480,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
         $scope.showEvent = Event.showEvent;
         console.log('Show event: ', $scope.showEvent);
 
-        if( Event.showEvent.place_id ) {
+        if( $scope.showEvent.place_id ) {
             initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
         }
 
@@ -504,7 +507,6 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
         $scope.weather = {};
         getLocationWeather();
 
-        
     }
 
     function getLocationWeather() {
@@ -680,15 +682,19 @@ catch(err) {
 
                 Event.myEvent = $scope.showEvent;
                 Event.deletePlace();
+
                 $scope.showEvent = Event.myEvent;
                 Event.resetMyEvent;
+                
             }
         });
 
         // For example's sake, hide the sheet after two seconds
         $timeout(function() {
             hideSheet();
-        }, 28000);
+        }, 8000);
+
+        $scope.isEdit = false;
     }
 //  Edit Name Section --------------------------
 
@@ -784,11 +790,10 @@ catch(err) {
                         case 3: 
                             date = addMinutes(Date(), 120);
                             break;
-                        default: return addMinutes(Date(), 0);
+                        default: return;
                     }
                     hideSheet();
                     saveDate(date);
-                    return true;
                 },
                 destructiveButtonClicked: function() {
                     console.log('chegou ao delete');
@@ -803,6 +808,8 @@ catch(err) {
             }, 8000);
 
         }
+
+        $scope.isEdit = false;
 
     }
 
@@ -822,7 +829,7 @@ catch(err) {
             $scope.showEvent.date = date;
             Event.showEvent.date = date;
         }
-        Event.myEvent = Event.showEvent;
+        Event.myEvent = $scope.showEvent;
         Event.save();
         Event.resetMyEvent();
         getLocationWeather();

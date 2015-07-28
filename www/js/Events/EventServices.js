@@ -150,9 +150,20 @@ angular.module('events.EventServices',[])
 			else {
 				saveEvent.id = this.myEvent.id;
 			}
-			var myEvent_temp = this.myEvent;
-			delete myEvent_temp['participants'];
-
+			var myEvent_temp = {
+				id: 	this.myEvent.id,
+				name: 	this.myEvent.name,
+				theme: 	this.myEvent.theme,
+				place_id: 	this.myEvent.place_id == undefined ? null : this.myEvent.place_id,
+				place_name: this.myEvent.place_name == undefined ? null : this.myEvent.place_name,
+				place_address: this.myEvent.place_address == undefined ? null : this.myEvent.place_address,
+				place_image_url: this.myEvent.place_image_url == undefined ? null : this.myEvent.place_image_url,
+				place_lat: 	this.myEvent.place_lat == undefined ? null : this.myEvent.place_lat,
+				place_lng: 	this.myEvent.place_lng == undefined ? null : this.myEvent.place_lng,
+				date: 		this.myEvent.date == undefined ? null : this.myEvent.date,
+				createdBy:	this.myEvent.createdBy
+			};
+console.log('Before Save myEvent_temp: ', myEvent_temp);
 			saveEvent.save( myEvent_temp , {
 			  success: function(newEvent) {
 			  	console.log('Event saved successfully!');
@@ -177,6 +188,8 @@ angular.module('events.EventServices',[])
 		this.myEvent.place_address = undefined;
 		this.myEvent.place_lat = undefined;
 		this.myEvent.place_lng = undefined;
+		this.myEvent.place_image_url = undefined;
+
 		this.save();
 	}
 
