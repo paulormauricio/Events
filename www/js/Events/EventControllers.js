@@ -112,7 +112,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 console.log('');
 console.log('<<<<<<-----------   Edit Screen  ---------->>>>>');
 if(ionic.Platform.isWebView()) alert('<<--- Edit Screen --->>>');
-    $scope.isNew = $stateParams.objectId ? false : true;
+    $scope.isNew = $stateParams.isNew ? true : false;
 
     $scope.loadingIndicator = $ionicLoading.show({
         content: 'Loading Data',
@@ -122,7 +122,7 @@ if(ionic.Platform.isWebView()) alert('<<--- Edit Screen --->>>');
         showDelay: 500
     });
 
-    if( $scope.isNew ) {
+    if( $stateParams.objectId == '' ) {
         $scope.editEvent = {};
         Event.myEvent = {};
     }
@@ -135,9 +135,17 @@ if(ionic.Platform.isWebView()) alert('<<--- Edit Screen --->>>');
 console.log('Event.myEvent: ', Event.myEvent);
     var currentLocation = {};
 
-    $scope.back = function() {
+    $scope.backFromName = function() {
         if( $scope.isNew ) {
             $state.go('events');
+        }
+        else {
+            $state.go('showEvent', {objectId: $scope.editEvent.id});
+        }
+    }
+    $scope.backFromParticipants = function() {
+        if( $scope.isNew ) {
+            $state.go('editEventName', {isNew: true, objectId: $scope.editEvent.id});
         }
         else {
             $state.go('showEvent', {objectId: $scope.editEvent.id});
@@ -636,15 +644,13 @@ catch(err) {
     }
 
 //  Edit Place  -------------------
-    $scope.newPlacePressed = function() {
-        
-        console.log('chegou ao newPlacePressed');
+    $scope.editPlacePressed = function() {
+
+        if( $scope.showEvent.place_name != undefined && !$scope.isEdit) return;
 
         var buttons = [
-                { text: 'Edit Place' }
+                { text: $scope.showEvent.place_name ? 'Edit place' : 'Select place' }
             ];
-        if( $scope.showEvent.place_id )
-            buttons.push({text: 'Go to google maps'});
 
         // Show the action sheet
         var hideSheet = $ionicActionSheet.show({
@@ -662,13 +668,10 @@ catch(err) {
                         Event.myEvent = $scope.showEvent;
                         $state.go('editEventPlace', {objectId: $scope.showEvent.id});
                         break;
-                    case 1:
-                        console.log('Go to google maps');
-                        break;
-                    default: return false;
+                    default: break;
                 }
                 hideSheet();
-                return true;
+                return ;
             },
             destructiveButtonClicked: function() {
                 console.log('chegou ao delete place');
@@ -696,6 +699,15 @@ catch(err) {
         }
     }
 
+//  Edit Participants Section -------------------
+
+    $scope.editParticipants = function() {
+        if( $scope.isEdit ) {
+            Event.myEvent = $scope.showEvent;
+            $state.go('editEventFriends', {objectId: $scope.showEvent.id});
+        }
+    }
+
 //  Data Section --------------------------------
     $scope.editDate = function() {
 
@@ -704,15 +716,18 @@ catch(err) {
         $scope.showAngularDateEditor = true;
 
         console.log(Event.showEvent);
-        var date = Event.showEvent.date;
 
         if( ionic.Platform.isIOS() ||
             ionic.Platform.isAndroid() ||
             ionic.Platform.isWindowsPhone()
             ) {
 
+            var date = new Date();
+            if( $scope.showEvent.date ) date = $scope.showEvent.date;
+
+
             var options = {
-                date: new Date(),
+                date: date,
                 mode: 'datetime',
                 minuteInterval: 5,
                 allowOldDates: false,
@@ -724,7 +739,16 @@ catch(err) {
             };
 
             datePicker.show(options, function(newDate){
-                alert("date result " + newDate);  
+                switch (newDate) {
+                    case 'clear':
+                        newDate = '';
+                        break;
+                    case 'cancel':
+                        return;
+                    default:
+                        alert("date result: " + newDate);
+                        break;
+                }
                 saveDate(newDate);
             });
         }

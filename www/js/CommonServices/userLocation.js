@@ -10,7 +10,7 @@ angular.module('common.GeolocationServices',['geolocation'])
         	if( ionic.Platform.isIOS() || ionic.Platform.isAndroid() || ionic.Platform.isWindowsPhone() ) {
 	        	$cordovaGeolocation.getCurrentPosition()
 		            .then(function (position) {
-		            	alert('userlocation: A obter posição.');
+		            	
 		                var glocation = {
 			                lat: position.coords.latitude,
 			                lng: position.coords.longitude

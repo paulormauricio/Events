@@ -318,7 +318,7 @@ a {
 #dayLabel {
 	position: absolute;
 	left: 6px;
-	top: 16px;
+	top: 17px;
 	font-weight: bold;
 	width: 20px;
 	text-align: center;
@@ -334,7 +334,6 @@ a {
 .horizontalList {
 	text-align: left;
 	white-space: nowrap;
-	display: inline-block;
 }
 
 .horizontalList .item {

@@ -16,7 +16,7 @@ angular.module('events.lang_en_us', [])
 
 	friends: "Friends",
 
-	event_invite: "Invite",
+	event_invite: "Done",
 	event_goingFriend: 'friend is going',
 	event_goingFriends: 'friends are going',
 	event_invitedFriend: 'invited friend',
