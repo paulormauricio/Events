@@ -833,7 +833,7 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
         {
 console.log('');
 console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
-
+if(ionic.Platform.isWebView())  alert('Entrou no Edit Place');
     $scope.isNew = $stateParams.isNew ? true : false;
 
     $scope.loadingIndicator = $ionicLoading.show({

@@ -469,6 +469,7 @@ a {
 
 #showEvent, #showEvent .item {
 	background-color: transparent;
+	border-top: 0px;
 	border-bottom: 1px solid rgba(255, 255, 255, .1);
 }
 
