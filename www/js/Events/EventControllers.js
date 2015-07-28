@@ -132,7 +132,7 @@ if(ionic.Platform.isWebView()) alert('<<--- Edit Screen --->>>');
         }
         $scope.editEvent = Event.myEvent;
     }
-console.log('Event.myEvent: ', Event.myEvent);
+
     var currentLocation = {};
 
     $scope.backFromName = function() {
@@ -700,6 +700,7 @@ catch(err) {
 
     $scope.editName = function() {
         if( $scope.isEdit ) {
+            if(ionic.Platform.isWebView()) alert('EditName');
             Event.myEvent = $scope.showEvent;
             $state.go('editEventName', {objectId: $scope.showEvent.id});
         }
