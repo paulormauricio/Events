@@ -815,7 +815,7 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
             'Friend', 
             'Participant',
             'Theme',
-            // 'userlocation',
+            'userlocation',
             // 'ngGPlacesAPI',
             function(
                 $scope,
@@ -827,11 +827,11 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
                 Friend,
                 Participant,
                 Theme
-                // userlocation,
+                userlocation,
                 // ngGPlacesAPI
             )
         {
-var userlocation = {};
+
 var ngGPlacesAPI = {};
 console.log('');
 console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
