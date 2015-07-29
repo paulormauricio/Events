@@ -816,7 +816,7 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
             'Participant',
             'Theme',
             'userlocation',
-            // 'ngGPlacesAPI',
+            'ngGPlacesAPI',
             function(
                 $scope,
                 $window,
@@ -827,12 +827,12 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
                 Friend,
                 Participant,
                 Theme,
-                userlocation
-                // ngGPlacesAPI
+                userlocation,
+                ngGPlacesAPI
             )
         {
 
-var ngGPlacesAPI = {};
+
 console.log('');
 console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
 if(ionic.Platform.isWebView())  alert('Entrou no Edit Place');
@@ -901,7 +901,7 @@ if(ionic.Platform.isWebView())  alert('Entrou no Edit Place');
 
     }   
 
-    $scope.loadGooglePlaces = function (query) {
+    $scope.loadPlaces = function (query) {
 
         GoogleOptions['name'] = query;
 
