@@ -267,8 +267,7 @@ console.log('chegou');
             alert('Google Maps library not loaded!');
             return;
         }
-
-        if(ionic.Platform.isWebView())  alert('Initialize GoogleMaps (lat, lng) = ('+lat+', '+lng+')');
+        // if(ionic.Platform.isWebView())  alert('Initialize GoogleMaps (lat, lng) = ('+lat+', '+lng+')');
 
 try {
         var myLatlng = new google.maps.LatLng(lat,lng);
@@ -835,7 +834,7 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
 
 console.log('');
 console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
-if(ionic.Platform.isWebView())  alert('Entrou no Edit Place');
+
     $scope.isNew = $stateParams.isNew ? true : false;
 
     $scope.loadingIndicator = $ionicLoading.show({
