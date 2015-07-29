@@ -1,6 +1,6 @@
 angular.module('events.IonicServices',[])
 
-.factory('PushService',['$ionicUser', '$rootScope', function($ionicUser, $rootScope){
+.factory('PushService',['$ionicUser', '$rootScope', '$ionicPush', function($ionicUser, $rootScope, $ionicPush){
 
 	$rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
 		alert("Successfully registered token " + data.token);
