@@ -43,6 +43,7 @@ angular.module('events.IonicServices',[])
 					onNotification: function(notification) {
 						// Handle new push notifications here
 						// console.log(notification);
+						alert('Received push: '+notification);
 						return true;
 					}
 				});

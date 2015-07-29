@@ -5,7 +5,8 @@
     "ionic": "driftyco/ionic-bower#1.0.0",
     "ngCordova": "~0.1.17-alpha",
     "ionic-service-core": "~0.1.7",
-    "ionic-service-push": "~0.1.8"
+    "ionic-service-push": "~0.1.8",
+    "angular-websocket": "~1.0.13"
   },
   "dependencies": {
     "ion-autocomplete": "~0.2.2"

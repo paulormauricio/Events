@@ -343,6 +343,10 @@ a {
 	clear: both;
 }
 
+.collectionList.bottomSpace .item:last-child {
+	margin-bottom: 10px;
+}
+
 .collectionList .item {
 	position: relative;
 	overflow: hidden;
@@ -351,7 +355,9 @@ a {
 	text-align: center;
 	width: 50%;
 	border: 3px solid #fff;
-	border-bottom-width: 1px;
+	border-bottom-width: 2px;
+	border-right-width: 1px;
+	border-left-width: 4px;
 	background-color: rgba(18, 86, 136, .5);
 	padding: 0px;
 	margin: 0px;
@@ -491,14 +497,14 @@ a {
 
 .topHalf {
 	position: absolute;
-	bottom: 50%;
+	bottom: 46%;
 	left: 0px;
 	right: 0px;
 	white-space: normal;
 }
 .bottomHalf {
 	position: absolute;
-	top: 50%;
+	top: 54%;
 	left: 0px;
 	right: 0px;
 }
