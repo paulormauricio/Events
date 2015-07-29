@@ -434,7 +434,6 @@ catch(err) {
                     case 'cancel':
                         return;
                     default:
-                        alert("date result: " + newDate);
                         break;
                 }
                 saveDate(newDate);
