@@ -16,11 +16,13 @@
 </div>
 
 <div class="background backgroundImage" 
-     ng-show="showEvent.place_image_url"
+     
      style="position: fixed"
      ng-style="{'background-image': 'url('+showEvent.place_image_url+')', 'width': item.width, 'height': item.height}"></div>
 
-<ion-content style="height: 100%;" has-bouncing="true" header-shrink scroll-event-interval="5" class="cover" scroll-watch>
+<div id="bottomWhiteBar"></div>
+
+<ion-content style="height: 100%;" has-bouncing="false" header-shrink scroll-event-interval="5" class="cover" scroll-watch>
 
 
     <ion-list id="showEvent">
@@ -30,7 +32,7 @@
                 ng-click="editName()"
                 class="topHalf centered">
                 {{showEvent.name}}
-                <span ng-hide="!isEdit" style="position: absolute; right: 0px;">
+                <span ng-hide="!isEdit" class="rightIcon">
                     <i class="icon ion-edit edit"></i>
                 </span>
             </h1>   
@@ -84,7 +86,7 @@
                     <span ng-switch-when="true" translate="event_goingFriend"></span>
                     <span ng-switch-when="false" translate="event_goingFriends"></span>
                 </span>
-                <a class="" ng-hide="!isEdit">
+                <a class="rightIcon" ng-hide="!isEdit">
                     <i class="icon ion-edit edit"></i>
                 </a>
             </div>
@@ -100,14 +102,12 @@
 
         <!-- Event Place  -->
         <ion-item class="noPadding" ng-click="editPlacePressed()">
-            <div class="leftTitle">
-                <span translate="event_place_details"></span>
-                <a class="" ng-hide="!isEdit">
-                    <i class="icon ion-edit edit"></i>
-                </a>
-            </div>
 
-            <div ng-hide="showEvent.place_id" class="cellSideTemplate">
+            <a class="rightIcon" ng-hide="!isEdit">
+                <i class="icon ion-edit edit"></i>
+            </a>
+
+            <div ng-hide="showEvent.place_id" class="cellSideTemplate" style="margin-top: 15px;">
                 <i class="ion-ios-location-outline" style="left: 20px"></i>
                 <label ng-switch="showEvent.place_name == undefined" style="padding-top: 15px;">
                     <span ng-switch-when="true" class="emptyMsg" translate="event_place_click_edit"></span>
@@ -115,25 +115,18 @@
                 </label>
             </div>
 
-            <div ng-show="showEvent.place_id" class="">
+            <div ng-show="showEvent.place_id" class="mapContainer">
 
                 <table id="addressInfo" ng-show="showEvent.place_address">
-                <tbody>
-                    <tr>
-                        <td width="100%" class="top">
-                            <div ng-show="isShowAddress" class="info">
-                                <p class="bold">{{ showEvent.place_name }}</p>
-                                <p>{{ showEvent.place_address }}</p>
-                            </div>
-                        </td>
-                        <td class="title themeBackgroundColor top" ng-click="toggleAddress()" translate="event_place_address">Address</td>
-                    </tr>
-                </tbody>
+                <tr>
+                    <td class="info">
+                        <p class="bold" translate="event_place_address">Address</p>
+                        <p>{{ showEvent.place_address }}</p>
+                    </td>
+                </tr>
                 </table>
                 <div id="coverMap" class=""></div>
-                <div class="mapContainer " ng-show="showEvent.place_name">
-                    <div id="map" class="circle themeBorderColor" data-tap-disabled="true"></div>
-                </div>
+                <div id="map" class="" data-tap-disabled="true"></div>
 
             </div>
         </ion-item>
