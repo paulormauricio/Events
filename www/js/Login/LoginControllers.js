@@ -136,7 +136,7 @@ angular.module('events.LoginControllers', [])
           }
         );
         
-        PushService.init();
+//        PushService.init();
 
         Language.set();
         

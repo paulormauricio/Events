@@ -529,7 +529,7 @@ catch(err) {
                 height: $window.innerHeight,
                 width:  $window.innerWidth
             };
-        $scope.item.height = 500;
+        $scope.item.height = 400;
     }
 
 }])
