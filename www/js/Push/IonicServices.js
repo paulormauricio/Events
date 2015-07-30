@@ -1,5 +1,6 @@
 angular.module('events.IonicServices',[])
 
+<<<<<<< HEAD
 .factory('PushService',['$ionicUser', '$rootScope', '$ionicPush', '$http', function($ionicUser, $rootScope, $ionicPush, $http){
 
 	var message = {
@@ -29,6 +30,9 @@ angular.module('events.IonicServices',[])
 		}
 	};
 
+=======
+.factory('PushService',['$ionicUser', '$rootScope', function($ionicUser, $rootScope){
+>>>>>>> parent of 50d8678... Version 0.66
 
 	$rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
 		//alert("Successfully registered token " + data.token);
