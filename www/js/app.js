@@ -22,8 +22,8 @@ angular.module('events',
       'events.FriendServices',
       'events.filters',
       'common.DynamicHeader',
-      'common.DynamicBackgroundImage'
-      //'events.IonicServices'
+      'common.DynamicBackgroundImage',
+      'events.IonicServices'
     ]
   )
 
