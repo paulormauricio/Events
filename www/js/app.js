@@ -30,6 +30,11 @@ angular.module('events',
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
+
+    document.addEventListener("pause", function() {
+        alert("The application when to background mode");
+    }, false);
+
     if(window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }

@@ -16,11 +16,17 @@
 
     <div class="list">
 
-  		<a class="item item-icon-left item-icon-right" ng-href="#/friends">
+  		<ion-item class="item-icon-left item-icon-right" ng-href="#/friends">
   			<i class="icon ion-person-stalker"></i>
   			{{total_friends}} {{total_friends == 1 ? 'Friend' : 'Friends'}} connected
   			<i class="icon ion-ios-arrow-forward"></i>
-  		</a>
+  		</ion-item>
+
+      <ion-item class="item-icon-right hidden" ng-click="teste()">
+        
+        Testar função
+        <i class="icon ion-ios-arrow-forward"></i>
+      </ion-item>
 
     </div>
 

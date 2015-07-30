@@ -149,7 +149,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     $scope.isShowAddress = false;
     $scope.isShowJoinButton = false;
     $scope.isShowEditButton = false;
-console.log('chegou');
+
     $scope.doRefresh = function() {
         Event.get($stateParams.objectId).then(function(object) {
             Event.showEvent = object;

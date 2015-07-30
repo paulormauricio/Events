@@ -1,11 +1,42 @@
 angular.module('events.IonicServices',[])
 
-.factory('PushService',['$ionicUser', '$rootScope', '$ionicPush', function($ionicUser, $rootScope, $ionicPush){
+.factory('PushService',['$ionicUser', '$rootScope', '$ionicPush', '$http', function($ionicUser, $rootScope, $ionicPush, $http){
+
+	var message = {
+		"tokens":[],
+		"notification":{
+			"alert": undefined,
+			"ios":{
+				"badge":1,
+				"sound":"ping.aiff",
+				"expiry": 1423238641,
+				"priority": 10,
+				"contentAvailable": true,
+				"payload":{
+					"key1":"value",
+					"key2":"value"
+				}
+			},
+			"android":{
+				"collapseKey":"foo",
+				"delayWhileIdle":true,
+				"timeToLive":300,
+				"payload":{
+					"key1":"value",
+					"key2":"value"
+				}
+			}
+		}
+	}
 
 	$rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
 		alert("Successfully registered token " + data.token);
 		console.log('Ionic Push: Got token ', data.token, data.platform);
-		//$scope.token = data.token;
+
+		Parse.User.current().set('device_token', data.token);
+		Parse.User.current().set('device_platform', data.platform);
+		Parse.User.current().save();
+		
 	});
 
 	return {
@@ -42,16 +73,50 @@ angular.module('events.IonicServices',[])
 					canRunActionsOnWake: true, //Can run actions outside the app,
 					onNotification: function(notification) {
 						// Handle new push notifications here
-						// console.log(notification);
-						alert('Received push: '+notification);
+						console.log('Push Notification :', notification);
+						//alert('Received push: '+notification);
 						return true;
 					}
 				});
 
-
 		    });
 
 		    return;
+
+		},
+
+		send: function(tokens, msg) {
+
+			if( alert == undefined || tokens == undefined) {
+				//return false;
+				tokens = ['DEV-f9c8747c-7f67-4255-8bea-0204c564f94c'];
+				msg = 'Hello world';
+			}
+
+			message.notification.alert = msg;
+			message.tokens = tokens;
+
+			var url = 'https://push.ionic.io/api/v1/push?';
+
+			var request = {
+				method: 'POST',
+				url: url,
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Ionic-Application-Id': '0d7d2a38'
+				},
+				data: message
+			}
+
+			$http(request).
+				success(function(data, status) {
+					
+					console.log('Send Push Success:', data);
+
+				}).
+				error(function(error, status) {
+					console.log('Send Push Error: ', error);
+				});
 
 		}
 
