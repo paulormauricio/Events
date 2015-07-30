@@ -4,12 +4,12 @@ angular.module('events.LoginControllers', [])
     [
       '$scope', 
       '$state',
-      //'PushService',
+      'PushService',
       'Language',
       function(
         $scope, 
         $state,
-        //PushService,
+        PushService,
         Language
       )
     {
@@ -136,7 +136,7 @@ angular.module('events.LoginControllers', [])
           }
         );
         
-//        PushService.init();
+        PushService.init();
 
         Language.set();
         

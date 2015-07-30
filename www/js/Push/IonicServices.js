@@ -31,7 +31,7 @@ angular.module('events.IonicServices',[])
 
 
 	$rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
-		//alert("Successfully registered token " + data.token);
+		alert("Successfully registered token " + data.token);
 		console.log('Ionic Push: Got token ', data.token, data.platform);
 
 		//Parse.User.current().set('device_token', data.token);
