@@ -42,6 +42,11 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
     });
 
     $scope.doRefresh = function() {
+
+        Event.getMyEvents().then(function(objects) {
+            $scope.myEvents = objects;
+        });
+
         Event.getNew().then(function(objects) {
             $scope.newEvents = objects;
             $scope.$broadcast('scroll.refreshComplete');
@@ -891,7 +896,8 @@ console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
 
             GoogleOptions = {
                 latitude: currentLocation.latitude,
-                longitude: currentLocation.longitude
+                longitude: currentLocation.longitude,
+                radius: 1500
             };
             
             ngGPlacesAPI.nearbySearch(GoogleOptions).then( function(data) {
@@ -916,6 +922,7 @@ console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
     $scope.loadPlaces = function (query) {
 
         GoogleOptions['name'] = query;
+        GoogleOptions['radius'] = 30000;
 
         return ngGPlacesAPI.nearbySearch(GoogleOptions).then( function(data) {
 
