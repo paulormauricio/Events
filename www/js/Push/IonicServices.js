@@ -33,9 +33,9 @@ angular.module('events.IonicServices',[])
 		alert("Successfully registered token " + data.token);
 		console.log('Ionic Push: Got token ', data.token, data.platform);
 
-		Parse.User.current().set('device_token', data.token);
-		Parse.User.current().set('device_platform', data.platform);
-		Parse.User.current().save();
+		//Parse.User.current().set('device_token', data.token);
+		//Parse.User.current().set('device_platform', data.platform);
+		//Parse.User.current().save();
 		
 	});
 
