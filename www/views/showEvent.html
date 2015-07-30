@@ -5,7 +5,7 @@
     <button class="button button-clear left" ui-sref="events">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
-    <span ng-switch="isEdit" ng-hide="!isShowEditButton" class="">
+    <span ng-switch="isEdit" ng-hide="!isShowEditButton">
         <button ng-switch-when="false" class="button button-clear right" ng-click="startEdit()">
             <i class="ion-edit"></i>
         </button>
@@ -41,7 +41,7 @@
                 {{showEvent.place_name}}
             </h2>
 
-            <button ng-hide="!isShowJoinButton" ng-click="joinEvent()" class="themeButton joinButton" translate="event_newEvent_join">
+            <button ng-show="isShowJoinButton" ng-click="joinEvent()" class="themeButton joinButton hidden" translate="event_newEvent_join">
                 JOIN
             </button>
 
@@ -101,7 +101,7 @@
         </ion-item>
 
         <!-- Event Place  -->
-        <ion-item class="noPadding white" ng-click="editPlacePressed()">
+        <ion-item class="noPadding" ng-click="editPlacePressed()">
 
             <a class="rightIcon" ng-hide="!isEdit">
                 <i class="icon ion-edit edit"></i>
@@ -129,9 +129,6 @@
                 <div id="map" class="" data-tap-disabled="true"></div>
 
             </div>
-        </ion-item>
-
-        <ion-item class="white">
         </ion-item>
 
     </ion-list>

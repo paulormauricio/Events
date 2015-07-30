@@ -155,8 +155,7 @@ body > * {
 	width: 100%;
 	height: 130px;
 	display: inline-block;
-	background-color: white;
-	border-top: 4px solid white;
+	background-color: white
 }
 
 #coverMap {
@@ -460,9 +459,6 @@ a {
 #showEvent i {
 	font-size: 30px;
 }
-#showEvent .item.white {
-	background-color: white;
-}
 
 #showEvent .joinButton {
 	border-radius: 5px;
@@ -483,7 +479,6 @@ a {
 	height: 5px;
 	background-color: white;
 	z-index: 1;
-	display: none;
 }
 
 .item-square {
@@ -758,10 +753,6 @@ i.edit {
 
 .bold {
 	font-weight: bold !important;
-}
-
-.hidden {
-	display: none;
 }
 
 
