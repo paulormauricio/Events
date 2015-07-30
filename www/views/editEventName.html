@@ -10,10 +10,10 @@
               name="name" ng-model="editEvent.name" required autofocus 
               style="padding: 25px 0px 10px; width: 100%; resize: none; border: 1px solid #eee; text-align: center"></textarea>
 
-    <div class="item item-divider clean themeBorderColor themeColor" translate="event_theme_choose" ng-show="editEvent.name.length > 2">
+    <div class="item item-divider clean themeBorderColor themeColor" translate="event_theme_choose">
         Choose your theme
     </div>
-    <ion-scroll class="collectionList" ng-show="themes.length>2 && editEvent.name.length>2">
+    <ion-scroll class="collectionList">
         <ion-item ng-click="storeName(theme)" class="" 
                   ng-repeat="theme in themes"
                   ng-show="([theme]|themeSearch:editEvent.name).length"

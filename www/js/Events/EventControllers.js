@@ -570,7 +570,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
     });
 
     if( $stateParams.objectId == '' ) {
-        $scope.editEvent = {};
+        $scope.editEvent = {name: ''};
         Event.myEvent = {};
     }
     else {
@@ -607,6 +607,14 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
 
     $scope.storeName = function(theme) {
 
+        if( $scope.editEvent.name.length <= 1 ) {
+            
+            var locale = Parse.User.current().get('locale').toLowerCase();
+            var desc = theme['tags_'+locale].split(',')[0];
+            console.log('name: ', desc);
+            $scope.editEvent.name = desc;
+        }
+
         $scope.loadingIndicator = $ionicLoading.show({
             content: 'Loading Data',
             animation: 'fade-in',
@@ -623,6 +631,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
         Event.myEvent.theme = theme.name;
 
         Event.save($scope.isNew).then(function(savedEvent) {
+
             Event.myEvent.id = savedEvent.id;
             if($scope.isNew) {
                 Participant.store(Event.myEvent, Parse.User.current(), true);

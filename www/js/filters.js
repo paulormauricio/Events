@@ -5,6 +5,9 @@ angular.module('events.filters',[])
 
     return function(input, searchString) {
 
+        if( searchString == undefined ) return input;
+        if( searchString.length < 3 ) return input;
+
         var output = [];
 
         if( !angular.isString(searchString) ) return output;
