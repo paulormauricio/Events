@@ -1,6 +1,6 @@
 angular.module('events.ProfileControllers', [])
 
-.controller('ProfileController', ['$scope', '$state', 'Profile','PushService', function($scope, $state, Profile, PushService) {
+.controller('ProfileController', ['$scope', '$state', 'Profile', function($scope, $state, Profile) {
 
 	console.log('');
 	console.log('<<<<<<-----------   Settings Screen  ---------->>>>>');
@@ -18,7 +18,7 @@ angular.module('events.ProfileControllers', [])
     }
 
     $scope.teste = function() {
-    	PushService.init();
+    	//PushService.init();
     }
 
     
