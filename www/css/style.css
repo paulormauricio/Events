@@ -158,6 +158,10 @@ body > * {
 	background-color: white
 }
 
+#map {
+	border: 3px solid white;
+}
+
 #coverMap {
 	position: absolute;
 	z-index: 5001;
@@ -439,7 +443,9 @@ a {
 }
 
 /** Lists  **/
+#showEvent {
 
+}
 #showEvent, #showEvent .item {
 	background-color: transparent;
 	border-top: 0px;
@@ -451,13 +457,19 @@ a {
 #showEvent * {
 	color: white;
 }
-
+#showEvent .white {
+	background-color: white;
+}
 #showEvent .white * {
 	color: #333;
 }
 
 #showEvent i {
 	font-size: 30px;
+}
+
+#showEvent .cover * {
+	color: white;
 }
 
 #showEvent .joinButton {

@@ -1,13 +1,13 @@
 angular.module('common.DynamicHeader',[])
 
 
-.directive('scrollWatch', function($rootScope) {
+.directive('dynamicHeader', function($rootScope) {
   return function(scope, elem, attr) {
     var start = 0;
     var threshold = 150;
     
     elem.bind('scroll', function(e) {
-
+      
       if(e.detail.scrollTop - start > threshold) {
         $rootScope.slideHeader = true;
       } else {

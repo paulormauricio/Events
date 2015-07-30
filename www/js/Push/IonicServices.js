@@ -27,10 +27,11 @@ angular.module('events.IonicServices',[])
 				}
 			}
 		}
-	}
+	};
+
 
 	$rootScope.$on('$cordovaPush:tokenReceived', function(event, data) {
-		alert("Successfully registered token " + data.token);
+		//alert("Successfully registered token " + data.token);
 		console.log('Ionic Push: Got token ', data.token, data.platform);
 
 		//Parse.User.current().set('device_token', data.token);
@@ -61,7 +62,7 @@ angular.module('events.IonicServices',[])
 		    // Identify your user with the Ionic User Service
 		    $ionicUser.identify(user).then(function(){
 		      
-				alert('Identified user ' + user.name + '\n ID ' + user.user_id);
+				//alert('Identified user ' + user.name + '\n ID ' + user.user_id);
 
 				console.log('Ionic Push: Registering user');
 

@@ -526,9 +526,10 @@ catch(err) {
 
     function calculateScreenSize() {
         $scope.item = {
-                height: $window.innerHeight + 'px',
-                width:  $window.innerWidth + 'px'
+                height: $window.innerHeight,
+                width:  $window.innerWidth
             };
+        $scope.item.height = 500;
     }
 
 }])

@@ -5,7 +5,7 @@
     <button class="button button-clear left" ui-sref="events">
         <i class="icon ion-ios-arrow-back"></i>
     </button>
-    <span ng-switch="isEdit" ng-hide="!isShowEditButton">
+    <span ng-switch="isEdit" ng-hide="!isShowEditButton" class="">
         <button ng-switch-when="false" class="button button-clear right" ng-click="startEdit()">
             <i class="ion-edit"></i>
         </button>
@@ -15,19 +15,18 @@
     </span>
 </div>
 
-<div class="background backgroundImage" 
-     
+<div class="background backgroundImage"      
      style="position: fixed"
-     ng-style="{'background-image': 'url('+showEvent.place_image_url+')', 'width': item.width, 'height': item.height}"></div>
+     ng-style="{'background-image': 'url('+showEvent.place_image_url+')', 'width': item.width + 'px', 'height': item.height + imageResize.height + 'px'}"></div>
 
 <div id="bottomWhiteBar"></div>
 
-<ion-content style="height: 100%;" has-bouncing="false" header-shrink scroll-event-interval="5" class="cover" scroll-watch>
+<ion-content style="height: 100%;" has-bouncing="false" header-shrink scroll-event-interval="5" class="cover" dynamic-header resize-on-scroll>
 
 
     <ion-list id="showEvent">
         <ion-refresher pulling-text="{{ 'refresh' | translate }}" on-refresh="doRefresh()"></ion-refresher>  
-        <ion-item ng-style="{'height': item.height}">   
+        <ion-item ng-style="{'height': item.height + 'px'}" class="">   
             <h1 ng-show="showEvent.name"
                 ng-click="editName()"
                 class="topHalf centered">
@@ -41,7 +40,7 @@
                 {{showEvent.place_name}}
             </h2>
 
-            <button ng-show="isShowJoinButton" ng-click="joinEvent()" class="themeButton joinButton hidden" translate="event_newEvent_join">
+            <button ng-hide="!isShowJoinButton" ng-click="joinEvent()" class="themeButton joinButton" translate="event_newEvent_join">
                 JOIN
             </button>
 
@@ -78,30 +77,9 @@
             </div>
         </ion-item>
 
-        <!-- Participants -->
-        <ion-item class="noPadding" ng-click="editParticipants()">
-            <div class="leftTitle">
-                {{showEvent.participants.length}}
-                <span ng-switch="showEvent.participants.length == 1">
-                    <span ng-switch-when="true" translate="event_goingFriend"></span>
-                    <span ng-switch-when="false" translate="event_goingFriends"></span>
-                </span>
-                <a class="rightIcon" ng-hide="!isEdit">
-                    <i class="icon ion-edit edit"></i>
-                </a>
-            </div>
-            <ion-scroll direction="x" class="horizontalList">
-                <a href="javascript:void(0)" class="item" ng-repeat="participant in showEvent.participants | orderBy : participant.first_name + participant.last_name">
-                    <img ng-src="https://graph.facebook.com/v2.2/{{participant.facebookId}}/picture??type=small" class="circle">
-                    <div class="title">
-                        {{participant.first_name}} {{participant.last_name}}
-                    </div>
-                </a>
-            </ion-scroll>
-        </ion-item>
 
         <!-- Event Place  -->
-        <ion-item class="noPadding" ng-click="editPlacePressed()">
+        <ion-item class="noPadding white" ng-click="editPlacePressed()">
 
             <a class="rightIcon" ng-hide="!isEdit">
                 <i class="icon ion-edit edit"></i>
@@ -129,6 +107,31 @@
                 <div id="map" class="" data-tap-disabled="true"></div>
 
             </div>
+        </ion-item>
+
+        <!-- Participants -->
+        <ion-item class="noPadding white" ng-click="editParticipants()">
+            <div class="leftTitle">
+                {{showEvent.participants.length}}
+                <span ng-switch="showEvent.participants.length == 1">
+                    <span ng-switch-when="true" translate="event_goingFriend"></span>
+                    <span ng-switch-when="false" translate="event_goingFriends"></span>
+                </span>
+                <a class="rightIcon" ng-hide="!isEdit">
+                    <i class="icon ion-edit edit"></i>
+                </a>
+            </div>
+            <ion-scroll direction="x" class="horizontalList">
+                <a href="javascript:void(0)" class="item" ng-repeat="participant in showEvent.participants | orderBy : participant.first_name + participant.last_name">
+                    <img ng-src="https://graph.facebook.com/v2.2/{{participant.facebookId}}/picture??type=small" class="circle">
+                    <div class="title">
+                        {{participant.first_name}} {{participant.last_name}}
+                    </div>
+                </a>
+            </ion-scroll>
+        </ion-item>
+
+        <ion-item class="white">
         </ion-item>
 
     </ion-list>
