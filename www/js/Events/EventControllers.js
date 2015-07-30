@@ -542,6 +542,7 @@ catch(err) {
             '$state', 
             '$stateParams',
             '$ionicLoading',
+            '$filter',
             'Event', 
             'Participant',
             'Theme',
@@ -551,6 +552,7 @@ catch(err) {
                 $state, 
                 $stateParams,
                 $ionicLoading, 
+                $filter,
                 Event, 
                 Participant,
                 Theme
@@ -611,6 +613,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
             
             var locale = Parse.User.current().get('locale').toLowerCase();
             var desc = theme['tags_'+locale].split(',')[0];
+            desc = $filter('translate')(theme.name);
             console.log('name: ', desc);
             $scope.editEvent.name = desc;
         }
@@ -641,7 +644,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
                 $state.go('showEvent', {objectId: savedEvent.id});
             }
             else {
-                $state.go('editEventFriends', {objectId: savedEvent.id}, {reload: true});
+                $state.go('editEventFriends', {isNew: true, objectId: savedEvent.id}, {reload: true});
             }
         });
 

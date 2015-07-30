@@ -43,6 +43,12 @@ angular.module('events.lang_pt_pt', [])
 	logout: 'Terminar sessão',
 	profile_title: 'Perfil',
 	refresh: 'Actualizar',
-	settings_title: 'Configurações'
+	settings_title: 'Configurações',
+
+	cocktail: 'Beber um copo',
+	drinks: 'Beber um copo',
+	food: 'Jantar',
+	football: 'Jogar futebol',
+	running: 'Correr'
 });
 
