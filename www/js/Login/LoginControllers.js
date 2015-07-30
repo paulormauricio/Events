@@ -53,7 +53,6 @@ angular.module('events.LoginControllers', [])
       
       fbLogged.then( function(authData) {
         console.log('Promised');
-        alert('Promised');
         return Parse.FacebookUtils.logIn(authData);
       })
       .then( function(userObject) {
