@@ -10,7 +10,7 @@
               name="name" ng-model="editEvent.name" required autofocus 
               style="padding: 25px 0px 10px; width: 100%; resize: none; border: 1px solid #eee; text-align: center"></textarea>
 
-    <div class="item item-divider clean themeBorderColor themeColor" translate="event_theme_choose">
+    <div class="item item-divider clean themeBorderColor themeColor centered" translate="event_theme_choose">
         Choose your theme
     </div>
     <ion-scroll class="collectionList">
@@ -21,8 +21,10 @@
             <img ng-src="{{'img/themes/'+theme.name+'.png'}}">
         </ion-item>
         <ion-item ng-click="storeName({name: '_'})" class="" 
-                  ng-style="{'width': item.width, 'height': item.height}">
-                  <span class="topHalf">{{editEvent.name}}</span>
+                  ng-style="{'width': item.width, 'height': item.height}"
+                  ng-show="editEvent.name.length > 0">
+                  <img ng-src="{{'img/themes/_.png'}}">
+                  <h3 class="bottomHalf  small">{{editEvent.name}}</h3>
         </ion-item>
     </ion-scroll>
 

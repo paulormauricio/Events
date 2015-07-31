@@ -114,6 +114,7 @@ angular.module('events',
       url:'/event/editName/:isNew/:objectId',
       controller:'EventEditNameController',
       templateUrl:'views/editEventName.html',
+      cache: false,
       data: {
         authenticate: true
       }

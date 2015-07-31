@@ -16,6 +16,7 @@ angular.module('events.lang_pt_pt', [])
 
 	friends: "Amigos",
 
+	event_date_click: "Definir data do evento",
 	event_goingFriend: 'amigo vai',
 	event_goingFriends: 'amigos vão',
 	event_invite: "Confirmar",
@@ -29,7 +30,7 @@ angular.module('events.lang_pt_pt', [])
 	event_newEvents_title: 'Novos eventos',
 	event_place_address: 'Morada',
 	event_place_details: 'Detalhe do local',
-	event_place_click_edit: 'Carregue para seleccionar o local',
+	event_place_click_edit: 'Definir o local',
 	event_theme_choose: 'Escolhe o teu tema para abrir o evento',
 	event_what: 'O que planeias fazer?',
 	event_where: 'Onde?',
@@ -45,10 +46,15 @@ angular.module('events.lang_pt_pt', [])
 	refresh: 'Actualizar',
 	settings_title: 'Configurações',
 
+	beach: 'Ir à praia',
+	burger: 'Comer um humburger',
 	cocktail: 'Beber um copo',
 	drinks: 'Beber um copo',
 	food: 'Jantar',
 	football: 'Jogar futebol',
-	running: 'Correr'
+	golf: 'Jogar golf',
+	rugby: 'Jogar rugby',
+	running: 'Correr',
+	surf: 'Fazer surf'
 });
 

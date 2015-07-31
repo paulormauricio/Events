@@ -366,11 +366,16 @@ angular.module('events.EventServices',[])
 .factory('Theme',['$rootScope', '$q', function($rootScope, $q){
 
 	var themes = [
-		{name: 'cocktail', 	tags_en_us: 'drinks, cocktails', 	tags_pt_pt: 'bebidas, beber, copo, cocktails'},
-		{name: 'drinks', 	tags_en_us: 'drinks, party', 		tags_pt_pt: 'bebidas, beber, copo, festa'},
-		{name: 'food', 		tags_en_us: 'dinner, lunch, food', 	tags_pt_pt: 'jantar, comer, almoçar, almoço'},
-		{name: 'football', 	tags_en_us: 'play, football', 		tags_pt_pt: 'jogar, futebol, bola'},
-		{name: 'running', 	tags_en_us: 'run, running', 		tags_pt_pt: 'correr, corrida, caminhar, caminhada'}
+		{name: 'beach', 	tags_en_us: 'beach, sand, sea, sun',	tags_pt_pt: 'praia, areia, mar, sol'},
+		{name: 'burger', 	tags_en_us: 'hamburger, lunch, dinner',	tags_pt_pt: 'Humburger, almoçar, jantar'},
+		{name: 'cocktail', 	tags_en_us: 'drinks, cocktails', 		tags_pt_pt: 'bebidas, beber, copo, cocktails'},
+		{name: 'drinks', 	tags_en_us: 'drinks, party', 			tags_pt_pt: 'bebidas, beber, copo, festa'},
+		{name: 'food', 		tags_en_us: 'dinner, lunch, food', 		tags_pt_pt: 'jantar, comer, almoçar, almoço'},
+		{name: 'football', 	tags_en_us: 'play, football', 			tags_pt_pt: 'jogar, futebol, bola'},
+		{name: 'golf',	 	tags_en_us: 'golf, play',				tags_pt_pt: 'golf, jogar'},
+		{name: 'rugby', 	tags_en_us: 'rugby, play',				tags_pt_pt: 'rugby, jogar, rugbi'},
+		{name: 'running', 	tags_en_us: 'run, running', 			tags_pt_pt: 'correr, corrida, caminhar, caminhada'},
+		{name: 'surf',	 	tags_en_us: 'surfing, waves',			tags_pt_pt: 'surfing, surfar, ondas'}
 	];
 
 	return {

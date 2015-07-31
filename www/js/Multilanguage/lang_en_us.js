@@ -16,9 +16,10 @@ angular.module('events.lang_en_us', [])
 
 	friends: "Friends",
 
-	event_invite: "Done",
+	event_date_click: "Define event date",
 	event_goingFriend: 'friend is going',
 	event_goingFriends: 'friends are going',
+	event_invite: "Done",
 	event_invitedFriend: 'invited friend',
 	event_invitedFriends: 'invited friends',
 	event_myEvents_noEvents: 'You don\'t have events',
@@ -29,7 +30,7 @@ angular.module('events.lang_en_us', [])
 	event_newEvents_title: 'New events',
 	event_place_address: 'Address',
 	event_place_details: 'Place details',
-	event_place_click_edit: 'Click to define location',
+	event_place_click_edit: 'Define location',
 	event_theme_choose: 'Choose a theme to open event',
 	event_what: 'What are you planning to do?',
 	event_where: 'Where?',
@@ -45,9 +46,14 @@ angular.module('events.lang_en_us', [])
 	refresh: 'Refresh',
 	settings_title: 'Settings',
 
+	beach: 'Going to the beach',
+	burger: 'Have a burguer',
 	cocktail: 'Have a drink',
 	drinks: 'Have a drink',
 	food: 'Dinner',
 	football: 'Play football',
-	running: 'Running'
+	golf: 'Golfing',
+	rugby: 'Play rugby',
+	running: 'Running',
+	surf: 'Surfing'
 });

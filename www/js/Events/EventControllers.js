@@ -588,6 +588,9 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
     }
 
     $scope.back = function() {
+        
+        console.log('Fez reset');
+        Event.resetMyEvent();
         if( $scope.isNew ) {
             $state.go('events');
         }
@@ -614,13 +617,8 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
 
     $scope.storeName = function(theme) {
 
-        if( $scope.editEvent.name.length <= 1 ) {
-            
-            var locale = Parse.User.current().get('locale').toLowerCase();
-            var desc = theme['tags_'+locale].split(',')[0];
-            desc = $filter('translate')(theme.name);
-            console.log('name: ', desc);
-            $scope.editEvent.name = desc;
+        if( $scope.editEvent.name == undefined || $scope.editEvent.name == '' ) {            
+            $scope.editEvent.name = $filter('translate')(theme.name);
         }
 
         $scope.loadingIndicator = $ionicLoading.show({
@@ -631,10 +629,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
             showDelay: 500
         });
 
-        if( $scope.isNew ) {
-            Event.myEvent.id = $scope.editEvent.id;
-        }
-        Event.myEvent.name = $scope.editEvent.name;
+        Event.myEvent = $scope.editEvent;
         
         Event.myEvent.theme = theme.name;
 
@@ -660,16 +655,16 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
         var width =  $window.innerWidth;
         $scope.item = {width: 0, height: 0};
         if( width > 700 ) {
-            $scope.item.width = 80 + 'px';
+            $scope.item.width = 70 + 'px';
         }
         else if( width > 550 ) {
-            $scope.item.width = (width / 5 - 3) + 'px';
+            $scope.item.width = (width / 6 - 3) + 'px';
         }
         else if( width > 400 ) {
-            $scope.item.width = (width / 4 - 3) + 'px';
+            $scope.item.width = (width / 5 - 2) + 'px';
         }
         else {
-            $scope.item.width = (width / 3 - 3) + 'px';
+            $scope.item.width = (width / 4 - 0) + 'px';
         }
         $scope.item.height = $scope.item.width;
         console.log('height: ', $scope.item.height);

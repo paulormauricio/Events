@@ -263,13 +263,13 @@ a {
 
 .cellSideTemplate {
 	position: relative;
-	padding-left: 50px;
+	padding-left: 55px;
 	height: 40px;
 }
 .cellSideTemplate i, .cellSideTemplate img {
 	position: absolute;
 	top: 0px;
-	left: -5px;
+	left: 10px;
 	font-size: 40px !important;
 }
 .cellSideTemplate img {
@@ -359,8 +359,8 @@ a {
 	width: 50%;
 	border: 3px solid #fff;
 	border-bottom-width: 2px;
-	border-right-width: 1px;
-	border-left-width: 4px;
+	border-right-width: 2px;
+	border-left-width: 3px;
 	background-color: rgba(18, 86, 136, .5);
 	padding: 0px;
 	margin: 0px;
@@ -525,7 +525,7 @@ a {
 	bottom: 0px;
 	left: 0px;
 	right: 0px;
-	padding: 5px 15px;
+	padding: 5px 5px;
 }
 
 /**** Cards List Styles  ***/
@@ -742,6 +742,10 @@ a {
 
 .small, i.small {
 	font-size: 85% !important;
+}
+
+.large {
+	font-size: 105% !important;
 }
 
 .inline {

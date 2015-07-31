@@ -53,7 +53,7 @@
                                 <a href="javascript:void(0)">
                                     <i class="ion-calendar"></i>
                                     <span ng-switch="!showEvent.date" class="inline">
-                                        <label ng-switch-when="true">
+                                        <label ng-switch-when="true" translate="event_date_click" class="emptyMsg large">
                                             Click to define date
                                         </label>
                                         <label ng-switch-when="false">
@@ -86,11 +86,11 @@
             </a>
 
             <div ng-hide="showEvent.place_id" class="cellSideTemplate" style="margin-top: 15px;">
-                <i class="ion-ios-location-outline" style="left: 20px"></i>
-                <label ng-switch="showEvent.place_name == undefined" style="padding-top: 15px;">
-                    <span ng-switch-when="true" class="emptyMsg" translate="event_place_click_edit"></span>
-                    <span ng-switch-when="false">{{showEvent.place_name}}</span>
-                </label>
+                <i class="ion-ios-location" style="left: 18px"></i>
+                <span ng-switch="showEvent.place_name == undefined" style="padding-top: 15px;">
+                    <p ng-switch-when="true" class="emptyMsg large" translate="event_place_click_edit"></p>
+                    <p ng-switch-when="false">{{showEvent.place_name}}</p>
+                </span>
             </div>
 
             <div ng-show="showEvent.place_id" class="mapContainer">
