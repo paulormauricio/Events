@@ -367,7 +367,7 @@ angular.module('events.EventServices',[])
 
 	var themes = [
 		{name: 'beach', 	tags_en_us: 'beach, sand, sea, sun',	tags_pt_pt: 'praia, areia, mar, sol'},
-		{name: 'burger', 	tags_en_us: 'hamburger, lunch, dinner',	tags_pt_pt: 'Humburger, almoçar, jantar'},
+		{name: 'burger', 	tags_en_us: 'hamburger, lunch, dinner',	tags_pt_pt: 'humburger, comer, almoçar, jantar'},
 		{name: 'cocktail', 	tags_en_us: 'drinks, cocktails', 		tags_pt_pt: 'bebidas, beber, copo, cocktails'},
 		{name: 'drinks', 	tags_en_us: 'drinks, party', 			tags_pt_pt: 'bebidas, beber, copo, festa'},
 		{name: 'food', 		tags_en_us: 'dinner, lunch, food', 		tags_pt_pt: 'jantar, comer, almoçar, almoço'},

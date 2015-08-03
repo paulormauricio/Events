@@ -144,6 +144,15 @@ angular.module('events',
         authenticate: true
       }
     })
+    .state('showEventMap',{
+      url:'/event/:objectId/map',
+      controller:'EventShowMapController',
+      templateUrl:'views/showEventMap.html',
+      cache: false,
+      data: {
+        authenticate: true
+      }
+    })
     .state('profile',{
       url:'/profile',
       templateUrl:'views/profile.html',

@@ -90,7 +90,6 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 .controller('EventShowController',
         [
             '$scope',
-            '$sce',
             '$window',
             'Event',
             'Participant',
@@ -103,7 +102,6 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
             'Weather',
             function(
                 $scope,
-                $sce,
                 $window,
                 Event,
                 Participant,
@@ -171,6 +169,9 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
         if( $scope.showEvent.place_id ) {
             initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
+        }
+        if( $scope.showEvent.place_image_url == null || $scope.showEvent.place_image_url == undefined ) {
+            $scope.showEvent.place_image_url = 'img/themes/'+$scope.showEvent.theme+'.png';
         }
 
         $scope.showEvent.participants = {};
@@ -333,7 +334,11 @@ catch(err) {
     }
 
 //  Edit Place  -------------------
-    $scope.editPlacePressed = function() {
+    $scope.placePressed = function() {
+
+        if( $scope.showEvent.place_id != undefined && !$scope.isEdit) {
+            $state.go('showEventMap', {objectId: $scope.showEvent.id});
+        }
 
         if( $scope.showEvent.place_name != undefined && !$scope.isEdit) return;
 
@@ -961,5 +966,151 @@ console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
 
     }
 
+
+}])
+
+
+.controller('EventShowMapController',
+        [
+            '$scope',
+            '$window',
+            'Event',
+            '$state',
+            '$stateParams',
+            '$ionicLoading', 
+            '$ionicActionSheet',
+            'userlocation',
+            function(
+                $scope,
+                $window,
+                Event,
+                $state,
+                $stateParams,
+                $ionicLoading,
+                $ionicActionSheet,
+                userlocation
+            )
+    {
+console.log('');
+console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
+
+    $scope.loadingIndicator = $ionicLoading.show({
+        content: 'Loading Data',
+        animation: 'fade-in',
+        showBackdrop: false,
+        maxWidth: 200,
+        showDelay: 500
+    });
+
+    $scope.showEvent = Event.showEvent;
+
+    calculateScreenSize();
+
+    if( !$scope.showEvent.place_id ) {
+
+        Event.get($stateParams.objectId).then(function(object) {
+            if(object == undefined ) {
+                $state.go('events');
+            }
+            else {
+                $scope.showEvent = object;
+                initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
+            }
+        })
+        .catch(function(fallback) {
+            alert('Get Event Error: '+fallback);
+        })
+        .finally( function() {
+            $ionicLoading.hide();
+        });
+    }
+    else {
+
+        initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
+        $ionicLoading.hide();
+    }
+
+    function initializeGoogleMaps(lat, lng) {
+
+        console.log('Initialize Maps (lat, lng): '+lat+', '+lng);
+
+        if(!window.google) {
+            alert('Google Maps library not loaded!');
+            return;
+        }
+        // if(ionic.Platform.isWebView())  alert('Initialize GoogleMaps (lat, lng) = ('+lat+', '+lng+')');
+
+    try {
+        var myLatlng = new google.maps.LatLng(lat,lng);
+
+        // Create an array of styles.
+        var styles = [
+            {
+                // stylers: [
+                //     { hue: "#00ffe6" },
+                //     { saturation: -20 }
+                // ]
+            },{
+                featureType: "road",
+                stylers: [
+                    { lightness: 100 },
+                    { visibility: "simplified" }
+                ]
+            },{
+                featureType: "road",
+                elementType: "labels",
+                stylers: [
+                    { visibility: "off" }
+                ]
+            }
+        ];
+
+        // Create a new StyledMapType object, passing it the array of styles,
+        // as well as the name to be displayed on the map type control.
+        var styledMap = new google.maps.StyledMapType(styles, {name: "Styled Map"});
+
+        // Create a map object, and include the MapTypeId to add
+        // to the map type control.
+        var mapOptions = {
+            center: myLatlng,
+            zoom: 15,
+            streetViewControl: false,
+            mapTypeControlOptions: {
+                mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+            }
+        };
+        var map = new google.maps.Map(document.getElementById("fullMap"), mapOptions);
+
+        //Associate the styled map with the MapTypeId and set it to display.
+        map.mapTypes.set('map_style', styledMap);
+        map.setMapTypeId('map_style');
+        
+        var marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            animation: google.maps.Animation.DROP,
+            title: 'Place!'
+        });
+    }
+    catch(err) {
+        alert( 'Maps Error: '+err.message);
+    }
+
+    }
+
+
+    //  Other functions
+    
+
+    angular.element(window).bind('resize', function () {
+        calculateScreenSize();
+    });
+
+    function calculateScreenSize() {
+        $scope.item = {
+                height: $window.innerHeight +'px',
+                width:  $window.innerWidth + 'px'
+            };
+    }
 
 }]);

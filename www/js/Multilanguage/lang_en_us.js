@@ -22,6 +22,7 @@ angular.module('events.lang_en_us', [])
 	event_invite: "Done",
 	event_invitedFriend: 'invited friend',
 	event_invitedFriends: 'invited friends',
+	event_map: 'Map',
 	event_myEvents_noEvents: 'You don\'t have events',
 	event_myEvents_title: 'My events',
 	event_new: 'New event',

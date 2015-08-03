@@ -81,6 +81,10 @@ body > * {
 	z-index: 5000;
 }
 
+.loading-container .loading {
+	padding: 23px 20px 17px;
+}
+
 /* Header Slide */
 
 .dynamicHeader {
@@ -133,6 +137,12 @@ body > * {
 	width: 100px;
 	border-radius: 7px;
 }
+#addressInfo.bottom {
+	top: auto;
+	bottom: 30px;
+	right: 30px;
+}
+
 #addressInfo .info {
 	font-size: 12px;
 	height: 70px;

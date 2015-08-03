@@ -40,7 +40,7 @@
                 {{showEvent.place_name}}
             </h2>
 
-            <button ng-hide="!isShowJoinButton" ng-click="joinEvent()" class="themeButton joinButton" translate="event_newEvent_join">
+            <button ng-hide="!isShowJoinButton || isShowJoinButton == undefined" ng-click="joinEvent()" class="themeButton joinButton" translate="event_newEvent_join">
                 JOIN
             </button>
 
@@ -79,7 +79,7 @@
 
 
         <!-- Event Place  -->
-        <ion-item class="noPadding white" ng-click="editPlacePressed()">
+        <ion-item class="noPadding white" ng-click="placePressed()">
 
             <a class="rightIcon" ng-hide="!isEdit">
                 <i class="icon ion-edit edit"></i>

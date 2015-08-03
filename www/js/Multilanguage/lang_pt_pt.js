@@ -22,6 +22,7 @@ angular.module('events.lang_pt_pt', [])
 	event_invite: "Confirmar",
 	event_invitedFriend: 'convidado',
 	event_invitedFriends: 'convidados',
+	event_map: 'Mapa',
 	event_myEvents_noEvents: 'Nenhum evento programado',
 	event_myEvents_title: 'Os meus eventos',
 	event_new: 'Novo evento',
