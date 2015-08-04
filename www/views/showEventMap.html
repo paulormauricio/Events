@@ -5,7 +5,7 @@
         <h1 class="title" translate="event_map"></h1>
 </ion-header-bar>
 
-<ion-view>
+<ion-view ng-style="{'width': item.width, 'height': item.height}">
 
   <table id="addressInfo" ng-show="showEvent.place_address" class="bottom">
   <tr>
@@ -15,6 +15,6 @@
       </td>
   </tr>
   </table>
-  <div id="fullMap" class="" data-tap-disabled="true" ng-style="{'width': item.width, 'height': item.height}"></div>
+  <div id="fullMap" class="" data-tap-disabled="true"></div>
 
 </ion-view>
