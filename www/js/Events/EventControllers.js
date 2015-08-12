@@ -6,6 +6,8 @@ angular.module('events.EventControllers',[])
         '$state', 
         '$scope', 
         '$ionicLoading', 
+        '$cordovaNetwork',
+        '$filter',
         'Event', 
         'Participant', 
         function( 
@@ -13,6 +15,8 @@ angular.module('events.EventControllers',[])
             $state, 
             $scope,
             $ionicLoading,
+            $cordovaNetwork,
+            $filter,
             Event,
             Participant
         )
@@ -20,19 +24,17 @@ angular.module('events.EventControllers',[])
 
 console.log('');
 console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
+    
+    
+    $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
-    $scope.loadingIndicator = $ionicLoading.show({
-        content: 'Loading events',
-        animation: 'fade-in',
-        showBackdrop: false,
-        maxWidth: 200,
-        showDelay: 500
-    });
     calculateColectionItemSize();
 
-    Event.getMyEvents().then(function(objects) {
+    Event.loadMyEvents().then(function(objects) {
         $scope.myEvents = objects;
         console.log('My Events: ', objects);
+    })
+    .finally( function() {
         $ionicLoading.hide();
     });
 
@@ -49,6 +51,8 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 
         Event.getNew().then(function(objects) {
             $scope.newEvents = objects;
+        })
+        .finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     }
@@ -60,8 +64,9 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 
     $scope.joinNewEvent = function(newEvent, index) {
         Participant.updateByEvent(newEvent, Parse.User.current(), true);
-        $scope.myEvents.push(newEvent);
         $scope.newEvents.splice(index, 1);
+        $scope.myEvents.push(newEvent);
+        Event.updateEventLocally(newEvent);
     }
 
     angular.element(window).bind('resize', function () {
@@ -98,6 +103,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
             '$ionicLoading', 
             '$ionicActionSheet',
             '$timeout',
+            '$cordovaNetwork',
             'userlocation',
             'Weather',
             function(
@@ -110,6 +116,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
                 $ionicLoading,
                 $ionicActionSheet,
                 $timeout,
+                $cordovaNetwork,
                 userlocation,
                 Weather
             )
@@ -117,15 +124,10 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 console.log('');
 console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
-    $scope.loadingIndicator = $ionicLoading.show({
-        content: 'Loading Data',
-        animation: 'fade-in',
-        showBackdrop: false,
-        maxWidth: 200,
-        showDelay: 500
-    });
+    $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
     if( !Event.showEvent.id ) {
+        console.log('$stateParams.objectId: ', $stateParams.objectId);
         Event.get($stateParams.objectId).then(function(object) {
             if(object == undefined ) {
                 $state.go('events');
@@ -162,8 +164,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     }
 
     function loadEventDetail() {
-        //$scope.class_pane = 'cover';
-        
+console.log('Event.showEvent :', Event.showEvent);
         $scope.showEvent = Event.showEvent;
         console.log('Show event: ', $scope.showEvent);
 
@@ -174,25 +175,38 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
             $scope.showEvent.place_image_url = 'img/themes/'+$scope.showEvent.theme+'.png';
         }
 
-        $scope.showEvent.participants = {};
-        Participant.getAll(Event.showEvent, true).then(function(result) {
-            $scope.showEvent.participants = result;
-            console.log('Participantes: ', $scope.showEvent.participants);
+        var isOffline = false;
+        if( window.connection ) {
+            if( $cordovaNetwork.isOffline() ) {
+                isOffline = true;
+            }
+        }
 
-            var count = 0;
-            for (var i = 0; i<$scope.showEvent.participants.length; i++) {
-                if( $scope.showEvent.participants[i].id == Parse.User.current().id )
-                    count++;
-            };
-            if(count==0) 
-                $scope.isShowJoinButton = true;
-            else
-                $scope.isShowEditButton = true;
+        if( !isOffline ) {
+            $scope.showEvent.participants = {};
+            Participant.getAll(Event.showEvent, true).then(function(result) {
+                $scope.showEvent.participants = result;
+                console.log('Participantes: ', $scope.showEvent.participants);
 
-        })
-        .catch(function(error) {
-            alert('Get participants Error: '+error);
-        });
+                // Store Participants Locally
+                Event.updateEventLocally($scope.showEvent);
+
+                // Validar se o utilizador vai ao evento
+                var count = 0;
+                for (var i = 0; i<$scope.showEvent.participants.length; i++) {
+                    if( $scope.showEvent.participants[i].id == Parse.User.current().id )
+                        count++;
+                };
+                if(count==0) 
+                    $scope.isShowJoinButton = true;
+                else
+                    $scope.isShowEditButton = true;
+
+            })
+            .catch(function(error) {
+                alert('Get participants Error: '+error);
+            });
+        }
 
         $scope.weather = {};
         getLocationWeather();
@@ -245,6 +259,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
         Participant.updateByEvent($scope.showEvent, Parse.User.current(), true);
         $scope.isShowJoinButton = false;
         $scope.isShowEditButton = true;
+        Event.updateEventLocally($scope.showEvent);
 
         var newParticipant = {
             id: Parse.User.current().id,
@@ -255,10 +270,6 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
             isHidden: false
         };
         $scope.showEvent.participants.unshift(newParticipant);
-
-        console.log('-------------------------');
-        console.log('WARNING: Não esquecer de colocar o evento nos MyEvents after Join');
-        console.log('-------------------------');
     }
 
 //  Place Section  ------------------------
@@ -268,6 +279,12 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     }
 
     function initializeGoogleMaps(lat, lng) {
+
+        if( window.connection ) {
+            if( $cordovaNetwork.isOffline() ) {
+                return;
+            }
+        }
 
         if(!window.google) {
             alert('Google Maps library not loaded!');
@@ -411,6 +428,12 @@ catch(err) {
 
         if( !$scope.isEdit && $scope.showEvent.date ) return;
 
+        if( window.connection ) {
+            if( $cordovaNetwork.isOffline() ) {
+                return;
+            }
+        }
+
         $scope.showAngularDateEditor = true;
 
         console.log(Event.showEvent);
@@ -444,7 +467,6 @@ catch(err) {
                     case 'cancel':
                         return;
                     default:
-                        alert("date result: " + newDate);
                         break;
                 }
                 saveDate(newDate);
@@ -573,13 +595,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
 
     $scope.isNew = $stateParams.isNew ? true : false;
 
-    $scope.loadingIndicator = $ionicLoading.show({
-        content: 'Loading Data',
-        animation: 'fade-in',
-        showBackdrop: false,
-        maxWidth: 200,
-        showDelay: 500
-    });
+    $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
     if( $stateParams.objectId == '' ) {
         $scope.editEvent = {name: ''};
@@ -626,13 +642,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
             $scope.editEvent.name = $filter('translate')(theme.name);
         }
 
-        $scope.loadingIndicator = $ionicLoading.show({
-            content: 'Loading Data',
-            animation: 'fade-in',
-            showBackdrop: false,
-            maxWidth: 200,
-            showDelay: 500
-        });
+        $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
         Event.myEvent = $scope.editEvent;
         
@@ -641,16 +651,20 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
         Event.save($scope.isNew).then(function(savedEvent) {
 
             Event.myEvent.id = savedEvent.id;
+            Event.myEvent._id = savedEvent.id;
             if($scope.isNew) {
                 Participant.store(Event.myEvent, Parse.User.current(), true);
             }
-            $ionicLoading.hide();
+            
             if( !$scope.isNew ) {
                 $state.go('showEvent', {objectId: savedEvent.id});
             }
             else {
                 $state.go('editEventFriends', {isNew: true, objectId: savedEvent.id}, {reload: true});
             }
+        })
+        .finally( function() {
+            $ionicLoading.hide();
         });
 
     }
@@ -705,13 +719,7 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
 
     $scope.isNew = $stateParams.isNew ? true : false;
 
-    $scope.loadingIndicator = $ionicLoading.show({
-        content: 'Loading Data',
-        animation: 'fade-in',
-        showBackdrop: false,
-        maxWidth: 200,
-        showDelay: 500
-    });
+    $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
     if( $stateParams.objectId == '' ) {
         $scope.editEvent = {};
@@ -855,13 +863,7 @@ console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
 
     $scope.isNew = $stateParams.isNew ? true : false;
 
-    $scope.loadingIndicator = $ionicLoading.show({
-        content: 'Loading Data',
-        animation: 'fade-in',
-        showBackdrop: false,
-        maxWidth: 200,
-        showDelay: 500
-    });
+    $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
     if( $stateParams.objectId == '' ) {
         $scope.editEvent = {};
@@ -994,13 +996,7 @@ console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
 console.log('');
 console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
 
-    $scope.loadingIndicator = $ionicLoading.show({
-        content: 'Loading Data',
-        animation: 'fade-in',
-        showBackdrop: false,
-        maxWidth: 200,
-        showDelay: 500
-    });
+    $scope.loadingIndicator = $ionicLoading.show({showBackdrop: false});
 
     $scope.showEvent = Event.showEvent;
 
@@ -1031,6 +1027,12 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
     }
 
     function initializeGoogleMaps(lat, lng) {
+
+        if( window.connection ) {
+            if( $cordovaNetwork.isOffline() ) {
+                return;
+            }
+        }
 
         console.log('Initialize Maps (lat, lng): '+lat+', '+lng);
 

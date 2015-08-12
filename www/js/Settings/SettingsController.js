@@ -9,6 +9,7 @@ angular.module('events.SettingsControllers', [])
       '$timeout',
       '$translate',
       'Settings', 
+      'Event',
       function(
         $scope, 
         $state, 
@@ -16,7 +17,8 @@ angular.module('events.SettingsControllers', [])
         $ionicActionSheet,
         $timeout,
         $translate,
-        Settings
+        Settings,
+        Event
       )
     {
 console.log('');
@@ -68,7 +70,9 @@ console.log('<<<<<<-----------   Settings Screen  ---------->>>>>');
       
       Parse.User.logOut();
 
-      ionic.Platform.exitApp();
+      Event.destroy();
+
+      //ionic.Platform.exitApp();
       
       $state.go('login');
     };

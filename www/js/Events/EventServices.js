@@ -1,101 +1,206 @@
 angular.module('events.EventServices',[])
 
 
-.service('Event',['$rootScope', '$q' , function($rootScope, $q ){
+.service('Event',['$rootScope', '$q', '$cordovaNetwork', '$timeout', function($rootScope, $q, $cordovaNetwork, $timeout){
+
+console.log('<------ Start Events ----------->');
+
+	var _db = new PouchDB('events', {adapter: 'websql'});
+	var _myEvents = [];
 
 	var Event = Parse.Object.extend("Event");
 	var Participant = Parse.Object.extend("Participant");
 
+	this.isForceGetEvents = false;
 	this.myEvent = null;
-
 	this.showEvent = {};
 
 
+    // Listen for changes on the database.
+    //_db.changes({ live: true, since: 'now', include_docs: true}).on('change', onDatabaseChange);
+
+	this.loadMyEvents = function() {
+
+		if( this.isForceGetEvents ) {
+			console.log('Force get MyEvents');
+			this.isForceGetEvents = false;
+			return this.getMyEvents();
+		}
+		if( _db === undefined ) {
+			alert('Database not loaded!');
+			return this.getMyEvents();
+		}
+
+	    if (_myEvents.length == 0) {
+
+	       return $q.when(_db.allDocs({ include_docs: true}))
+	            .then(function(docs) {
+
+	                // Each row has a .doc object and we just want to send an 
+	                // array of myEvents objects back to the calling controller,
+	                // so let's map the array to contain just the .doc objects.
+	                _myEvents = docs.rows.map(function(row) {
+	                    row.doc.date = row.doc.date ? new Date(row.doc.date) : undefined;
+
+						// Unserialize participants
+						row.doc.participants = angular.fromJson(row.doc.participants);
+
+	                    return row.doc;
+	                });
+
+					console.log('_myEvents: ', _myEvents);
+
+	                return _myEvents;
+	            });
+	    } else {
+	        // Return cached data as a promise
+	        console.log('Loaded from cache');
+	        return $q.when(_myEvents);
+	    }
+	}
+
+	function onDatabaseChange(change) {  
+console.log('----->  Database change: ', change);
+	    var index = findIndex(_myEvents, change.id);
+	    var myEvent = _myEvents[index];
+
+	    if (change.deleted) {
+	        if (myEvent) {
+	            _myEvents.splice(index, 1); // delete
+	        }
+	    } else {
+	        if (myEvent && myEvent._id === change.id) {
+	            _myEvents[index] = change.doc; // update
+	        } else {
+	            _myEvents.splice(index, 0, change.doc) // insert
+	        }
+	    }
+
+	}
+	// Binary search, the array is by default sorted by _id.
+	function findIndex(array, id) {  
+	    var low = 0, high = array.length, mid;
+	    while (low < high) {
+		    mid = (low + high) >>> 1;
+		    array[mid]._id < id ? low = mid + 1 : high = mid
+	    }
+	    return low;
+	}
+
 	this.getMyEvents = function() {
-			var deferred = $q.defer();
+		_myEvents = [];
+		var deferred = $q.defer();
 
-			var query = new Parse.Query(Event);
-			var innerQuery = new Parse.Query(Participant);
+		// Validate network connection
+		if(window.Connection) {
+			if( $cordovaNetwork.isOffline() ) {
+				$timeout(function() {
+					$rootScope.$apply(function() { deferred.resolve([]); });
+				}, 100);
+				return deferred.promise;
+			}
+		}
 
-			innerQuery.matchesQuery("Event", query);
-			innerQuery.equalTo("User", Parse.User.current() );
-			innerQuery.equalTo("isHidden", false );
-			innerQuery.equalTo("isGoing", true );
-			innerQuery.include("Event");
+		var query = new Parse.Query(Event);
+		var innerQuery = new Parse.Query(Participant);
 
-			innerQuery.find({
-			  success: function(objects) {
-			  	console.log('Events List get successfully!');
+		innerQuery.matchesQuery("Event", query);
+		innerQuery.equalTo("User", Parse.User.current() );
+		innerQuery.equalTo("isHidden", false );
+		innerQuery.equalTo("isGoing", true );
+		innerQuery.include("Event");
 
-				var results = [];
+		innerQuery.find({
+		  success: function(objects) {
+		  	console.log('getMyEvents: List get successfully!');
 
-				angular.forEach(objects, function(object, key) {
-					var result = {};
-					result.id = object.get('Event').id;
-					result.name = object.get('Event').get('name');
-					result.theme = object.get('Event').get('theme');
-					result.place_id = object.get('Event').get('place_id');
-					result.place_name = object.get('Event').get('place_name');
-					result.place_address = object.get('Event').get('place_address');
-					result.place_image_url = object.get('Event').get('place_image_url');
-					result.place_lat = object.get('Event').get('place_lat');
-					result.place_lng = object.get('Event').get('place_lng');
-					result.date = object.get('Event').get('date');
-					this.push(result);
-				}, results);
+			var results = objects.map(function(object) {
 
-			    $rootScope.$apply(function() { deferred.resolve(results); });
-
-			  },
-			  error: function(error) {
-			    alert("getMyEvents Error: " + error.code + " " + error.message);
-			  }
+				var result = {};
+				result.id = object.get('Event').id;
+				result._id = object.get('Event').id;
+				result.name = object.get('Event').get('name');
+				result.theme = object.get('Event').get('theme');
+				result.place_id = object.get('Event').get('place_id');
+				result.place_name = object.get('Event').get('place_name');
+				result.place_address = object.get('Event').get('place_address');
+				result.place_image_url = object.get('Event').get('place_image_url');
+				result.place_lat = object.get('Event').get('place_lat');
+				result.place_lng = object.get('Event').get('place_lng');
+				result.date = object.get('Event').get('date');
+				return result;
 			});
-			return deferred.promise;
-		};
+
+			//Add to local database
+			$q.when(_db.bulkDocs(results)).catch(function(error){alert('bulkDocs Error: '+error)});
+			_myEvents = results;
+
+		    $rootScope.$apply(function() { deferred.resolve(results); });
+
+		  },
+		  error: function(error) {
+		    console.log("getMyEvents Error: " + error.code + " " + error.message);
+		    //throw new Error(error); 
+		    $rootScope.$apply(function() { deferred.resolve([]); });
+		  }
+		});
+		return deferred.promise;
+	};
 
 	this.getNew = function() {
-			var deferred = $q.defer();
+		var deferred = $q.defer();
 
-			var query = new Parse.Query(Event);
-			var innerQuery = new Parse.Query(Participant);
+		// Validate network connection
+		if(window.Connection) {
+			if( $cordovaNetwork.isOffline() ) {
+				$timeout(function() {
+					$rootScope.$apply(function() { deferred.resolve([]); });
+				}, 100);
+				return deferred.promise;
+			}
+		}
 
-			innerQuery.matchesQuery("Event", query);
-			innerQuery.equalTo("User", Parse.User.current() );
-			innerQuery.equalTo("isHidden", false );
-			innerQuery.equalTo("isGoing", false );
-			innerQuery.include("Event");
+		var query = new Parse.Query(Event);
+		var innerQuery = new Parse.Query(Participant);
 
-			innerQuery.find({
-			  success: function(objects) {
-			  	console.log('Events List get successfully!');
+		innerQuery.matchesQuery("Event", query);
+		innerQuery.equalTo("User", Parse.User.current() );
+		innerQuery.equalTo("isHidden", false );
+		innerQuery.equalTo("isGoing", false );
+		innerQuery.include("Event");
 
-				var results = [];
+		innerQuery.find({
+		  success: function(objects) {
+		  	console.log('getNew: Events List get successfully!');
 
-				angular.forEach(objects, function(object, key) {
-					var result = {};
-					result.id = object.get('Event').id;
-					result.name = object.get('Event').get('name');
-					result.theme = object.get('Event').get('theme');
-					result.place_id = object.get('Event').get('place_id');
-					result.place_name = object.get('Event').get('place_name');
-					result.place_address = object.get('Event').get('place_address');
-					result.place_image_url = object.get('Event').get('place_image_url');
-					result.place_lat = object.get('Event').get('place_lat');
-					result.place_lng = object.get('Event').get('place_lng');
-					result.date = object.get('Event').get('date');
-					this.push(result);
-				}, results);
+			var results = objects.map(function(object) {
 
-			    $rootScope.$apply(function() { deferred.resolve(results); });
-
-			  },
-			  error: function(error) {
-			    alert("getNewEvent Error: " + error.code + " " + error.message);
-			  }
+				var result = {};
+				result.id = object.get('Event').id;
+				result._id = object.get('Event').id;
+				result.name = object.get('Event').get('name');
+				result.theme = object.get('Event').get('theme');
+				result.place_id = object.get('Event').get('place_id');
+				result.place_name = object.get('Event').get('place_name');
+				result.place_address = object.get('Event').get('place_address');
+				result.place_image_url = object.get('Event').get('place_image_url');
+				result.place_lat = object.get('Event').get('place_lat');
+				result.place_lng = object.get('Event').get('place_lng');
+				result.date = object.get('Event').get('date');
+				return result;
 			});
-			return deferred.promise;
-		};
+
+		    $rootScope.$apply(function() { deferred.resolve(results); });
+
+		  },
+		  error: function(error) {
+		    console.log("getNewEvent Error: " + error.code + " " + error.message);
+		    //throw new Error(error); 
+		    $rootScope.$apply(function() { deferred.resolve([]); });
+		  }
+		});
+		return deferred.promise;
+	};
 
 	this.get = function(id) {
 			var deferred = $q.defer();
@@ -114,6 +219,7 @@ angular.module('events.EventServices',[])
 			  	}
 				else {
 					result.id = object.id;
+					result._id = object.id;
 					result.name = object.get('name');
 					result.theme = object.get('theme');
 					result.place_id = object.get('place_id');
@@ -124,9 +230,23 @@ angular.module('events.EventServices',[])
 					result.place_lng = object.get('place_lng');
 					result.date = object.get('date');
 					result.participants = null;
-				}
 
-				this.showEvent = result;
+					this.showEvent = result;
+
+					_db.get(object.id)
+					.then(function (doc) {
+						onDatabaseChange({doc: result, deleted: false, id: result._id});
+					})
+					.catch(function(error) {
+						if( error.name === 'not_found') {
+							console.log('Document not found in local DB');
+						}
+						else {
+							console.log('Get Doc error: ', error);
+						}
+					});
+
+				}
 				
 			  	$rootScope.$apply(function() { deferred.resolve(result); });
 
@@ -168,6 +288,13 @@ angular.module('events.EventServices',[])
 			  success: function(newEvent) {
 			  	console.log('Event saved successfully!');
 
+			  	myEvent_temp.id = newEvent.id;
+				myEvent_temp._id = newEvent.id;
+				delete myEvent_temp.createdBy;
+				$q.when(_db.put(myEvent_temp));
+				
+				onDatabaseChange({doc: myEvent_temp, deleted: false, id: myEvent_temp._id});
+
 			  	$rootScope.$apply(function() { deferred.resolve(newEvent); });
 
 			  },
@@ -175,8 +302,35 @@ angular.module('events.EventServices',[])
 			  	alert('Failed to create event: ' + error.message);
 			  }
 			});
+
+
 			return deferred.promise;
 		};
+
+	this.updateEventLocally = function(myEvent) {
+
+		_db.get(myEvent.id)
+		.then(function (doc) {
+
+			myEvent._id = myEvent.id;
+			// Serialize participants
+			myEvent.participants = angular.toJson(myEvent.participants, false);
+
+			$q.when(_db.put(myEvent));
+			// Unserialize participants
+			myEvent.participants = angular.fromJson(myEvent.participants);
+			onDatabaseChange({doc: myEvent, deleted: false, id: myEvent._id});
+		})
+		.catch(function(error) {
+			if( error.name === 'not_found') {
+				console.log('Document not found in local DB');
+			}
+			else {
+				console.log('Get Doc error: ', error);
+			}
+		});
+
+	}
 
 	this.resetMyEvent = function() {
 		this.myEvent = null;
@@ -193,21 +347,12 @@ angular.module('events.EventServices',[])
 		this.save();
 	}
 
-	this.newParticipant = function() {
-		this.myEvent.increment('totalParticipants');
-		this.myEvent.save();
+	this.leaveEvent = function(myEvent) {
+		//$q.when(_db.remove(myEvent));
 	}
-	this.removeParticipant = function() {
-		this.myEvent.increment("totalParticipants", -1);
-		this.myEvent.save();
-	}
-	this.newGoingParticipant = function() {
-		this.myEvent.increment('goingParticipants');
-		this.myEvent.save();
-	}	
-	this.removeGoingParticipant = function() {
-		this.myEvent.increment("goingParticipants", -1);
-		this.myEvent.save();
+
+	this.destroy = function() {
+		_db.destroy().then(function() { console.log('Events DB deleted') });
 	}
 
 }])
@@ -363,7 +508,7 @@ angular.module('events.EventServices',[])
    }
 }])
 
-.factory('Theme',['$rootScope', '$q', function($rootScope, $q){
+.factory('Theme',['$rootScope', '$q', '$timeout', function($rootScope, $q, $timeout){
 
 	var themes = [
 		{name: 'beach', 	tags_en_us: 'beach, sand, sea, sun',	tags_pt_pt: 'praia, areia, mar, sol'},
@@ -383,7 +528,7 @@ angular.module('events.EventServices',[])
 		getAll: function() {
 			var deferred = $q.defer();
 
-			setTimeout(function() {
+			$timeout(function() {
 				$rootScope.$apply(function() { deferred.resolve(themes); });
 			}, 1000);
 

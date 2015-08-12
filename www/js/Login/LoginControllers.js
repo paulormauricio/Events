@@ -4,11 +4,13 @@ angular.module('events.LoginControllers', [])
     [
       '$scope', 
       '$state',
+      'Event',
       'PushService',
       'Language',
       function(
         $scope, 
         $state,
+        Event,
         PushService,
         Language
       )
@@ -136,9 +138,12 @@ angular.module('events.LoginControllers', [])
           }
         );
         
+
         PushService.init();
 
         Language.set();
+
+        Event.isForceGetEvents = true;
         
         $state.go('events');
       })

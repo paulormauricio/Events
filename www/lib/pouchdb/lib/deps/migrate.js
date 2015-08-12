@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var utils = require('../utils');
+var isLocalId = require('./docs/isLocalId');
 var merge = require('../merge');
 var levelup = require('levelup');
 var through = require('through2').obj;
@@ -56,6 +56,7 @@ exports.toSublevel = function (name, db, callback) {
     var done = [];
     stores.forEach(function (store, i) {
       move(store, i, function (err, storePath) {
+        /* istanbul ignore if */
         if (err) {
           return callback(err);
         }
@@ -133,7 +134,7 @@ exports.localAndMetaStores = function (db, stores, callback) {
           startKey: '_',
           endKey: '_\xFF'
         }).pipe(through(function (ch, _, next) {
-          if (!utils.isLocalId(ch.key)) {
+          if (!isLocalId(ch.key)) {
             return next();
           }
           batches.push({
@@ -167,7 +168,7 @@ exports.localAndMetaStores = function (db, stores, callback) {
           }
           deletedSeqs[seq] = true;
           stores.bySeqStore.get(seq, function (err, resp) {
-            if (err || !utils.isLocalId(resp._id)) {
+            if (err || !isLocalId(resp._id)) {
               return next();
             }
             batches.push({

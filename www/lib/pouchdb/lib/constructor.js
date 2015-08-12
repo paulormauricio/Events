@@ -1,6 +1,8 @@
 /*globals cordova */
 "use strict";
 
+var debug = require('debug');
+
 var Adapter = require('./adapter');
 var utils = require('./utils');
 var TaskQueue = require('./taskqueue');
@@ -10,6 +12,37 @@ function defaultCallback(err) {
   if (err && global.debug) {
     console.error(err);
   }
+}
+
+// OK, so here's the deal. Consider this code:
+//     var db1 = new PouchDB('foo');
+//     var db2 = new PouchDB('foo');
+//     db1.destroy();
+// ^ these two both need to emit 'destroyed' events,
+// as well as the PouchDB constructor itself.
+// So we have one db object (whichever one got destroy() called on it)
+// responsible for emitting the initial event, which then gets emitted
+// by the constructor, which then broadcasts it to any other dbs
+// that may have been created with the same name.
+function prepareForDestruction(self, opts) {
+
+  function constructorDestructionListener(name) {
+    if (name === opts.originalName) {
+      self.removeListener('destroyed', destructionListener);
+      self.emit('destroyed', self);
+    }
+  }
+
+  function destructionListener() {
+    // we destroyed ourselves, so no need to listen on the constructor
+    PouchDB.removeListener('destroyed', constructorDestructionListener);
+    PouchDB.emit('destroyed', opts.originalName);
+    //so we don't have to sift through all dbnames
+    PouchDB.emit(opts.originalName, 'destroyed');
+  }
+
+  PouchDB.once('destroyed', constructorDestructionListener);
+  self.once('destroyed', destructionListener);
 }
 
 utils.inherits(PouchDB, Adapter);
@@ -72,6 +105,8 @@ function PouchDB(name, opts, callback) {
         }
         opts.adapter = opts.adapter || backend.adapter;
         self._adapter = opts.adapter;
+        debug('pouchdb:adapter')('Picked adapter: ' + opts.adapter);
+
         self._db_name = originalName;
         if (!PouchDB.adapters[opts.adapter]) {
           error = new Error('Adapter is missing');
@@ -86,11 +121,6 @@ function PouchDB(name, opts, callback) {
         }
       } catch (err) {
         self.taskqueue.fail(err);
-        self.changes = utils.toPromise(function (opts) {
-          if (opts.complete) {
-            opts.complete(err);
-          }
-        });
       }
     }());
     if (error) {
@@ -123,13 +153,8 @@ function PouchDB(name, opts, callback) {
         }
         return;
       }
-      function destructionListener() {
-        PouchDB.emit('destroyed', opts.originalName);
-        //so we don't have to sift through all dbnames
-        PouchDB.emit(opts.originalName, 'destroyed');
-        self.removeListener('destroyed', destructionListener);
-      }
-      self.on('destroyed', destructionListener);
+      prepareForDestruction(self, opts);
+
       self.emit('created', self);
       PouchDB.emit('created', opts.originalName);
       self.taskqueue.ready(self);
@@ -155,6 +180,6 @@ function PouchDB(name, opts, callback) {
   self.catch = promise.catch.bind(promise);
 }
 
-PouchDB.debug = require('debug');
+PouchDB.debug = debug;
 
 module.exports = PouchDB;

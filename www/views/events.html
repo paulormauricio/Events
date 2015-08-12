@@ -3,7 +3,7 @@
             <i class="ion-person"></i>
         </button>
         <h1 class="title"></h1>
-        <button class="button button-clear" ui-sref="editEventName({isNew: true, reload: true})">
+        <button class="button button-clear" ui-sref="editEventName({isNew: true, reload: true})" ng-hide="isOffline">
             <i class="ion-plus-round"></i>
         </button>
 </ion-header-bar>
@@ -33,7 +33,7 @@
         </ion-item>
     </ion-list>
 
-    <ion-list class="collectionList bottomSpace">
+    <ion-list class="collectionList bottomSpace" ng-hide="isOffline">
     <!-- New Events -->
         <h1 class="item-divider clean themeBorderColor themeColor" translate="event_newEvents_title">
             New events

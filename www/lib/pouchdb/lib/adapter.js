@@ -7,6 +7,8 @@ var EventEmitter = require('events').EventEmitter;
 var upsert = require('./deps/upsert');
 var Changes = require('./changes');
 var Promise = utils.Promise;
+var isDeleted = require('./deps/docs/isDeleted');
+var isLocalId = require('./deps/docs/isLocalId');
 
 /*
  * A generic pouch adapter
@@ -46,7 +48,7 @@ function cleanDocs(docs) {
       for (var j = 0; j < atts.length; j++) {
         var att = atts[j];
         doc._attachments[att] = utils.pick(doc._attachments[att],
-          ['data', 'digest', 'content_type', 'revpos', 'stub']);
+          ['data', 'digest', 'content_type', 'length', 'revpos', 'stub']);
       }
     }
   }
@@ -202,7 +204,7 @@ AbstractPouchDB.prototype.put =
   if (error) {
     return callback(error);
   }
-  if (utils.isLocalId(doc._id) && typeof this._putLocal === 'function') {
+  if (isLocalId(doc._id) && typeof this._putLocal === 'function') {
     if (doc._deleted) {
       return this._removeLocal(doc, callback);
     } else {
@@ -305,7 +307,7 @@ AbstractPouchDB.prototype.remove =
   opts.was_delete = true;
   var newDoc = {_id: doc._id, _rev: (doc._rev || opts.rev)};
   newDoc._deleted = true;
-  if (utils.isLocalId(newDoc._id) && typeof this._removeLocal === 'function') {
+  if (isLocalId(newDoc._id) && typeof this._removeLocal === 'function') {
     return this._removeLocal(doc, callback);
   }
   this.bulkDocs({docs: [newDoc]}, opts, yankError(callback));
@@ -468,7 +470,7 @@ AbstractPouchDB.prototype.get =
   if (typeof id !== 'string') {
     return callback(errors.error(errors.INVALID_ID));
   }
-  if (utils.isLocalId(id) && typeof this._getLocal === 'function') {
+  if (isLocalId(id) && typeof this._getLocal === 'function') {
     return this._getLocal(id, callback);
   }
   var leaves = [], self = this;
@@ -546,7 +548,7 @@ AbstractPouchDB.prototype.get =
       }
     }
 
-    if (utils.isDeleted(metadata, doc._rev)) {
+    if (isDeleted(metadata, doc._rev)) {
       doc._deleted = true;
     }
 
@@ -583,11 +585,6 @@ AbstractPouchDB.prototype.get =
       }
     }
 
-    if (opts.local_seq) {
-      utils.info('The "local_seq" option is deprecated and will be removed');
-      doc._local_seq = result.metadata.seq;
-    }
-
     if (opts.attachments && doc._attachments) {
       var attachments = doc._attachments;
       var count = Object.keys(attachments).length;
@@ -595,8 +592,10 @@ AbstractPouchDB.prototype.get =
         return callback(null, doc);
       }
       Object.keys(attachments).forEach(function (key) {
-        this._getAttachment(attachments[key],
-                            {encode: true, ctx: ctx}, function (err, data) {
+        this._getAttachment(attachments[key], {
+          binary: opts.binary,
+          ctx: ctx
+        }, function (err, data) {
           var att = doc._attachments[key];
           att.data = data;
           delete att.stub;
@@ -609,6 +608,7 @@ AbstractPouchDB.prototype.get =
     } else {
       if (doc._attachments) {
         for (var key in doc._attachments) {
+          /* istanbul ignore else */
           if (doc._attachments.hasOwnProperty(key)) {
             doc._attachments[key].stub = true;
           }
@@ -634,6 +634,7 @@ AbstractPouchDB.prototype.getAttachment =
     }
     if (res.doc._attachments && res.doc._attachments[attachmentId]) {
       opts.ctx = res.ctx;
+      opts.binary = true;
       self._getAttachment(res.doc._attachments[attachmentId], opts, callback);
     } else {
       return callback(errors.error(errors.MISSING_DOC));
@@ -695,6 +696,7 @@ AbstractPouchDB.prototype.info = utils.adapterFun('info', function (callback) {
     // assume we know better than the adapter, unless it informs us
     info.db_name = info.db_name || self._db_name;
     info.auto_compaction = !!(self.auto_compaction && self.type() !== 'http');
+    info.adapter = self.type();
     callback(null, info);
   });
 });

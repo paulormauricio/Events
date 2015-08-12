@@ -27,14 +27,20 @@ angular.module('events',
     ]
   )
 
-.run(function($ionicPlatform, $rootScope, $state, $ionicPopup, $translate, $cordovaNetwork, Language) {
+.run(function
+    (
+      $ionicPlatform, 
+      $rootScope, 
+      $state, 
+      $ionicPopup, 
+      $translate, 
+      $cordovaNetwork, 
+      Language, 
+      Event) {
+  
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
-
-    // document.addEventListener("pause", function() {
-    //     alert("The application when to background mode");
-    // }, false);
 
     if(window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -43,26 +49,65 @@ angular.module('events',
       StatusBar.styleDefault();
     }
     if(window.Connection) {
-      if(navigator.connection.type == Connection.NONE) {
-        $ionicPopup.confirm({
+      if( $cordovaNetwork.isOffline() ) {
+        $ionicPopup.alert({
           title: "Internet Disconnected",
-          content: "The internet is disconnected on your device."
+          template: "The internet is disconnected on your device."
         })
         .then(function(result) {
-          if(!result) {
-            console.log('warning result: ', result);
-            alert('Exiting the  App...');
-            //ionic.Platform.exitApp();
-          }
+          
+          alert('Exiting the  App...');
+          //ionic.Platform.exitApp();
+          
         });
       }
     }
 
+    
     Language.set();
+
+    document.addEventListener("online", onOnline, false);
+    document.addEventListener("resume", onResume, false);
+    document.addEventListener("pause", onpause, false);
+    loadMapsApi();
   })
 
+  function onOnline () {
+      loadMapsApi();
+  }
+
+  function onResume () {
+      loadMapsApi();
+  }
+
+  function onPause () {
+      // Stop services
+      alert('App paused');
+  }
+
+  function loadMapsApi () {
+    return;
+
+      if(window.Connection || typeof google === 'undefined') {
+        if( $cordovaNetwork.isOffline() || typeof google.maps !== 'undefined') {
+            return;
+        }
+      }
+      
+      var script_map = document.createElement('script');
+      script_map.type = 'text/javascript';
+      script_map.src = 'https://maps.googleapis.com/maps/api/js?';
+      document.body.appendChild(script_map);
+
+      var script_places = document.createElement('script');
+      script_places.type = 'text/javascript';
+      script_places.src = 'https://maps.googleapis.com/maps/api/js?libraries=places';
+      document.body.appendChild(script_places);
+
+  }
+
   // listen for Offline event
-  $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
+  $rootScope.$on('$cordovaNetwork:offline', function(event, networkState, $rootScope){
     //var offlineState = networkState;
     $ionicPopup.alert({
       title: 'Internet Disconnected',
@@ -70,6 +115,11 @@ angular.module('events',
       okText: 'Continue',
       okType: 'button-light'
     });
+    $rootScope.isOffline = true;
+  });
+  // listen for Online event
+  $rootScope.$on('$cordovaNetwork:online', function(event, networkState, $rootScope){
+    $rootScope.isOffline = false;
   });
 
   // UI Router Authentication Check
