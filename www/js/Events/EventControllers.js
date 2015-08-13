@@ -160,16 +160,21 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
     $scope.doRefresh = function() {
 
+alert( 'navigator.connection.type: ' + navigator.connection.type);
         if( window.connection ) {
             if( navigator.connection.type == Connection.NONE ) {
+                alert('offline');
                 $scope.$broadcast('scroll.refreshComplete');
                 return;
             }
         }
+        alert('online');
 
         Event.get($stateParams.objectId).then(function(object) {
             Event.showEvent = object;
             loadEventDetail();
+        })
+        .finally( function() {
             $scope.$broadcast('scroll.refreshComplete');
         });
     }
