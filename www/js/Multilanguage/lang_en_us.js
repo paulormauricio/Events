@@ -2,6 +2,7 @@ angular.module('events.lang_en_us', [])
 
 .constant('lang_en_us', {
 	cancel: 'Cancel',
+	continue: 'Continue',
 
 	date_at: 'at',
 	date_today: 'Today',
@@ -36,6 +37,9 @@ angular.module('events.lang_en_us', [])
 	event_what: 'What are you planning to do?',
 	event_where: 'Where?',
 	event_who: 'Who?',
+
+	internet_disconnected: 'Internet not connected',
+	internet_disconnected_desc: 'While disconnected you can only browse your current events.',
 
 	locale_change: 'Change language',
 	locale_en_us: 'English',

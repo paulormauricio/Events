@@ -32,6 +32,7 @@ angular.module('events',
       $ionicPlatform, 
       $rootScope, 
       $state, 
+      $filter,
       $ionicPopup, 
       $translate, 
       $cordovaNetwork, 
@@ -107,25 +108,28 @@ angular.module('events',
   }
 
   // listen for Offline event
-  $rootScope.$on('$cordovaNetwork:offline', function(event, networkState, $rootScope){
+  $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
     //var offlineState = networkState;
+
+
     $ionicPopup.alert({
-      title: 'Internet Disconnected',
-      template: 'The internet is disconnected on your device.',
-      okText: 'Continue',
+      title: $filter('translate')('internet_disconnected'),
+      template: $filter('translate')('internet_disconnected_desc'),
+      okText: $filter('translate')('continue'),
       okType: 'button-light'
+    }).then(function() {
+
+      $rootScope.isOffline = true;
+      // Teste
+      alert('isOffline: '+isOffline);
+      alert('$cordovaNetwork.isOffline(): '+$cordovaNetwork.isOffline() );
+      var aux = navigator.connection.type == Connection.NONE;
+      alert('navigator.connection.type: ', aux);
+
     });
-    $rootScope.isOffline = true;
-
-    // Teste
-    alert('isOffline: '+isOffline);
-    alert('$cordovaNetwork.isOffline(): '+$cordovaNetwork.isOffline() );
-    var aux = navigator.connection.type == Connection.NONE;
-
-    alert('navigator.connection.type: ', aux);
 
   });
-  
+
   // listen for Online event
   $rootScope.$on('$cordovaNetwork:online', function(event, networkState, $rootScope){
     $rootScope.isOffline = false;
