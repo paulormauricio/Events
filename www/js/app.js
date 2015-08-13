@@ -134,10 +134,17 @@ angular.module('events',
   // listen for Online event
   $rootScope.$on('$cordovaNetwork:online', function(event, networkState, $rootScope){
 
-    $timeout(function() {
+    $ionicPopup.alert({
+      title: 'internet_connected',
+      template: 'OK',
+      okText: $filter('translate')('continue'),
+      okType: 'button-light'
+    }).then(function() {
+
         $rootScope.isOffline = false;
         alert('isOffline: '+isOffline);
-      }, 100);
+    });
+
   });
 
   // UI Router Authentication Check
