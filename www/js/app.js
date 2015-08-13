@@ -121,10 +121,6 @@ angular.module('events',
     }).then(function() {
 
       $rootScope.isOffline = true;
-      // Teste
-      alert('$cordovaNetwork.isOffline(): '+$cordovaNetwork.isOffline() );
-      var aux = navigator.connection.type == Connection.NONE;
-      alert('navigator.connection.type: ', aux);
 
     });
 
@@ -133,15 +129,7 @@ angular.module('events',
   // listen for Online event
   $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
 
-    $ionicPopup.alert({
-      title: 'internet_connected',
-      template: 'OK',
-      okText: $filter('translate')('continue'),
-      okType: 'button-light'
-    }).then(function() {
-
-        $rootScope.isOffline = false;
-    });
+      $rootScope.isOffline = false;
 
   });
 

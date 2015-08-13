@@ -166,6 +166,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
         if( window.connection ) {
             if( $cordovaNetwork.isOffline() ) {
+                $scope.$broadcast('scroll.refreshComplete');
                 return;
             }
         }
