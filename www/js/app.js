@@ -50,20 +50,6 @@ angular.module('events',
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
-    if(window.Connection) {
-      if( $cordovaNetwork.isOffline() ) {
-        $ionicPopup.alert({
-          title: "Internet Disconnected",
-          template: "The internet is disconnected on your device."
-        })
-        .then(function(result) {
-          
-          alert('Exiting the  App...');
-          //ionic.Platform.exitApp();
-          
-        });
-      }
-    }
 
     
     Language.set();
@@ -90,7 +76,7 @@ angular.module('events',
   function loadMapsApi () {
     return;
 
-      if(window.Connection || typeof google === 'undefined') {
+      if(window.connection || typeof google === 'undefined') {
         if( $cordovaNetwork.isOffline() || typeof google.maps !== 'undefined') {
             return;
         }
