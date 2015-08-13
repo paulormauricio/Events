@@ -108,6 +108,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
             '$ionicLoading', 
             '$ionicActionSheet',
             '$timeout',
+            '$cordovaNetwork',
             'userlocation',
             'Weather',
             function(
@@ -120,6 +121,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
                 $ionicLoading,
                 $ionicActionSheet,
                 $timeout,
+                $cordovaNetwork,
                 userlocation,
                 Weather
             )
