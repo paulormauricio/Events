@@ -6,7 +6,6 @@ angular.module('events.EventControllers',[])
         '$state', 
         '$scope', 
         '$ionicLoading', 
-        '$cordovaNetwork',
         '$filter',
         'Event', 
         'Participant', 
@@ -15,7 +14,6 @@ angular.module('events.EventControllers',[])
             $state, 
             $scope,
             $ionicLoading,
-            $cordovaNetwork,
             $filter,
             Event,
             Participant
@@ -110,7 +108,6 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
             '$ionicLoading', 
             '$ionicActionSheet',
             '$timeout',
-            '$cordovaNetwork',
             'userlocation',
             'Weather',
             function(
@@ -123,7 +120,6 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
                 $ionicLoading,
                 $ionicActionSheet,
                 $timeout,
-                $cordovaNetwork,
                 userlocation,
                 Weather
             )
@@ -165,7 +161,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     $scope.doRefresh = function() {
 
         if( window.connection ) {
-            if( $cordovaNetwork.isOffline() ) {
+            if( navigator.connection.type == Connection.NONE ) {
                 $scope.$broadcast('scroll.refreshComplete');
                 return;
             }
@@ -192,7 +188,7 @@ console.log('Event.showEvent :', Event.showEvent);
 
         var isOffline = false;
         if( window.connection ) {
-            if( $cordovaNetwork.isOffline() ) {
+            if( navigator.connection.type == Connection.NONE ) {
                 isOffline = true;
             }
         }
@@ -296,7 +292,7 @@ console.log('Event.showEvent :', Event.showEvent);
     function initializeGoogleMaps(lat, lng) {
 
         if( window.connection ) {
-            if( $cordovaNetwork.isOffline() ) {
+            if( navigator.connection.type == Connection.NONE ) {
                 return;
             }
         }
@@ -444,7 +440,7 @@ catch(err) {
         if( !$scope.isEdit && $scope.showEvent.date ) return;
 
         if( window.connection ) {
-            if( $cordovaNetwork.isOffline() ) {
+            if( navigator.connection.type == Connection.NONE ) {
                 return;
             }
         }
@@ -1044,7 +1040,7 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
     function initializeGoogleMaps(lat, lng) {
 
         if( window.connection ) {
-            if( $cordovaNetwork.isOffline() ) {
+            if( navigator.connection.type == Connection.NONE ) {
                 return;
             }
         }
