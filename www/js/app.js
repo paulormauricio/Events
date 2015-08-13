@@ -116,10 +116,20 @@ angular.module('events',
       okType: 'button-light'
     });
     $rootScope.isOffline = true;
+
+    // Teste
+    alert('isOffline: '+isOffline);
+    alert('$cordovaNetwork.isOffline(): '+$cordovaNetwork.isOffline() );
+    var aux = navigator.connection.type == Connection.NONE;
+
+    alert('navigator.connection.type: ', aux);
+
   });
+  
   // listen for Online event
   $rootScope.$on('$cordovaNetwork:online', function(event, networkState, $rootScope){
     $rootScope.isOffline = false;
+    alert('isOffline: '+isOffline);
   });
 
   // UI Router Authentication Check

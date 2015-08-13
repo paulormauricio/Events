@@ -45,6 +45,12 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 
     $scope.doRefresh = function() {
 
+        if( window.connection ) {
+            if( $cordovaNetwork.isOffline() ) {
+                return;
+            }
+        }
+
         Event.getMyEvents().then(function(objects) {
             $scope.myEvents = objects;
         });
@@ -156,6 +162,13 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     $scope.isShowEditButton = false;
 
     $scope.doRefresh = function() {
+
+        if( window.connection ) {
+            if( $cordovaNetwork.isOffline() ) {
+                return;
+            }
+        }
+        
         Event.get($stateParams.objectId).then(function(object) {
             Event.showEvent = object;
             loadEventDetail();
