@@ -46,7 +46,8 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
     $scope.doRefresh = function() {
 
         if( window.connection ) {
-            if( $cordovaNetwork.isOffline() ) {
+            if( navigator.connection.type == Connection.NONE ) {
+                $scope.$broadcast('scroll.refreshComplete');
                 return;
             }
         }
@@ -168,7 +169,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
                 return;
             }
         }
-        
+
         Event.get($stateParams.objectId).then(function(object) {
             Event.showEvent = object;
             loadEventDetail();
