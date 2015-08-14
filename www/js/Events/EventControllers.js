@@ -7,6 +7,7 @@ angular.module('events.EventControllers',[])
         '$scope', 
         '$ionicLoading', 
         '$filter',
+        '$cordovaNetwork',
         'Event', 
         'Participant', 
         function( 
@@ -15,6 +16,7 @@ angular.module('events.EventControllers',[])
             $scope,
             $ionicLoading,
             $filter,
+            $cordovaNetwork,
             Event,
             Participant
         )
@@ -42,6 +44,8 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
     });
 
     $scope.doRefresh = function() {
+
+alert('$cordovaNetwork.isOnline()' + $cordovaNetwork.isOnline());
 
         if( window.connection ) {
             if( navigator.connection.type == Connection.NONE ) {
@@ -108,7 +112,6 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
             '$ionicLoading', 
             '$ionicActionSheet',
             '$timeout',
-            '$cordovaNetwork',
             'userlocation',
             'Weather',
             function(
@@ -121,7 +124,6 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
                 $ionicLoading,
                 $ionicActionSheet,
                 $timeout,
-                $cordovaNetwork,
                 userlocation,
                 Weather
             )
@@ -162,8 +164,8 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
     $scope.doRefresh = function() {
 
-alert( 'navigator.connection.type: ' + navigator.connection.type);
 alert('$cordovaNetwork.isOnline()' + $cordovaNetwork.isOnline());
+
         if( window.connection ) {
 alert( 'window.connection: ' + window.connection);
             if( navigator.connection.type == Connection.NONE ) {
@@ -479,7 +481,7 @@ catch(err) {
                 clearButtonLabel: "Clear date"
             };
 
-            datePicker.show(options, function(newDate){
+            $cordovaDatePicker.show(options, function(newDate){
                 switch (newDate) {
                     case 'clear':
                         newDate = '';

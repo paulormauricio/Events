@@ -11,7 +11,6 @@ angular.module('events',
       'events.EventControllers',
       'events.EventServices',
       'events.WeatherServices',
-      'common.GeolocationServices',
       'events.Storage',
       'events.LoginControllers',
       'events.ProfileControllers',
@@ -21,6 +20,7 @@ angular.module('events',
       'events.FriendControllers',
       'events.FriendServices',
       'events.filters',
+      'common.GeolocationServices',
       'common.DynamicHeader',
       'common.DynamicBackgroundImage',
       'events.IonicServices'
@@ -41,6 +41,7 @@ angular.module('events',
       Event) {
   
   $ionicPlatform.ready(function() {
+
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
 
