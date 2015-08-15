@@ -44,7 +44,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
     });
 
     $scope.doRefresh = function() {
-
+console.log('$rootScope: ', $rootScope);
 alert('$rootScope.isOffline' + $rootScope.isOffline);
 
         if( $rootScope.isOffline ) {
@@ -479,7 +479,7 @@ catch(err) {
                 clearButtonLabel: "Clear date"
             };
 
-            $cordovaDatePicker.show(options, function(newDate){
+            datePicker.show(options, function(newDate){
                 switch (newDate) {
                     case 'clear':
                         newDate = '';
