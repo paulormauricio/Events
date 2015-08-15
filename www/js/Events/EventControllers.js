@@ -7,7 +7,7 @@ angular.module('events.EventControllers',[])
         '$scope', 
         '$ionicLoading', 
         '$filter',
-        '$cordovaNetwork',
+        '$rootScope',
         'Event', 
         'Participant', 
         function( 
@@ -16,7 +16,7 @@ angular.module('events.EventControllers',[])
             $scope,
             $ionicLoading,
             $filter,
-            $cordovaNetwork,
+            $rootScope,
             Event,
             Participant
         )
@@ -45,13 +45,13 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 
     $scope.doRefresh = function() {
 
-alert('$cordovaNetwork.isOnline()' + $cordovaNetwork.isOnline());
+alert('$rootScope.isOffline' + $rootScope.isOffline);
 
-        if( window.connection ) {
-            if( navigator.connection.type == Connection.NONE ) {
+        if( $rootScope.isOffline ) {
+            //if( navigator.connection.type == Connection.NONE ) {
                 $scope.$broadcast('scroll.refreshComplete');
                 return;
-            }
+            //}
         }
 
         Event.getMyEvents().then(function(objects) {
@@ -164,15 +164,13 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
     $scope.doRefresh = function() {
 
-alert('$cordovaNetwork.isOnline()' + $cordovaNetwork.isOnline());
 
-        if( window.connection ) {
-alert( 'window.connection: ' + window.connection);
-            if( navigator.connection.type == Connection.NONE ) {
+        if( $rootScope.isOffline ) {
+            //if( navigator.connection.type == Connection.NONE ) {
                 alert('offline');
                 $scope.$broadcast('scroll.refreshComplete');
                 return;
-            }
+            //}
         }
         alert('online');
 
