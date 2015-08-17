@@ -2,7 +2,9 @@ angular.module('events.lang_en_us', [])
 
 .constant('lang_en_us', {
 	cancel: 'Cancel',
+	closed_now: 'Closed now',
 	continue: 'Continue',
+	done: 'Done',
 
 	date_at: 'at',
 	date_today: 'Today',
@@ -17,6 +19,7 @@ angular.module('events.lang_en_us', [])
 
 	friends: "Friends",
 
+	event_date_clear: "Clear date",
 	event_date_click: "Define event date",
 	event_goingFriend: 'friend is going',
 	event_goingFriends: 'friends are going',
@@ -31,8 +34,10 @@ angular.module('events.lang_en_us', [])
 	event_newEvents_noEvents: 'Your friends are too quiet...',
 	event_newEvents_title: 'New events',
 	event_place_address: 'Address',
-	event_place_details: 'Place details',
+	event_place_clear: "Clear event place",
 	event_place_click_edit: 'Define location',
+	event_place_details: 'Place details',
+	event_place_edit: "Edit place",
 	event_theme_choose: 'Choose a theme to open event',
 	event_what: 'What are you planning to do?',
 	event_where: 'Where?',
@@ -47,6 +52,7 @@ angular.module('events.lang_en_us', [])
 
 	login_enter: '1-click Enter',
 	logout: 'logout',
+	open_now: 'Open now',
 	profile_title: 'My profile',
 	refresh: 'Refresh',
 	settings_title: 'Settings',

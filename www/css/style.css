@@ -37,6 +37,21 @@ body > * {
 	white-space: normal;
 }
 
+.item.right-label h2, .item.right-label p {
+	max-width: 80%;
+	overflow: hidden;
+}
+
+.item.right-label .item-note {
+	position: absolute;
+	top: 35%;
+	right: 10px;
+	white-space: normal;
+	width: 15%;
+	line-height: 1.1;
+	direction: rtl;
+}
+
 .item > .fillParent {
 	margin: -16px;
 }
@@ -192,6 +207,10 @@ body > * {
 
 /** Header **/
 
+#whereTitle {
+	right: 0px !important;
+	z-index: 4000;
+}
 h1.title .top {
 	position: absolute;
 	top: 0px;
@@ -498,14 +517,14 @@ a {
 }
 
 .item-square {
-	padding-left: 95px;
+	padding-left: 80px;
 }
 
 .item-square > img:first-child {
 	border-radius: 0px;
 	top: 0px;
 	left: 0px;
-	max-width: 80px;
+	max-width: 70px;
 	max-height: none;
 	height: 100%;
 }
@@ -747,9 +766,15 @@ a {
 .small, i.small {
 	font-size: 85% !important;
 }
+.smaller, i.smaller {
+	font-size: 75% !important;
+}
 
 .large {
 	font-size: 105% !important;
+}
+.larger {
+	font-size: 120% !important;
 }
 
 .inline {

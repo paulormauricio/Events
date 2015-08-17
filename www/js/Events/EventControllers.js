@@ -108,6 +108,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
             '$ionicLoading', 
             '$ionicActionSheet',
             '$timeout',
+            '$filter',
             '$rootScope',
             'userlocation',
             'Weather',
@@ -121,6 +122,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
                 $ionicLoading,
                 $ionicActionSheet,
                 $timeout,
+                $filter,
                 $rootScope,
                 userlocation,
                 Weather
@@ -162,9 +164,7 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
     $scope.doRefresh = function() {
 
-
         if( $rootScope.isOffline ) {
-            alert('offline');
             $scope.$broadcast('scroll.refreshComplete');
             return;
         }
@@ -365,49 +365,54 @@ catch(err) {
 
         if( $scope.showEvent.place_name != undefined && !$scope.isEdit) return;
 
-        var buttons = [
-                { text: $scope.showEvent.place_name ? 'Edit place' : 'Select place' }
-            ];
+        if( !$scope.showEvent.place_name ) {
+            Event.myEvent = $scope.showEvent;
+            $state.go('editEventPlace', {objectId: $scope.showEvent.id});
+        }
+        else {
 
-        // Show the action sheet
-        var hideSheet = $ionicActionSheet.show({
-            buttons: buttons,
-            destructiveText: 'Clear event place',
-            // titleText: 'Modify your album',
-            cancelText: 'Cancel',
-            cancel: function() {
-                // add cancel code..
-            },
-            buttonClicked: function(index) {
-                console.log('Button clicked. Index = ', index);
-                switch(index) {
-                    case 0: 
-                        Event.myEvent = $scope.showEvent;
-                        $state.go('editEventPlace', {objectId: $scope.showEvent.id});
-                        break;
-                    default: break;
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: $filter('translate')('event_place_edit') }
+                ],
+                destructiveText: $filter('translate')('event_place_clear'),
+                // titleText: 'Modify your album',
+                cancelText: $filter('translate')('cancel'),
+                cancel: function() {
+                    // add cancel code..
+                },
+                buttonClicked: function(index) {
+                    console.log('Button clicked. Index = ', index);
+                    switch(index) {
+                        case 0: 
+                            Event.myEvent = $scope.showEvent;
+                            $state.go('editEventPlace', {objectId: $scope.showEvent.id});
+                            break;
+                        default: break;
+                    }
+                    hideSheet();
+                    return ;
+                },
+                destructiveButtonClicked: function() {
+                    console.log('chegou ao delete place');
+                    hideSheet();
+                    // Delete place
+
+                    Event.myEvent = $scope.showEvent;
+                    Event.deletePlace();
+
+                    $scope.showEvent = Event.myEvent;
+                    Event.resetMyEvent;
+                    
                 }
+            });
+
+            // For example's sake, hide the sheet after two seconds
+            $timeout(function() {
                 hideSheet();
-                return ;
-            },
-            destructiveButtonClicked: function() {
-                console.log('chegou ao delete place');
-                hideSheet();
-                // Delete place
-
-                Event.myEvent = $scope.showEvent;
-                Event.deletePlace();
-
-                $scope.showEvent = Event.myEvent;
-                Event.resetMyEvent;
-                
-            }
-        });
-
-        // For example's sake, hide the sheet after two seconds
-        $timeout(function() {
-            hideSheet();
-        }, 8000);
+            }, 8000);
+        }
 
         $scope.isEdit = false;
     }
@@ -458,9 +463,10 @@ catch(err) {
                 allowOldDates: false,
                 doneButtonColor: '#0000FF',
                 cancelButtonColor: '#000000',
+                cancelButtonLabel: $filter('translate')('done'),
                 clearButton: true,
                 clearButtonColor: "#ddd",
-                clearButtonLabel: "Clear date"
+                clearButtonLabel: $filter('translate')('event_date_clear')
             };
 
             datePicker.show(options, function(newDate){
@@ -614,7 +620,6 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
 
     $scope.back = function() {
         
-        console.log('Fez reset');
         Event.resetMyEvent();
         if( $scope.isNew ) {
             $state.go('events');
@@ -962,12 +967,12 @@ console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
                 Event.myEvent.place_image_url = callback.item.photos[0].getUrl({'maxWidth': 600, 'maxHeight': 600});
             }
         }
-        
+console.log('Save Event: ', Event.myEvent);
         Event.save();
         
         Event.showEvent = Event.myEvent;
         Event.resetMyEvent;
-
+console.log('showEvent: ', Event.showEvent);
         $state.go('showEvent', {objectId: Event.showEvent.id}, {reload: true});
 
     }
@@ -982,6 +987,7 @@ console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
             '$window',
             'Event',
             '$state',
+            '$rootScope',
             '$stateParams',
             '$ionicLoading', 
             '$ionicActionSheet',
@@ -991,6 +997,7 @@ console.log('<<<<<<-----------   Edit Place Screen  ---------->>>>>');
                 $window,
                 Event,
                 $state,
+                $rootScope,
                 $stateParams,
                 $ionicLoading,
                 $ionicActionSheet,

@@ -2,7 +2,9 @@ angular.module('events.lang_pt_pt', [])
 
 .constant('lang_pt_pt', {
 	cancel: 'Cancelar',
+	closed_now: 'Encerrado agora',
 	continue: 'Continuar',
+	done: 'Confirmar',
 
 	date_at: 'às',
 	date_today: 'Hoje',
@@ -17,6 +19,7 @@ angular.module('events.lang_pt_pt', [])
 
 	friends: "Amigos",
 
+	event_date_clear: "Limpar",
 	event_date_click: "Definir data do evento",
 	event_goingFriend: 'amigo vai',
 	event_goingFriends: 'amigos vão',
@@ -31,8 +34,10 @@ angular.module('events.lang_pt_pt', [])
 	event_newEvents_noEvents: 'Nenhum evento. Desafia tu os teus amigos...',
 	event_newEvents_title: 'Novos eventos',
 	event_place_address: 'Morada',
-	event_place_details: 'Detalhe do local',
+	event_place_clear: "Limpar local do evento",
 	event_place_click_edit: 'Definir o local',
+	event_place_details: 'Detalhe do local',
+	event_place_edit: "Editar local",
 	event_theme_choose: 'Escolhe o teu tema para abrir o evento',
 	event_what: 'O que planeias fazer?',
 	event_where: 'Onde?',
@@ -47,6 +52,7 @@ angular.module('events.lang_pt_pt', [])
 
 	login_enter: 'Entrar',
 	logout: 'Terminar sessão',
+	open_now: 'Aberto agora',
 	profile_title: 'Perfil',
 	refresh: 'Actualizar',
 	settings_title: 'Configurações',

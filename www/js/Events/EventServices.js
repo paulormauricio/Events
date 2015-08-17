@@ -93,13 +93,11 @@ console.log('----->  Database change: ', change);
 		var deferred = $q.defer();
 
 		// Validate network connection
-		if(window.Connection) {
-			if( $cordovaNetwork.isOffline() ) {
-				$timeout(function() {
-					$rootScope.$apply(function() { deferred.resolve([]); });
-				}, 100);
-				return deferred.promise;
-			}
+		if( $rootScope.isOffline ) {
+			$timeout(function() {
+				$rootScope.$apply(function() { deferred.resolve([]); });
+			}, 100);
+			return deferred.promise;
 		}
 
 		var query = new Parse.Query(Event);
@@ -152,13 +150,11 @@ console.log('----->  Database change: ', change);
 		var deferred = $q.defer();
 
 		// Validate network connection
-		if(window.Connection) {
-			if( $cordovaNetwork.isOffline() ) {
-				$timeout(function() {
-					$rootScope.$apply(function() { deferred.resolve([]); });
-				}, 100);
-				return deferred.promise;
-			}
+		if( $rootScope.isOffline ) {
+			$timeout(function() {
+				$rootScope.$apply(function() { deferred.resolve([]); });
+			}, 100);
+			return deferred.promise;
 		}
 
 		var query = new Parse.Query(Event);
@@ -227,7 +223,7 @@ console.log('Event loaded locally!');
 
 	this.get = function(id) {
 
-		if( !$rootScope.isOffline ) {
+		if( $rootScope.isOffline ) {
 			return this.loadEvent(id);
 		}
 
@@ -287,6 +283,7 @@ console.log('Event loaded locally!');
 	};
 
 	this.save = function(isNew) {
+
 			isNew = typeof isNew !== 'undefined' ? isNew : false;
 			var deferred = $q.defer();
 
