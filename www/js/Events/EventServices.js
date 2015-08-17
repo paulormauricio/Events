@@ -59,6 +59,7 @@ console.log('<------ Start Events ----------->');
 	    }
 	}
 
+
 	function onDatabaseChange(change) {  
 console.log('----->  Database change: ', change);
 	    var index = findIndex(_myEvents, change.id);
@@ -202,61 +203,88 @@ console.log('----->  Database change: ', change);
 		return deferred.promise;
 	};
 
+
+	this.loadEvent = function(id) {
+
+		if( _db === undefined ) {
+			alert('Database not loaded!');
+			return {};
+		}
+
+       return $q.when(_db.get(id)
+	       		.then(function (doc) {
+console.log('Event loaded locally!');
+					doc.date = doc.date ? new Date(doc.date) : undefined;
+					// Unserialize participants
+					doc.participants = angular.fromJson(doc.participants);
+
+				  return doc;
+				}).catch(function (err) {
+				  console.log(err);
+				})
+			);
+	};
+
 	this.get = function(id) {
-			var deferred = $q.defer();
 
-			var query = new Parse.Query(Event);
-			query.equalTo("objectId", id );
-			query.first({
-			  success: function(object) {
+		if( !$rootScope.isOffline ) {
+			return this.loadEvent(id);
+		}
 
-			  	console.log('Event get successfully!');
+		var deferred = $q.defer();
 
-			  	var result = {};
+		var query = new Parse.Query(Event);
+		query.equalTo("objectId", id );
+		query.first({
+		  success: function(object) {
 
-			  	if( object == undefined ) {
-			  		result = object;
-			  	}
-				else {
-					result.id = object.id;
-					result._id = object.id;
-					result.name = object.get('name');
-					result.theme = object.get('theme');
-					result.place_id = object.get('place_id');
-					result.place_name = object.get('place_name');
-					result.place_address = object.get('place_address');
-					result.place_image_url = object.get('place_image_url');
-					result.place_lat = object.get('place_lat');
-					result.place_lng = object.get('place_lng');
-					result.date = object.get('date');
-					result.participants = null;
+		  	console.log('Event get successfully!');
 
-					this.showEvent = result;
+		  	var result = {};
 
-					_db.get(object.id)
-					.then(function (doc) {
-						onDatabaseChange({doc: result, deleted: false, id: result._id});
-					})
-					.catch(function(error) {
-						if( error.name === 'not_found') {
-							console.log('Document not found in local DB');
-						}
-						else {
-							console.log('Get Doc error: ', error);
-						}
-					});
+		  	if( object == undefined ) {
+		  		result = object;
+		  	}
+			else {
+				result.id = object.id;
+				result._id = object.id;
+				result.name = object.get('name');
+				result.theme = object.get('theme');
+				result.place_id = object.get('place_id');
+				result.place_name = object.get('place_name');
+				result.place_address = object.get('place_address');
+				result.place_image_url = object.get('place_image_url');
+				result.place_lat = object.get('place_lat');
+				result.place_lng = object.get('place_lng');
+				result.date = object.get('date');
+				result.participants = null;
 
-				}
-				
-			  	$rootScope.$apply(function() { deferred.resolve(result); });
+				this.showEvent = result;
 
-			  },
-			  error: function(error) {
-			    alert("getEvent Error: " + error.code + " " + error.message);
-			  }
-			});
-			return deferred.promise;
-		};
+				_db.get(object.id)
+				.then(function (doc) {
+					onDatabaseChange({doc: result, deleted: false, id: result._id});
+				})
+				.catch(function(error) {
+					if( error.name === 'not_found') {
+						console.log('Document not found in local DB');
+					}
+					else {
+						console.log('Get Doc error: ', error);
+					}
+				});
+
+			}
+			
+		  	$rootScope.$apply(function() { deferred.resolve(result); });
+
+		  },
+		  error: function(error) {
+		    alert("getEvent Error: " + error.code + " " + error.message);
+		  }
+		});
+		return deferred.promise;
+	};
 
 	this.save = function(isNew) {
 			isNew = typeof isNew !== 'undefined' ? isNew : false;

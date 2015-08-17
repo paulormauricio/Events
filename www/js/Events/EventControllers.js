@@ -44,14 +44,10 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
     });
 
     $scope.doRefresh = function() {
-console.log('$rootScope: ', $rootScope);
-alert('$rootScope.isOffline' + $rootScope.isOffline);
 
         if( $rootScope.isOffline ) {
-            //if( navigator.connection.type == Connection.NONE ) {
-                $scope.$broadcast('scroll.refreshComplete');
-                return;
-            //}
+            $scope.$broadcast('scroll.refreshComplete');
+            return;
         }
 
         Event.getMyEvents().then(function(objects) {
@@ -112,6 +108,7 @@ alert('$rootScope.isOffline' + $rootScope.isOffline);
             '$ionicLoading', 
             '$ionicActionSheet',
             '$timeout',
+            '$rootScope',
             'userlocation',
             'Weather',
             function(
@@ -124,6 +121,7 @@ alert('$rootScope.isOffline' + $rootScope.isOffline);
                 $ionicLoading,
                 $ionicActionSheet,
                 $timeout,
+                $rootScope,
                 userlocation,
                 Weather
             )
@@ -166,13 +164,10 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
 
 
         if( $rootScope.isOffline ) {
-            //if( navigator.connection.type == Connection.NONE ) {
-                alert('offline');
-                $scope.$broadcast('scroll.refreshComplete');
-                return;
-            //}
+            alert('offline');
+            $scope.$broadcast('scroll.refreshComplete');
+            return;
         }
-        alert('online');
 
         Event.get($stateParams.objectId).then(function(object) {
             Event.showEvent = object;
@@ -184,9 +179,9 @@ console.log('<<<<<<-----------   Show Screen  ---------->>>>>');
     }
 
     function loadEventDetail() {
-console.log('Event.showEvent :', Event.showEvent);
+
         $scope.showEvent = Event.showEvent;
-        console.log('Show event: ', $scope.showEvent);
+        console.log('$scope.showEvent: ', $scope.showEvent);
 
         if( $scope.showEvent.place_id ) {
             initializeGoogleMaps($scope.showEvent.place_lat, $scope.showEvent.place_lng);
@@ -195,14 +190,8 @@ console.log('Event.showEvent :', Event.showEvent);
             $scope.showEvent.place_image_url = 'img/themes/'+$scope.showEvent.theme+'.png';
         }
 
-        var isOffline = false;
-        if( window.connection ) {
-            if( navigator.connection.type == Connection.NONE ) {
-                isOffline = true;
-            }
-        }
-
-        if( !isOffline ) {
+        $scope.weather = {};
+        if( !$rootScope.isOffline ) {
             $scope.showEvent.participants = {};
             Participant.getAll(Event.showEvent, true).then(function(result) {
                 $scope.showEvent.participants = result;
@@ -226,10 +215,9 @@ console.log('Event.showEvent :', Event.showEvent);
             .catch(function(error) {
                 alert('Get participants Error: '+error);
             });
-        }
 
-        $scope.weather = {};
-        getLocationWeather();
+            getLocationWeather();
+        }
 
     }
 
@@ -300,10 +288,8 @@ console.log('Event.showEvent :', Event.showEvent);
 
     function initializeGoogleMaps(lat, lng) {
 
-        if( window.connection ) {
-            if( navigator.connection.type == Connection.NONE ) {
-                return;
-            }
+        if( $rootScope.isOffline ) {
+            return;
         }
 
         if(!window.google) {
@@ -448,10 +434,8 @@ catch(err) {
 
         if( !$scope.isEdit && $scope.showEvent.date ) return;
 
-        if( window.connection ) {
-            if( navigator.connection.type == Connection.NONE ) {
-                return;
-            }
+        if( $rootScope.isOffline ) {
+            return;
         }
 
         $scope.showAngularDateEditor = true;
@@ -1048,10 +1032,8 @@ console.log('<<<<<<-----------   Show Map Screen  ---------->>>>>');
 
     function initializeGoogleMaps(lat, lng) {
 
-        if( window.connection ) {
-            if( navigator.connection.type == Connection.NONE ) {
-                return;
-            }
+        if( $rootScope.isOffline ) {
+            return;
         }
 
         console.log('Initialize Maps (lat, lng): '+lat+', '+lng);

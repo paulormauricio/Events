@@ -52,6 +52,7 @@ angular.module('events',
       StatusBar.styleDefault();
     }
 
+    $rootScope.isOffline = false;
     
     Language.set();
 
@@ -77,10 +78,8 @@ angular.module('events',
   function loadMapsApi () {
     return;
 
-      if(window.connection || typeof google === 'undefined') {
-        if( $cordovaNetwork.isOffline() || typeof google.maps !== 'undefined') {
-            return;
-        }
+      if( $rootScope.isOffline || typeof google.maps !== 'undefined') {
+          return;
       }
       
       var script_map = document.createElement('script');
@@ -99,7 +98,6 @@ angular.module('events',
   $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
     //var offlineState = networkState;
 
-
     $ionicPopup.alert({
       title: $filter('translate')('internet_disconnected'),
       template: $filter('translate')('internet_disconnected_desc'),
@@ -115,9 +113,7 @@ angular.module('events',
 
   // listen for Online event
   $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
-
       $rootScope.isOffline = false;
-
   });
 
   // UI Router Authentication Check
