@@ -1,7 +1,7 @@
 angular.module('events.EventServices',[])
 
 
-.service('Event',['$rootScope', '$q', '$cordovaNetwork', '$timeout', function($rootScope, $q, $cordovaNetwork, $timeout){
+.service('Event',['$rootScope', '$q', '$timeout', '$filter', function($rootScope, $q, $timeout, $filter){
 
 console.log('<------ Start Events ----------->');
 
@@ -33,25 +33,52 @@ console.log('<------ Start Events ----------->');
 
 	    if (_myEvents.length == 0) {
 
-	       return $q.when(_db.allDocs({ include_docs: true}))
-	            .then(function(docs) {
+	    	var currDate = $filter('date')(new Date(), 'yyyy-MM-dd' );
 
-	                // Each row has a .doc object and we just want to send an 
-	                // array of myEvents objects back to the calling controller,
-	                // so let's map the array to contain just the .doc objects.
-	                _myEvents = docs.rows.map(function(row) {
-	                    row.doc.date = row.doc.date ? new Date(row.doc.date) : undefined;
+	       return $q.when(_db.createIndex({
+					index: {fields: ['date']}
+				})
+				.then(function () {
+					return _db.find({
+						selector: {date: {$gte: currDate}}
+					});
+				})
+				.then(function(docs) {
+
+	                _myEvents = docs.docs.map(function(doc) {
+	                    doc.date = doc.date ? new Date(doc.date) : undefined;
+	                    doc.updatedAt = doc.updatedAt ? new Date(doc.updatedAt) : undefined;
 
 						// Unserialize participants
-						row.doc.participants = angular.fromJson(row.doc.participants);
+						doc.participants = angular.fromJson(doc.participants);
 
-	                    return row.doc;
+	                    return doc;
 	                });
+	                console.log('_myEvents(query1): ', _myEvents);
+					
+					//return _myEvents;
+					return _db.find({
+						selector: {date: {$exists: false}}
+					});
 
-					console.log('_myEvents: ', _myEvents);
+				})
+				.then(function(docs){
+					var events_withoutDate = [];
+	                events_withoutDate = docs.docs.map(function(doc) {
+	                    doc.date = doc.date ? new Date(doc.date) : undefined;
+	                    doc.updatedAt = doc.updatedAt ? new Date(doc.updatedAt) : undefined;
 
+						// Unserialize participants
+						doc.participants = angular.fromJson(doc.participants);
+
+	                    return doc;
+	                });
+	                _myEvents = _myEvents.concat(events_withoutDate);
+	                console.log('_myEvents(query2): ', _myEvents);
 	                return _myEvents;
-	            });
+				})
+				.catch(function(err){console.log('Load Docs Error: ', err); return [];}));
+
 	    } else {
 	        // Return cached data as a promise
 	        console.log('Loaded from cache');
@@ -63,14 +90,13 @@ console.log('<------ Start Events ----------->');
 	function onDatabaseChange(change) {  
 console.log('----->  Database change: ', change);
 	    var index = findIndex(_myEvents, change.id);
-	    var myEvent = _myEvents[index];
 
 	    if (change.deleted) {
-	        if (myEvent) {
+	        if (_myEvents[index]) {
 	            _myEvents.splice(index, 1); // delete
 	        }
 	    } else {
-	        if (myEvent && myEvent._id === change.id) {
+	        if (_myEvents[index] && _myEvents[index]._id === change.id) { 
 	            _myEvents[index] = change.doc; // update
 	        } else {
 	            _myEvents.splice(index, 0, change.doc) // insert
@@ -112,12 +138,14 @@ console.log('----->  Database change: ', change);
 		innerQuery.find({
 		  success: function(objects) {
 		  	console.log('getMyEvents: List get successfully!');
-
-			var results = objects.map(function(object) {
+		  	var currDate = $filter('date')(new Date(), 'yyyy-MM-dd');
+		  	var results = [];
+			angular.forEach(objects, function(object) {
 
 				var result = {};
 				result.id = object.get('Event').id;
 				result._id = object.get('Event').id;
+
 				result.name = object.get('Event').get('name');
 				result.theme = object.get('Event').get('theme');
 				result.place_id = object.get('Event').get('place_id');
@@ -127,11 +155,33 @@ console.log('----->  Database change: ', change);
 				result.place_lat = object.get('Event').get('place_lat');
 				result.place_lng = object.get('Event').get('place_lng');
 				result.date = object.get('Event').get('date');
-				return result;
-			});
+				result.updatedAt = object.get('Event').updatedAt;
 
-			//Add to local database
-			$q.when(_db.bulkDocs(results)).catch(function(error){alert('bulkDocs Error: '+error)});
+				//Add to local database
+				$q.when(_db.get(result._id)
+					.then(function(doc) {
+						doc.updatedAt = new Date(doc.updatedAt);
+						if( result.updatedAt > doc.updatedAt  ) {
+							result._rev = doc._rev;
+							return _db.put( result );
+						}
+					})
+					//.then(function(res){ console.log('Imported Event: ', res);})
+					.catch(function (err) { 
+						if( err.name === 'not_found' ) {
+							_db.put(result).then(function(res){console.log('Put new event: ', res);}).catch(function(err){console.log('Import/Put new Event: ', err);})
+						}
+						else {
+							console.log('Import Event Error: ', err); 
+						}
+					})
+				);
+				var eventDate = $filter('date')(result.date, 'yyyy-MM-dd');
+
+				if( result.date == null || result.date === undefined || currDate <= eventDate ) this.push(result);
+
+			}, results);
+
 			_myEvents = results;
 
 		    $rootScope.$apply(function() { deferred.resolve(results); });
@@ -184,6 +234,8 @@ console.log('----->  Database change: ', change);
 				result.place_lat = object.get('Event').get('place_lat');
 				result.place_lng = object.get('Event').get('place_lng');
 				result.date = object.get('Event').get('date');
+				result.updatedAt = object.get('Event').updatedAt;
+
 				return result;
 			});
 
@@ -253,6 +305,7 @@ console.log('Event loaded locally!');
 				result.place_lat = object.get('place_lat');
 				result.place_lng = object.get('place_lng');
 				result.date = object.get('date');
+				result.updatedAt = object.updatedAt;
 				result.participants = null;
 
 				this.showEvent = result;
@@ -334,26 +387,32 @@ console.log('Event loaded locally!');
 
 	this.updateEventLocally = function(myEvent) {
 
-		_db.get(myEvent.id)
-		.then(function (doc) {
+		$q.when(_db.get(myEvent.id)
+			.then(function (doc) {
+				doc.updatedAt = new Date(doc.updatedAt);
 
-			myEvent._id = myEvent.id;
-			// Serialize participants
-			myEvent.participants = angular.toJson(myEvent.participants, false);
+				if( myEvent.updatedAt > doc.updatedAt  ) {
+					console.log('updateEventLocally');
+					myEvent._id = myEvent.id;
+					myEvent._rev = doc._rev;
+					// Serialize participants
+					myEvent.participants = angular.toJson(myEvent.participants, false);
 
-			$q.when(_db.put(myEvent));
-			// Unserialize participants
-			myEvent.participants = angular.fromJson(myEvent.participants);
-			onDatabaseChange({doc: myEvent, deleted: false, id: myEvent._id});
-		})
-		.catch(function(error) {
-			if( error.name === 'not_found') {
-				console.log('Document not found in local DB');
-			}
-			else {
-				console.log('Get Doc error: ', error);
-			}
-		});
+					_db.put(myEvent);
+					// Unserialize participants
+					myEvent.participants = angular.fromJson(myEvent.participants);
+					onDatabaseChange({doc: myEvent, deleted: false, id: myEvent._id});
+				}
+			})
+			.catch(function(error) {
+				if( error.name === 'not_found') {
+					console.log('Document not found in local DB');
+				}
+				else {
+					console.log('Get Doc error: ', error);
+				}
+			})
+		);
 
 	}
 

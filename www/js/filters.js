@@ -65,6 +65,8 @@ angular.module('events.filters',[])
 
     return function(inputDateTime) { 
 
+        if( inputDateTime == undefined || inputDateTime == null ) return '';
+
         var inputDate = new Date( $filter('date')(inputDateTime, 'yyyy-MM-dd' ) );
 
         var currentDateTime = new Date();
@@ -72,7 +74,7 @@ angular.module('events.filters',[])
 
         var inputTime = $filter('date')(inputDateTime, 'HH:mm' );
 
-        var dateDiff = differenceInDays(inputDate, currentDate);
+        var dateDiff = differenceInDays(currentDate, inputDate);
 
         if (inputDate == currentDate) {
             return $filter('translate')('date_today')+' '+$filter('translate')('date_at')+' '+inputTime;
@@ -85,7 +87,7 @@ angular.module('events.filters',[])
             return $filter('translate')( 'date_week_'+week ) + ' '+$filter('translate')('date_at')+' '+inputTime;
         }
         else {
-            return $filter('date')(inputDateTime, 'dd-MM-yyyy '+$filter('translate')('date_at')+' HH:mm' );
+            return $filter('date')(inputDateTime, 'dd-MM-yyyy ')+$filter('translate')('date_at')+$filter('date')(inputDateTime, ' HH:mm' );
         }
         
         return "";

@@ -361,6 +361,13 @@ a {
 	line-height: 1.3;
 }
 
+.horizontalList .item .stamp {
+	position: absolute;
+	bottom: 12px;
+	right: 0px;
+	font-style: 16px;
+}
+
 /**** Collection List Styles  ***/
 
 .collectionList {

@@ -18,7 +18,7 @@
             My events
         </h1>
         <div ng-show="myEvents.length == 0" class="emptyMsg" translate="event_myEvents_noEvents"></div>
-        <ion-item class="" ng-repeat="myEvent in myEvents"
+        <ion-item class="" ng-repeat="myEvent in myEvents track by myEvent.id"
                   ng-click="showEvent(myEvent)" nav-transition="ios"
                   ng-style="{'width': item.width, 'height': item.height}">
             <span ng-switch="myEvent.place_image_url == undefined">

@@ -52,6 +52,7 @@ console.log('<<<<<<-----------   Events Screen  ---------->>>>>');
 
         Event.getMyEvents().then(function(objects) {
             $scope.myEvents = objects;
+            console.log('myEvent: ', objects);
         });
 
         Event.getNew().then(function(objects) {
@@ -405,6 +406,8 @@ catch(err) {
                     $scope.showEvent = Event.myEvent;
                     Event.resetMyEvent;
                     
+                    $scope.showEvent.place_image_url = 'img/themes/'+$scope.showEvent.theme+'.png';
+        
                 }
             });
 
@@ -446,6 +449,10 @@ catch(err) {
         $scope.showAngularDateEditor = true;
 
         console.log(Event.showEvent);
+
+console.log('ionic.Platform.isIOS() :', ionic.Platform.isIOS());
+console.log('ionic.Platform.isAndroid(): ',  ionic.Platform.isAndroid());
+console.log('ionic.Platform.isWindowsPhone(): ', ionic.Platform.isWindowsPhone());
 
         if( ionic.Platform.isIOS() ||
             ionic.Platform.isAndroid() ||
@@ -635,6 +642,9 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
         Theme.getAll().then(function(themes){
             $scope.themes = themes;
             console.log('Themes: ', themes);
+        })
+        .finally( function() {
+            $ionicLoading.hide();
         });
 
         calculateColectionItemSize();
@@ -642,7 +652,6 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
             calculateColectionItemSize();
         });
 
-        $ionicLoading.hide();
     }
 
     $scope.storeName = function(theme) {
@@ -656,6 +665,7 @@ console.log('<<<<<<-----------   Edit Name Screen  ---------->>>>>');
         Event.myEvent = $scope.editEvent;
         
         Event.myEvent.theme = theme.name;
+        Event.myEvent.place_image_url = 'img/themes/'+theme.name+'.png';
 
         Event.save($scope.isNew).then(function(savedEvent) {
 
@@ -765,6 +775,7 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
 
             Participant.getAll($scope.editEvent, false).then(function(invitedFriends){
                 $scope.invitedFriends = invitedFriends;
+console.log('$scope.invitedFriends: ', $scope.invitedFriends);
 
                 //Remove participants from friends
                 for (var i = 0; i < invitedFriends.length; i++) {
@@ -797,9 +808,11 @@ console.log('<<<<<<-----------   Edit Participant Screen  ---------->>>>>');
     }
 
     $scope.uninviteFriend = function(index, friend) {
-        friend.isNew = 0;
-        $scope.friends.unshift( friend );
-        $scope.invitedFriends.splice(index, 1);
+        if( !friend.isGoing ) {
+            friend.isNew = 0;
+            $scope.friends.unshift( friend );
+            $scope.invitedFriends.splice(index, 1);
+        }
     }
 
     $scope.notifyParticipants = function() {

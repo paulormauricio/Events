@@ -6,7 +6,7 @@ angular.module('events.lang_pt_pt', [])
 	continue: 'Continuar',
 	done: 'Confirmar',
 
-	date_at: 'às',
+	date_at: 'às ',
 	date_today: 'Hoje',
 	date_tomorrow: 'Amanhã',
 	date_week_monday: 'Segunda',
